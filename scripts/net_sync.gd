@@ -255,6 +255,8 @@ func fx(kind: String, args: Array) -> void:
 			world.emote(args[0], e)
 		"shower":
 			world._shower_fx()
+		"replay":
+			world.play_replay(args[0], args[1])
 		"roadworks":
 			world.make_roadworks(args[0], args[1])
 		"convoy":

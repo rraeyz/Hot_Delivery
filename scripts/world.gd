@@ -1133,6 +1133,7 @@ func _on_crash(_s: Scooter) -> void:
 	if sp > best_crash_speed and _rec_after < 0:
 		_rec_after = Replay.AFTER
 		_rec_speed = sp
+		_rec_who = _s.index
 	debug_log.crash_speeds.append(snappedf(_s._prev_vel.length(), 0.1))
 	run.stats.crashes += 1
 	for o in orders:
@@ -1456,6 +1457,8 @@ var _rec: Array = []
 var _rec_tick := 0
 var _rec_after := -1
 var _rec_speed := 0.0
+var _rec_who := 0
+var best_crash_who := 0
 var best_crash: Array = []
 var best_crash_speed := 0.0
 var skip_replay := false
@@ -1474,6 +1477,7 @@ func _record() -> void:
 		if _rec_after == 0:
 			best_crash = _rec.duplicate()
 			best_crash_speed = _rec_speed
+			best_crash_who = _rec_who
 			_rec_after = -1
 			_rec = _rec.slice(_rec.size() - Replay.KEEP)
 
@@ -1485,29 +1489,49 @@ func _end_shift() -> void:
 	audio.play("whistle")
 	if _rec_after >= 0:   # crash happened in the last seconds: keep what we have
 		best_crash = _rec.duplicate()
+		best_crash_who = _rec_who
 	if best_crash.size() > 10 and not skip_replay:
-		if split:
-			split_layer.visible = false
-			get_viewport().disable_3d = false
-		scooter.visible = false
-		for lf in loose:
-			if is_instance_valid(lf):
-				lf.visible = false
-		hud.visible = false
-		var rp := Replay.new()
-		add_child(rp)
-		rp.play(best_crash, camera)
-		await rp.finished
-		rp.queue_free()
-		camera.current = true
-		scooter.visible = true
-		hud.visible = true
-		if split:
-			split_layer.visible = true
-			get_viewport().disable_3d = true
+		if netsync:
+			netsync.send_fx("replay", [best_crash, best_crash_who])
+		await play_replay(best_crash, best_crash_who)
 	var top := reviews.duplicate()
 	top.sort_custom(func(a, b): return Reviews.funny_score(a.tag, a.stars) > Reviews.funny_score(b.tag, b.stars))
 	shift_ended.emit({"reviews": reviews, "top": top.slice(0, 3), "earned": run.earned_today})
+
+
+## Slow-motion clip of the day's biggest crash (online: the host sends it to everyone).
+var replays_shown := 0
+
+func play_replay(data: Array, who: int) -> void:
+	replays_shown += 1
+	if split:
+		split_layer.visible = false
+		get_viewport().disable_3d = false
+	var hidden: Array = scooters.filter(func(s): return s.visible)
+	for s in hidden:
+		s.visible = false
+	var food: Array = loose.filter(func(lf): return is_instance_valid(lf) and lf.visible)
+	if netsync:
+		food.append_array(netsync._loose_vis.values())
+	for lf in food:
+		lf.visible = false
+	hud.visible = false
+	var rp := Replay.new()
+	add_child(rp)
+	rp.play(data, camera, scooters, who)
+	await rp.finished
+	rp.queue_free()
+	camera.current = true
+	for s in hidden:
+		if is_instance_valid(s):
+			s.visible = true
+	for lf in food:
+		if is_instance_valid(lf):
+			lf.visible = true
+	hud.visible = true
+	if split:
+		split_layer.visible = true
+		get_viewport().disable_3d = true
 
 
 func pause(p: bool) -> void:

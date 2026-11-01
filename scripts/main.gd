@@ -871,8 +871,13 @@ func _autotest_net() -> void:
 	var start_pos: Array = w.scooters.map(func(s): return s.global_position)
 	var cooked := 0
 	var max_players := 0   # the peer may quit a moment before we check
+	var max_drivers := 0
 	while t < secs and is_instance_valid(w):
 		max_players = maxi(max_players, Net.players.size())
+		max_drivers = maxi(max_drivers, Net.drivers().size())
+		if args.has("crash") and Net.is_host() and t >= float(args.crash):
+			args.erase("crash")
+			w.scooter.crash(-w.scooter.global_basis.z * 12.0)
 		if Net.is_cook(Net.my_id()):
 			if int(t * 60.0) % 90 == 0:
 				for o in w.orders:
@@ -895,12 +900,13 @@ func _autotest_net() -> void:
 		moved.append(snappedf(w.scooters[i].global_position.distance_to(start_pos[i]), 0.1))
 	print("NET %s scooters=%d local=%d moved=%s money=%d orders=%d deliveries=%d" % ["host" if Net.is_host() else "client",
 		w.scooters.size(), w.local_index, moved, run.money, w.orders.size(), w.reviews.size()])
-	var ok: bool = max_players >= 2 and w.scooters.size() == Net.drivers().size() and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
+	print("NET replays shown: ", w.replays_shown)
+	var ok: bool = max_players >= 2 and w.scooters.size() == max_drivers and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
 	if Net.cooks().size() > 0:
 		var ready := w.orders.filter(func(o): return o.get("ready", true) or o.state != "offer").size()
 		print("NET cook: cooked=%d ready_or_taken=%d" % [cooked, ready])
 		ok = ok and ready > 0
-	print("NET RESULT ", "PASS" if ok else "FAIL players=%d drivers=%d" % [Net.players.size(), Net.drivers().size()])
+	print("NET RESULT ", "PASS" if ok else "FAIL players=%d drivers=%d" % [max_players, max_drivers])
 	if Net.is_host():
 		await get_tree().create_timer(3.0).timeout   # let the client finish first
 	get_tree().quit(0 if ok else 1)

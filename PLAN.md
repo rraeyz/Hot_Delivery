@@ -134,7 +134,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] İlk vardiya eğitimi (ok + kısa ipuçları: "restorana git", "yavaşla", "balkona fırlat")
 - [x] Köpek ve güvercinler en yakın scooter'ı hedeflesin (çok oyunculu)
 - [x] Bölünmüş ekranda 2. oyuncunun denge göstergesi + tekrar (replay)
-- [ ] Online'da tekrar (en büyük kaza herkese gösterilsin)
+- [x] Online'da tekrar: ev sahibi günün en büyük kazasını (tüm scooter'lar) herkese yollar
 - [x] Yeni olay: düğün konvoyu (raporda vardı) — korna çalan araba dizisi yolu kapatır
 - [x] Yeni olay: bozuk asansör — 30 sn boyunca kapıda teslim için 4 kat merdiven (dur ve bekle) ya da balkona fırlat (bot testi: `--elevator`)
 - [x] Rekabetçi denge: 2 bot simülasyonu (tests/comp_sim.tscn) — skorlar yakın, kartlar teslimatı azaltıyor
