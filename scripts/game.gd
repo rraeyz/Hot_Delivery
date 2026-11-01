@@ -8,7 +8,7 @@ var save := {"best_day": 0, "runs": 0, "unlock_level": 0, "rep": 0, "daily_best"
 
 const UI := {
 	"en": {
-		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER",
+		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
 		"settings": "SETTINGS", "quit": "QUIT", "day": "DAY", "rent": "RENT", "money": "CASH",
 		"time": "TIME", "pickup": "Pick up at", "deliver": "Deliver to", "orders": "ORDERS",
 		"no_orders": "Waiting for orders...", "fired": "YOU'RE FIRED!", "paid": "RENT PAID",
@@ -27,7 +27,7 @@ const UI := {
 		"rent_due": "Rent due tonight: $%d", "credits": "Made with Godot Engine (MIT). All art and audio generated in-house.",
 	},
 	"tr": {
-		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU",
+		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
 		"settings": "AYARLAR", "quit": "ÇIKIŞ", "day": "GÜN", "rent": "KİRA", "money": "PARA",
 		"time": "SÜRE", "pickup": "Al:", "deliver": "Teslim:", "orders": "SİPARİŞLER",
 		"no_orders": "Sipariş bekleniyor...", "fired": "KOVULDUN!", "paid": "KİRA ÖDENDİ",
@@ -197,6 +197,17 @@ func _setup_input() -> void:
 	_add("p2_bal_back", [_key(KEY_DOWN), _joy_axis(JOY_AXIS_LEFT_Y, 1.0, 1)])
 	_add("p2_throw", [_key(KEY_ENTER), _key(KEY_KP_0), _joy_btn(JOY_BUTTON_A, 1)])
 	_add("p2_pickup", [_key(KEY_SHIFT), _key(KEY_KP_ENTER), _joy_btn(JOY_BUTTON_X, 1)])
+	# split screen: second scooter on arrows / gamepad 1
+	_add("p2d_throttle", [_key(KEY_UP), _joy_axis(JOY_AXIS_TRIGGER_RIGHT, 1.0, 1)])
+	_add("p2d_brake", [_key(KEY_DOWN), _joy_axis(JOY_AXIS_TRIGGER_LEFT, 1.0, 1)])
+	_add("p2d_left", [_key(KEY_LEFT), _joy_axis(JOY_AXIS_LEFT_X, -1.0, 1)])
+	_add("p2d_right", [_key(KEY_RIGHT), _joy_axis(JOY_AXIS_LEFT_X, 1.0, 1)])
+	_add("p2d_horn", [_key(KEY_CTRL), _joy_btn(JOY_BUTTON_B, 1)])
+	_add("p2d_reset", [_key(KEY_BACKSPACE), _joy_btn(JOY_BUTTON_Y, 1)])
+	_add("p2s_bal_left", [_joy_axis(JOY_AXIS_RIGHT_X, -1.0, 1)])
+	_add("p2s_bal_right", [_joy_axis(JOY_AXIS_RIGHT_X, 1.0, 1)])
+	_add("p2s_bal_fwd", [_joy_axis(JOY_AXIS_RIGHT_Y, -1.0, 1)])
+	_add("p2s_bal_back", [_joy_axis(JOY_AXIS_RIGHT_Y, 1.0, 1)])
 	_add("pause", [_key(KEY_ESCAPE), _joy_btn(JOY_BUTTON_START)])
 	_add("screenshot", [_key(KEY_F12), _joy_btn(JOY_BUTTON_BACK)])
 	_add("ui_accept_pad", [_joy_btn(JOY_BUTTON_A)])

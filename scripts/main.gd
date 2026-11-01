@@ -6,6 +6,7 @@ const UNLOCK_DAYS := [2, 3, 4, 5, 6]   # reaching these days unlocks burger, dri
 var run: RunState
 var world: World
 var coop := false
+var split := false
 var daily := false
 var ui: CanvasLayer
 var menu_scene: Node3D
@@ -89,6 +90,7 @@ func show_menu() -> void:
 	v.add_child(UiKit.button(Game.t("play"), func(): start_run(randi(), false, false)))
 	v.add_child(UiKit.button(Game.t("daily"), func(): start_run(_daily_seed(), false, true)))
 	v.add_child(UiKit.button(Game.t("coop"), func(): start_run(randi(), true, false)))
+	v.add_child(UiKit.button(Game.t("split"), func(): start_run(randi(), false, false, true)))
 	v.add_child(UiKit.button(Game.t("settings"), show_settings))
 	v.add_child(UiKit.button(Game.t("quit"), func(): get_tree().quit()))
 	var best := UiKit.label(Game.t("best") % int(Game.save.best_day), 20, Color(1, 1, 1, 0.8))
@@ -194,8 +196,9 @@ func show_settings() -> void:
 
 # ---------------------------------------------------------------- run flow
 
-func start_run(seed_value: int, coop_mode: bool, is_daily: bool) -> void:
+func start_run(seed_value: int, coop_mode: bool, is_daily: bool, split_mode := false) -> void:
 	coop = coop_mode
+	split = split_mode
 	daily = is_daily
 	run = RunState.new(seed_value, int(Game.save.unlock_level))
 	Game.save.runs += 1
@@ -208,7 +211,7 @@ func start_day() -> void:
 	_clear_ui()
 	get_tree().paused = false
 	world = World.new()
-	world.setup(run, coop)
+	world.setup(run, coop, split)
 	world.shift_ended.connect(show_summary)
 	add_child(world)
 	world.process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -259,7 +262,7 @@ func show_summary(result: Dictionary) -> void:
 		v.add_child(UiKit.button(Game.t("garage"), show_garage))
 	else:
 		v.add_child(UiKit.label(Game.t("stats") % [run.stats.deliveries, run.stats.crashes, run.stats.throws], 22))
-		v.add_child(UiKit.button(Game.t("retry"), func(): start_run(randi(), coop, false)))
+		v.add_child(UiKit.button(Game.t("retry"), func(): start_run(randi(), coop, false, split)))
 		v.add_child(UiKit.button(Game.t("menu"), show_menu))
 		_record_run_end()
 	_focus_first(v)
@@ -399,6 +402,7 @@ func _autotest() -> void:
 		get_viewport().get_texture().get_image().save_png(out + "/menu.png")
 		get_tree().quit()
 		return
+	split = args.has("split")
 	start_day()
 	var w := world
 	await get_tree().process_frame

@@ -57,16 +57,16 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 
 ## Aşama 3 — Çok oyunculu (yerel)
 - [x] Sürücü + yolcu (aynı scooter, iki kontrolcü/klavye ikiye bölünmüş)
-- [ ] İki scooter (bölünmüş ekran)
+- [x] İki scooter (bölünmüş ekran)
 - [ ] Gamepad desteği ve kontrol ekranı
 - [ ] KULLANICI: Remote Play Together ile arkadaşla test (Steam sayfası açıldıktan sonra)
 
 ## Aşama 4 — İçerik ve cila
-- [ ] Sıcak yemekte buhar efekti (buhar azaldıkça soğuyor)
-- [ ] Fareyle denge (tek kişilik)
-- [ ] Kapıda müşteri figürü + tepki (sevinç/öfke)
+- [x] Sıcak yemekte buhar efekti (buhar azaldıkça soğuyor)
+- [x] Fareyle denge (tek kişilik)
+- [x] Kapıda müşteri figürü + tepki (sevinç/öfke)
 - [ ] Bot ile menü arka planı (attract mode)
-- [ ] Felaket tekrarı (en büyük kaza ağır çekim)
+- [x] Felaket tekrarı (en büyük kaza ağır çekim)
 - [ ] Efektler: buhar, çorba lekesi, parçacıklar, ekran sarsıntısı
 - [ ] Yokuşlu mahalle, sahil mahallesi
 - [ ] Kozmetikler (kask renkleri)

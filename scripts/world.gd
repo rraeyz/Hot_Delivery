@@ -34,6 +34,10 @@ void fragment() {
 var run: RunState
 var city: Dictionary
 var coop := false
+var split := false        # two scooters, split screen
+var scooters: Array = []
+var cameras: Array = []
+var arrows: Array = []
 var scooter: Scooter
 var camera: ChaseCamera
 var hud: Hud
@@ -63,9 +67,10 @@ var arrow: Node3D
 var rain: CPUParticles3D
 
 
-func setup(r: RunState, coop_mode: bool) -> void:
+func setup(r: RunState, coop_mode: bool, split_mode := false) -> void:
 	run = r
 	coop = coop_mode
+	split = split_mode
 	mods = run.mods()
 	rng.seed = run.seed_value * 1000 + run.day
 	var bumps := 8 + (30 if "bumps" in run.chaos else 0)
@@ -78,23 +83,36 @@ func _ready() -> void:
 	add_child(audio)
 	_build_environment()
 	_build_city()
-	scooter = Scooter.new()
-	scooter.mods = mods
-	scooter.coop = coop
-	add_child(scooter)
-	scooter.global_position = city.spawn
-	scooter.rack.item_fell.connect(_on_item_fell)
-	scooter.rack.spilled.connect(_on_spilled)
-	scooter.crashed.connect(_on_crash)
-	scooter.honked.connect(_on_honk)
-	scooter.jolted.connect(_on_jolt)
-	camera = ChaseCamera.new()
-	camera.target = scooter
-	add_child(camera)
-	camera.current = true
-	camera.snap()
-	arrow = _make_arrow()
-	add_child(arrow)
+	for i in (2 if split else 1):
+		var s := Scooter.new()
+		s.mods = mods
+		s.coop = coop
+		s.split = split
+		s.player = i
+		if i == 1:
+			s.color = Color("#4361ee")
+		add_child(s)
+		s.global_position = city.spawn + Vector3(3.0 * i, 0, 0)
+		s.rack.item_fell.connect(_on_item_fell)
+		s.rack.spilled.connect(_on_spilled)
+		s.crashed.connect(_on_crash)
+		s.honked.connect(_on_honk)
+		s.jolted.connect(_on_jolt)
+		scooters.append(s)
+		var a := _make_arrow()
+		add_child(a)
+		arrows.append(a)
+	scooter = scooters[0]
+	arrow = arrows[0]
+	if split:
+		_build_split_screen()
+	else:
+		camera = ChaseCamera.new()
+		camera.target = scooter
+		add_child(camera)
+		camera.current = true
+		camera.snap()
+		cameras = [camera]
 	hud = Hud.new()
 	add_child(hud)
 	hud.setup(self)
@@ -506,18 +524,24 @@ func _physics_process(dt: float) -> void:
 	for o in orders:
 		if o.state == "carry":
 			o.t_left -= dt
-	var sp := absf(scooter.speed)
-	var pos := scooter.global_position
-	if not scooter.is_crashed:
-		_check_pickups(pos, sp)
-		_check_hand_delivery(pos, sp)
-		_check_loose_pickup(pos, sp)
 	_check_loose()
-	_chaos_tick(dt, sp)
-	if scooter.controls_enabled and not scooter.is_crashed:
-		if Input.is_action_just_pressed("solo_throw") and not coop or Input.is_action_just_pressed("p2_throw"):
+	# shortcut: per-scooter logic swaps the `scooter` field; signal handlers still assume scooter 0.
+	for i in scooters.size():
+		scooter = scooters[i]
+		arrow = arrows[i]
+		var sp := absf(scooter.speed)
+		var pos := scooter.global_position
+		if not scooter.is_crashed:
+			_check_pickups(pos, sp)
+			_check_hand_delivery(pos, sp)
+			_check_loose_pickup(pos, sp)
+		_chaos_tick(dt, sp)
+		if scooter.controls_enabled and not scooter.is_crashed and _pressed("throw"):
 			throw_top()
-	_update_arrow()
+		_update_arrow()
+	scooter = scooters[0]
+	arrow = arrows[0]
+	request_pickup = false
 	if rain:
 		rain.global_position = camera.global_position + Vector3(0, 8, 0) - camera.global_basis.z * 8.0
 	audio.engine(scooter.speed, scooter.throttle)
@@ -554,10 +578,50 @@ func _check_hand_delivery(pos: Vector3, sp: float) -> void:
 			_deliver(o, it, false)
 
 
+## Which keys belong to the current scooter: solo = everything, coop = passenger keys, split = own pad/keys.
+func _pressed(what: String) -> bool:
+	if split:
+		return Input.is_action_just_pressed(("solo_" if scooter.player == 0 else "p2_") + what)
+	if coop:
+		return Input.is_action_just_pressed("p2_" + what)
+	return Input.is_action_just_pressed("solo_" + what) or Input.is_action_just_pressed("p2_" + what)
+
+
+func _build_split_screen() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = -1
+	add_child(layer)
+	var box := HBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.add_theme_constant_override("separation", 4)
+	layer.add_child(box)
+	for s in scooters:
+		var c := SubViewportContainer.new()
+		c.stretch = true
+		c.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		box.add_child(c)
+		var vp := SubViewport.new()
+		vp.world_3d = get_viewport().find_world_3d()
+		vp.audio_listener_enable_3d = false
+		c.add_child(vp)
+		var cam := ChaseCamera.new()
+		cam.target = s
+		vp.add_child(cam)
+		cam.current = true
+		cam.snap.call_deferred()
+		cameras.append(cam)
+	camera = cameras[0]
+	get_viewport().disable_3d = true
+
+
+func _exit_tree() -> void:
+	if split:
+		get_viewport().disable_3d = false
+
+
 func _check_loose_pickup(pos: Vector3, sp: float) -> void:
 	var r: float = mods.get("pickup_radius", 2.5)
-	var pressed := request_pickup or Input.is_action_just_pressed("p2_pickup") or (not coop and Input.is_action_just_pressed("solo_pickup"))
-	request_pickup = false
+	var pressed: bool = (request_pickup and scooter == scooters[0]) or _pressed("pickup")
 	for lf in loose.duplicate():
 		if not is_instance_valid(lf) or lf.age < 0.8:
 			continue
@@ -704,6 +768,10 @@ func _on_spilled(it: FoodItem, amount: float) -> void:
 		_drip(scooter.rack.global_position + Vector3.UP * 0.3, FoodVisual.COLORS.get(it.kind, Color.ORANGE))
 
 
+func _cam_for(s: Scooter) -> ChaseCamera:
+	return cameras[mini(s.player, cameras.size() - 1)]
+
+
 func _on_crash(_s: Scooter) -> void:
 	var sp := _s._prev_vel.length()
 	if sp > best_crash_speed and _rec_after < 0:
@@ -716,7 +784,7 @@ func _on_crash(_s: Scooter) -> void:
 			o.crashed = true
 	hud.popup(Game.t("crash"), Color("#ef476f"), true)
 	audio.play("crash")
-	camera.add_trauma(0.9)
+	_cam_for(_s).add_trauma(0.9)
 
 
 var debug_log := {"jolts": [], "falls": 0, "crash_speeds": []}
@@ -936,7 +1004,7 @@ func _end_shift() -> void:
 	audio.play("whistle")
 	if _rec_after >= 0:   # crash happened in the last seconds: keep what we have
 		best_crash = _rec.duplicate()
-	if best_crash.size() > 10 and not skip_replay:
+	if best_crash.size() > 10 and not skip_replay and not split:  # shortcut: no replay in split screen
 		scooter.visible = false
 		for lf in loose:
 			if is_instance_valid(lf):

@@ -19,6 +19,8 @@ const DAMP := 260.0
 
 var mods := {}
 var coop := false
+var split := false
+var player := 0          # split screen: 0 = WASD/pad 0, 1 = arrows/pad 1
 var controls_enabled := true
 var color := Color("#ff6b35")
 var rack: Rack
@@ -141,18 +143,24 @@ func read_input() -> void:
 		steer = external_input.get("steer", 0.0)
 		rack.balance = external_input.get("balance", Vector2.ZERO)
 		return
-	var gas := Input.get_action_strength("p1_throttle")
-	var brk := Input.get_action_strength("p1_brake")
+	var pre := "p1_" if player == 0 else "p2d_"
+	var gas := Input.get_action_strength(pre + "throttle")
+	var brk := Input.get_action_strength(pre + "brake")
 	# keyboard keys are all-or-nothing: ramp them so a tap is gentle and a hold is hard
 	var dt := get_physics_process_delta_time()
 	_gas_ramp = 0.0 if gas < 0.05 else minf(1.0, maxf(_gas_ramp, 0.55) + dt * 1.5)
 	_brake_ramp = 0.0 if brk < 0.05 else minf(1.0, maxf(_brake_ramp, 0.3) + dt * 1.4)
 	throttle = gas * _gas_ramp - brk * _brake_ramp
-	steer = _axis("p1_left", "p1_right")
-	var bal := Vector2(_axis("p2_bal_left", "p2_bal_right"), _axis("p2_bal_back", "p2_bal_fwd"))
-	if not coop:
+	steer = _axis(pre + "left", pre + "right")
+	var bal := Vector2.ZERO
+	if player == 1:
+		bal = Vector2(_axis("p2s_bal_left", "p2s_bal_right"), _axis("p2s_bal_back", "p2s_bal_fwd"))
+	elif not split:
+		bal = Vector2(_axis("p2_bal_left", "p2_bal_right"), _axis("p2_bal_back", "p2_bal_fwd"))
+	if not coop and player == 0:
 		bal += Vector2(_axis("solo_bal_left", "solo_bal_right"), _axis("solo_bal_back", "solo_bal_fwd"))
-	bal += _mouse_bal.limit_length(1.0)  # mouse balances too (passenger in co-op, anyone solo)
+	if player == 0:
+		bal += _mouse_bal.limit_length(1.0)  # mouse balances too (passenger in co-op, anyone solo)
 	_mouse_bal *= 0.8
 	rack.balance = bal.limit_length(1.0)
 
@@ -266,9 +274,9 @@ func _physics_process(dt: float) -> void:
 			crash(hv_prev)
 	else:
 		flip_timer = 0.0
-	if controls_enabled and Input.is_action_just_pressed("p1_horn"):
+	if controls_enabled and Input.is_action_just_pressed("p1_horn" if player == 0 else "p2d_horn"):
 		honked.emit(self)
-	if controls_enabled and Input.is_action_just_pressed("p1_reset") and not is_crashed:
+	if controls_enabled and Input.is_action_just_pressed("p1_reset" if player == 0 else "p2d_reset") and not is_crashed:
 		recover()
 	_prev_vel = v
 
