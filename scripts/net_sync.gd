@@ -241,6 +241,9 @@ func fx(kind: String, args: Array) -> void:
 			world._customer_reaction(world.city.lots[args[0]], args[1])
 		"splat":
 			world._splat(args[0], Color(args[1]))
+		"emote":
+			var e: int = args[1]
+			world.emote(args[0], e)
 		"convoy":
 			world.make_convoy(args[0], args[1], args[2])
 		"trauma":
@@ -250,5 +253,12 @@ func fx(kind: String, args: Array) -> void:
 
 @rpc("any_peer", "reliable")
 func cook_result(order_id: int, q: float) -> void:
-	if multiplayer.is_server() and Net.is_cook(multiplayer.get_remote_sender_id()):
-		world.cook_done(order_id, q)
+	var sender := multiplayer.get_remote_sender_id()
+	if multiplayer.is_server() and Net.is_cook(sender):
+		world.cook_done(order_id, q, Net.team_of(sender))
+
+
+@rpc("any_peer", "reliable")
+func emote_req(e: int) -> void:
+	if multiplayer.is_server():
+		world.emote(Net.my_index_of(multiplayer.get_remote_sender_id()), clampi(e, 0, 3))

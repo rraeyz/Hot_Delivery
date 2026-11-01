@@ -24,11 +24,12 @@ func _ready() -> void:
 
 const ROLES := ["drive", "ride", "cook"]
 var role := "drive"      # lobby choice: drive a scooter, ride on someone's back, or cook at the restaurants
+var team := -1           # competitive team (0 = A, 1 = B); -1 = auto (alternate by join order)
 
 
 func my_info() -> Dictionary:
 	return {"name": str(Game.settings.get("name", "Courier")), "look": Game.settings.look, "color": int(Game.settings.color),
-		"role": role}
+		"role": role, "team": team}
 
 
 ## Players who drive their own scooter, in scooter order.
@@ -39,10 +40,22 @@ func drivers() -> Array:
 	return d
 
 
-## Driver index a passenger rides with: passengers are spread over drivers round-robin.
+## Team of a player: chosen in the lobby, otherwise alternating A/B by join order.
+func team_of(id: int) -> int:
+	if not players.has(id):
+		return 0
+	var t := int(players[id].get("team", -1))
+	return t if t >= 0 else order().find(id) % 2
+
+
+## Driver index a passenger rides with: a teammate's scooter if there is one, else round-robin.
 func ride_target(id: int) -> int:
+	var ds := drivers()
+	for i in ds.size():
+		if team_of(ds[i]) == team_of(id):
+			return i
 	var passengers := order().filter(func(p): return is_passenger(p))
-	return maxi(0, passengers.find(id)) % maxi(1, drivers().size())
+	return maxi(0, passengers.find(id)) % maxi(1, ds.size())
 
 
 func is_passenger(id: int) -> bool:
@@ -118,6 +131,12 @@ func order() -> Array:
 	return ids
 
 
+func my_index_of(id: int) -> int:
+	if is_passenger(id) or is_cook(id):
+		return ride_target(id)
+	return maxi(0, drivers().find(id))
+
+
 func my_index() -> int:
 	if is_passenger(my_id()):
 		return ride_target(my_id())
@@ -156,7 +175,8 @@ func register(info: Dictionary) -> void:
 		return
 	# never trust the client's dictionary blindly: keep only known keys with sane types
 	players[id] = {"name": str(info.get("name", "Courier")).substr(0, 16), "look": info.get("look", {}) if info.get("look") is Dictionary else {},
-		"color": int(info.get("color", 0)) % 8, "role": str(info.get("role", "drive")) if str(info.get("role", "drive")) in ROLES else "drive"}
+		"color": int(info.get("color", 0)) % 8, "role": str(info.get("role", "drive")) if str(info.get("role", "drive")) in ROLES else "drive",
+		"team": clampi(int(info.get("team", -1)), -1, 1)}
 	sync_players.rpc(players)
 	players_changed.emit()
 

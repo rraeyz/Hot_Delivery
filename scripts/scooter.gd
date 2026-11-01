@@ -48,6 +48,8 @@ var stall_t := 0.0
 var _gas_ramp := 0.0
 var _brake_ramp := 0.0
 var external_input := {}
+var team := 0
+var name_tag: Label3D
 var index := 0                # position in World.scooters
 var remote := false           # host-side scooter driven by a network player
 var net_pending := {}         # button presses received from that player

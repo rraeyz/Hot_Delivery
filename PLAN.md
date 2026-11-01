@@ -119,6 +119,15 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Mutfak paneli: siparişi seç, ibreyi yeşil bölgede durdur (yemeğe göre hız); iyi zamanlama = daha sıcak/sağlam yemek
 - [x] Aşçı rolü (online): siparişler hazırlanmadan alınamaz (gri ışık 'HAZIRLANIYOR'); aşçı yoksa otomatik hazır
 
+## Aşama 9b — Üçüncü tur istekleri (1 Kasım akşam)
+- [x] Yazı tipi Nunito (OFL), büyük ve gölgeli arayüz; menü sadeleştirildi (Aynı Ekran alt menüsü)
+- [x] Diller: İspanyolca, Almanca, Fransızca, Portekizce, Rusça (+ Türkçe, İngilizce)
+- [x] Görsel adım 2: bulutlu/yıldızlı gökyüzü, SDFGI (Yüksek), SSR, ekran kartına göre otomatik kalite, çatı detayları, parlak yuvarlak scooter
+- [x] Takımlar (A/B): rekabetçide takım kasası/dükkânı; 1v1, 2v2, aşçı+kurye takımları; aşçının yaptığı sipariş 12 sn takıma ayrılır; aşçı yoksa 15 sn'de otomatik hazır
+- [x] Takım arkadaşına yemek pası (müşteri yakın değilse BOŞLUK)
+- [x] İşaretleşme: 1-4 tuşları / d-pad (YARDIM! BURAYA! HAHA! ACELE ET!), scooter üstünde isim etiketleri
+- [ ] Steam: GodotSteam ile lobi + arkadaş daveti + Steam üzerinden bağlantı (IP gerekmeden)
+
 ## Aşama 10 — Sürekli geliştirme (liste bitince buradan devam)
 - [x] İlk vardiya eğitimi (ok + kısa ipuçları: "restorana git", "yavaşla", "balkona fırlat")
 - [x] Köpek ve güvercinler en yakın scooter'ı hedeflesin (çok oyunculu)

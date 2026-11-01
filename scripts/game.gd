@@ -8,7 +8,7 @@ var save := {"best_day": 0, "runs": 0, "unlock_level": 0, "rep": 0, "daily_best"
 
 const UI := {
 	"en": {
-		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "big_order": "BIG ORDER: WEDDING CAKE!", "controls": "CONTROLS", "color": "SCOOTER COLOR", "quality": "GRAPHICS", "character": "CHARACTER", "skin": "Skin", "jacket": "Jacket", "helmet": "Helmet", "helmet_color": "Helmet color", "accessory": "Accessory", "random": "RANDOM", "round": "ROUND", "role": "ROLE", "driver": "DRIVER", "passenger": "PASSENGER (balance + throw)", "tagline": "Keep it hot. Keep it in the bowl.", "couch": "SAME SCREEN (2 PLAYERS)", "couch_tip": "Second player: arrow keys + ENTER + Right Shift, or a second gamepad.", "convoy_alert": "WEDDING CONVOY! HONK HONK!", "tut_0": "Follow the green arrow to the ORANGE beam (restaurant). Slow down there to load food.", "tut_1": "Now the GREEN beam is your customer. Stop next to it. Brake gently: soup sloshes!", "tut_2": "Your tower is leaning! Push the other way with the ARROW keys (or mouse).", "tut_3": "Pro move: near the customer, press SPACE to throw the top food onto the yellow balcony ring. 2x tip!", "hint_cook": "Pick an order in the KITCHEN, then stop the needle in the green zone (SPACE)", "hint_ride": "Arrows / mouse: balance the tower · SPACE: throw the top food · F: pick up", "r_drive": "DRIVER", "r_ride": "PASSENGER (balance + throw)", "r_cook": "COOK (prepares orders)", "cooking": "COOKING...", "kitchen": "KITCHEN", "cook_it": "COOK", "stop": "STOP! (SPACE)", "perfect_cook": "PERFECT!", "versus": "VERSUS: 2 SCOOTERS", "mode": "MODE", "m_normal": "NORMAL (CO-OP)", "m_competitive": "COMPETITIVE", "new_card": "NEW DIFFICULTY CARD", "winner": "WINS THE CITY!", "warned": "Rent missed! The boss lets it slide ONCE. Savings gone.", "next_round": "NEXT ROUND", "leaderboard": "LEADERBOARD", "your_shop": "YOUR SHOP", "online": "ONLINE (1-4 PLAYERS)", "your_name": "Your name", "host": "HOST", "join": "JOIN", "players": "PLAYERS", "start": "START", "waiting_host": "Waiting for the host...", "leave": "LEAVE", "disconnected": "Disconnected", "online_tip": "Host: share your IP (same Wi-Fi, or port 24680 forwarded / a LAN tool). Steam invites come with the Steam release.", "q0": "LOW", "q1": "MEDIUM", "q2": "HIGH", "district": "District", "bazaar": "Bazaar", "beach": "Beach", "downtown": "Downtown", "locked": "locked", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
+		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "big_order": "BIG ORDER: WEDDING CAKE!", "controls": "CONTROLS", "color": "SCOOTER COLOR", "quality": "GRAPHICS", "character": "CHARACTER", "skin": "Skin", "jacket": "Jacket", "helmet": "Helmet", "helmet_color": "Helmet color", "accessory": "Accessory", "random": "RANDOM", "round": "ROUND", "role": "ROLE", "driver": "DRIVER", "passenger": "PASSENGER (balance + throw)", "team": "TEAM", "pass": "PASS!", "caught": "CAUGHT!", "emote_0": "HELP!", "emote_1": "OVER HERE!", "emote_2": "HAHA!", "emote_3": "HURRY!", "tagline": "Keep it hot. Keep it in the bowl.", "couch": "SAME SCREEN (2 PLAYERS)", "couch_tip": "Second player: arrow keys + ENTER + Right Shift, or a second gamepad.", "convoy_alert": "WEDDING CONVOY! HONK HONK!", "tut_0": "Follow the green arrow to the ORANGE beam (restaurant). Slow down there to load food.", "tut_1": "Now the GREEN beam is your customer. Stop next to it. Brake gently: soup sloshes!", "tut_2": "Your tower is leaning! Push the other way with the ARROW keys (or mouse).", "tut_3": "Pro move: near the customer, press SPACE to throw the top food onto the yellow balcony ring. 2x tip!", "hint_cook": "Pick an order in the KITCHEN, then stop the needle in the green zone (SPACE)", "hint_ride": "Arrows / mouse: balance the tower · SPACE: throw the top food · F: pick up", "r_drive": "DRIVER", "r_ride": "PASSENGER (balance + throw)", "r_cook": "COOK (prepares orders)", "cooking": "COOKING...", "kitchen": "KITCHEN", "cook_it": "COOK", "stop": "STOP! (SPACE)", "perfect_cook": "PERFECT!", "versus": "VERSUS: 2 SCOOTERS", "mode": "MODE", "m_normal": "NORMAL (CO-OP)", "m_competitive": "COMPETITIVE", "new_card": "NEW DIFFICULTY CARD", "winner": "WINS THE CITY!", "warned": "Rent missed! The boss lets it slide ONCE. Savings gone.", "next_round": "NEXT ROUND", "leaderboard": "LEADERBOARD", "your_shop": "YOUR SHOP", "online": "ONLINE (1-4 PLAYERS)", "your_name": "Your name", "host": "HOST", "join": "JOIN", "players": "PLAYERS", "start": "START", "waiting_host": "Waiting for the host...", "leave": "LEAVE", "disconnected": "Disconnected", "online_tip": "Host: share your IP (same Wi-Fi, or port 24680 forwarded / a LAN tool). Steam invites come with the Steam release.", "q0": "LOW", "q1": "MEDIUM", "q2": "HIGH", "district": "District", "bazaar": "Bazaar", "beach": "Beach", "downtown": "Downtown", "locked": "locked", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
 		"settings": "SETTINGS", "quit": "QUIT", "day": "DAY", "rent": "RENT", "money": "CASH",
 		"time": "TIME", "pickup": "Pick up at", "deliver": "Deliver to", "orders": "ORDERS",
 		"no_orders": "Waiting for orders...", "fired": "YOU'RE FIRED!", "paid": "RENT PAID",
@@ -20,14 +20,14 @@ const UI := {
 		"quirk_picky": "WANTS IT HOT", "quirk_rooftop": "ROOFTOP", "lang": "LANGUAGE",
 		"shake": "CAMERA SHAKE", "volume": "SOUND", "music": "MUSIC", "fullscreen": "FULLSCREEN", "back": "BACK",
 		"stats": "Deliveries %d · Crashes %d · Throws %d", "best": "Best day: %d",
-		"hint": "WASD drive · Arrows balance · SPACE throw · F pick up · H horn · R reset",
+		"hint": "WASD drive · Arrows balance · SPACE throw · F pick up · H horn · R reset · 1-4 shout",
 		"hint_coop": "P1: WASD drive, H horn · P2: Arrows balance, ENTER throw, RShift pick up",
 		"crash": "WIPEOUT!", "fell": "FELL!", "spill": "SPILL!", "delivered": "DELIVERED",
 		"miss": "MISSED!", "unlock": "NEW FOOD UNLOCKED: %s", "capacity": "Rack full!",
 		"rent_due": "Rent due tonight: $%d", "credits": "Made with Godot Engine (MIT). All art and audio generated in-house.",
 	},
 	"tr": {
-		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "big_order": "BÜYÜK SİPARİŞ: DÜĞÜN PASTASI!", "controls": "KONTROLLER", "color": "SCOOTER RENGİ", "quality": "GRAFİK", "character": "KARAKTER", "skin": "Ten", "jacket": "Ceket", "helmet": "Kask", "helmet_color": "Kask rengi", "accessory": "Aksesuar", "random": "RASTGELE", "round": "BÖLÜM", "role": "ROL", "driver": "SÜRÜCÜ", "passenger": "YOLCU (denge + fırlatma)", "tagline": "Sıcak kalsın. Kasede kalsın.", "couch": "AYNI EKRAN (2 KİŞİ)", "couch_tip": "İkinci oyuncu: ok tuşları + ENTER + Sağ Shift ya da ikinci gamepad.", "convoy_alert": "DÜĞÜN KONVOYU! DIIT DIIT!", "tut_0": "Yeşil oku takip et, TURUNCU ışığa (restoran) git. Orada yavaşla, yemek yüklenir.", "tut_1": "Şimdi YEŞİL ışık müşterin. Yanında dur. Yavaş fren yap: çorba çalkalanıyor!", "tut_2": "Kule eğiliyor! OK tuşlarıyla (ya da fareyle) ters yöne it.", "tut_3": "Usta hareketi: müşterinin yanında BOŞLUK ile en üstteki yemeği balkondaki sarı halkaya fırlat. 2 kat bahşiş!", "hint_cook": "MUTFAK'ta sipariş seç, ibreyi yeşil bölgede durdur (BOŞLUK)", "hint_ride": "Oklar / fare: kuleyi dengele · BOŞLUK: üstteki yemeği fırlat · F: yerden al", "r_drive": "SÜRÜCÜ", "r_ride": "YOLCU (denge + fırlatma)", "r_cook": "AŞÇI (siparişleri hazırlar)", "cooking": "HAZIRLANIYOR...", "kitchen": "MUTFAK", "cook_it": "PİŞİR", "stop": "DUR! (BOŞLUK)", "perfect_cook": "MÜKEMMEL!", "versus": "KAPIŞMA: 2 SCOOTER", "mode": "MOD", "m_normal": "NORMAL (CO-OP)", "m_competitive": "REKABETÇİ", "new_card": "YENİ ZORLUK KARTI", "winner": "ŞEHRİN KRALI OLDU!", "warned": "Kira ödenmedi! Patron BİR kere göz yumuyor. Birikimin gitti.", "next_round": "SONRAKİ BÖLÜM", "leaderboard": "SKOR TABLOSU", "your_shop": "SENİN DÜKKANIN", "online": "ONLINE (1-4 OYUNCU)", "your_name": "Adın", "host": "KUR", "join": "KATIL", "players": "OYUNCULAR", "start": "BAŞLAT", "waiting_host": "Ev sahibi bekleniyor...", "leave": "AYRIL", "disconnected": "Bağlantı koptu", "online_tip": "Kuran kişi IP adresini paylaşır (aynı Wi-Fi ya da 24680 portu açık / LAN programı). Steam davetleri Steam sürümüyle gelecek.", "q0": "DÜŞÜK", "q1": "ORTA", "q2": "YÜKSEK", "district": "Mahalle", "bazaar": "Çarşı", "beach": "Sahil", "downtown": "Şehir Merkezi", "locked": "kilitli", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
+		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "big_order": "BÜYÜK SİPARİŞ: DÜĞÜN PASTASI!", "controls": "KONTROLLER", "color": "SCOOTER RENGİ", "quality": "GRAFİK", "character": "KARAKTER", "skin": "Ten", "jacket": "Ceket", "helmet": "Kask", "helmet_color": "Kask rengi", "accessory": "Aksesuar", "random": "RASTGELE", "round": "BÖLÜM", "role": "ROL", "driver": "SÜRÜCÜ", "passenger": "YOLCU (denge + fırlatma)", "team": "TAKIM", "pass": "PAS!", "caught": "YAKALADI!", "emote_0": "YARDIM!", "emote_1": "BURAYA!", "emote_2": "HAHA!", "emote_3": "ACELE ET!", "tagline": "Sıcak kalsın. Kasede kalsın.", "couch": "AYNI EKRAN (2 KİŞİ)", "couch_tip": "İkinci oyuncu: ok tuşları + ENTER + Sağ Shift ya da ikinci gamepad.", "convoy_alert": "DÜĞÜN KONVOYU! DIIT DIIT!", "tut_0": "Yeşil oku takip et, TURUNCU ışığa (restoran) git. Orada yavaşla, yemek yüklenir.", "tut_1": "Şimdi YEŞİL ışık müşterin. Yanında dur. Yavaş fren yap: çorba çalkalanıyor!", "tut_2": "Kule eğiliyor! OK tuşlarıyla (ya da fareyle) ters yöne it.", "tut_3": "Usta hareketi: müşterinin yanında BOŞLUK ile en üstteki yemeği balkondaki sarı halkaya fırlat. 2 kat bahşiş!", "hint_cook": "MUTFAK'ta sipariş seç, ibreyi yeşil bölgede durdur (BOŞLUK)", "hint_ride": "Oklar / fare: kuleyi dengele · BOŞLUK: üstteki yemeği fırlat · F: yerden al", "r_drive": "SÜRÜCÜ", "r_ride": "YOLCU (denge + fırlatma)", "r_cook": "AŞÇI (siparişleri hazırlar)", "cooking": "HAZIRLANIYOR...", "kitchen": "MUTFAK", "cook_it": "PİŞİR", "stop": "DUR! (BOŞLUK)", "perfect_cook": "MÜKEMMEL!", "versus": "KAPIŞMA: 2 SCOOTER", "mode": "MOD", "m_normal": "NORMAL (CO-OP)", "m_competitive": "REKABETÇİ", "new_card": "YENİ ZORLUK KARTI", "winner": "ŞEHRİN KRALI OLDU!", "warned": "Kira ödenmedi! Patron BİR kere göz yumuyor. Birikimin gitti.", "next_round": "SONRAKİ BÖLÜM", "leaderboard": "SKOR TABLOSU", "your_shop": "SENİN DÜKKANIN", "online": "ONLINE (1-4 OYUNCU)", "your_name": "Adın", "host": "KUR", "join": "KATIL", "players": "OYUNCULAR", "start": "BAŞLAT", "waiting_host": "Ev sahibi bekleniyor...", "leave": "AYRIL", "disconnected": "Bağlantı koptu", "online_tip": "Kuran kişi IP adresini paylaşır (aynı Wi-Fi ya da 24680 portu açık / LAN programı). Steam davetleri Steam sürümüyle gelecek.", "q0": "DÜŞÜK", "q1": "ORTA", "q2": "YÜKSEK", "district": "Mahalle", "bazaar": "Çarşı", "beach": "Sahil", "downtown": "Şehir Merkezi", "locked": "kilitli", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
 		"settings": "AYARLAR", "quit": "ÇIKIŞ", "day": "GÜN", "rent": "KİRA", "money": "PARA",
 		"time": "SÜRE", "pickup": "Al:", "deliver": "Teslim:", "orders": "SİPARİŞLER",
 		"no_orders": "Sipariş bekleniyor...", "fired": "KOVULDUN!", "paid": "KİRA ÖDENDİ",
@@ -39,7 +39,7 @@ const UI := {
 		"quirk_picky": "SICAK İSTİYOR", "quirk_rooftop": "ÇATI KATI", "lang": "DİL",
 		"shake": "KAMERA SARSINTISI", "volume": "SES", "music": "MÜZİK", "fullscreen": "TAM EKRAN", "back": "GERİ",
 		"stats": "Teslimat %d · Kaza %d · Atış %d", "best": "En iyi gün: %d",
-		"hint": "WASD sür · Oklar denge · BOŞLUK fırlat · F al · H korna · R kalk",
+		"hint": "WASD sür · Oklar denge · BOŞLUK fırlat · F al · H korna · R kalk · 1-4 bağır",
 		"hint_coop": "1.O: WASD sür, H korna · 2.O: Oklar denge, ENTER fırlat, Sağ Shift al",
 		"crash": "KAZA!", "fell": "DÜŞTÜ!", "spill": "DÖKÜLDÜ!", "delivered": "TESLİM",
 		"miss": "ISKA!", "unlock": "YENİ YEMEK AÇILDI: %s", "capacity": "Raf dolu!",
@@ -138,6 +138,24 @@ func districts_unlocked() -> Array:
 	if int(save.best_day) >= 7:
 		d.append("downtown")
 	return d
+
+
+const TEAM_COLORS := ["#ff6b35", "#4361ee"]
+
+
+func team_label(t: int) -> String:
+	return Game.t("team") + " " + ["A", "B"][clampi(t, 0, 1)]
+
+
+## "TEAM A (Ayşe, Mehmet)" online; P1/P2 locally.
+func team_name(t: int) -> String:
+	if not Net.online:
+		return player_name(t)
+	var names := []
+	for id in Net.order():
+		if Net.team_of(id) == t:
+			names.append(str(Net.players[id].get("name", "?")))
+	return "%s (%s)" % [team_label(t), ", ".join(names)]
 
 
 ## Display name of player index i (online: lobby name, local: P1/P2).
@@ -265,6 +283,10 @@ func _setup_input() -> void:
 	_add("p2s_bal_right", [_joy_axis(JOY_AXIS_RIGHT_X, 1.0, 1)])
 	_add("p2s_bal_fwd", [_joy_axis(JOY_AXIS_RIGHT_Y, -1.0, 1)])
 	_add("p2s_bal_back", [_joy_axis(JOY_AXIS_RIGHT_Y, 1.0, 1)])
+	var dpad := [JOY_BUTTON_DPAD_UP, JOY_BUTTON_DPAD_RIGHT, JOY_BUTTON_DPAD_DOWN, JOY_BUTTON_DPAD_LEFT]
+	for e in 4:
+		_add("emote_%d" % e, [_key(KEY_1 + e), _joy_btn(dpad[e], 0)])
+		_add("p2_emote_%d" % e, [_key(KEY_KP_1 + e), _joy_btn(dpad[e], 1)])
 	_add("pause", [_key(KEY_ESCAPE), _joy_btn(JOY_BUTTON_START)])
 	_add("screenshot", [_key(KEY_F12), _joy_btn(JOY_BUTTON_BACK)])
 	_add("ui_accept_pad", [_joy_btn(JOY_BUTTON_A)])

@@ -5,6 +5,7 @@ extends RigidBody3D
 signal landed(lf: LooseFood, speed: float)
 
 var item: FoodItem
+var pass_to: Node = null   # teammate scooter this was passed to
 var thrown := false          # thrown on purpose toward a balcony
 var target: Vector3 = Vector3.INF
 var age := 0.0

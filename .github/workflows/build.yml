@@ -34,6 +34,9 @@ jobs:
           timeout 300 godot --headless --path . --fixed-fps 60 res://tests/sim_drive.tscn 2>&1 | tee sim.log
           ! grep -q "SCRIPT ERROR" sim.log
 
+      - name: Food pass between scooters
+        run: timeout 120 godot --headless --path . --fixed-fps 60 res://tests/pass_test.tscn
+
       - name: Bot plays a shift
         run: |
           set -o pipefail
@@ -45,6 +48,7 @@ jobs:
           timeout 200 tests/net_test.sh 25
           RIDE=1 timeout 200 tests/net_test.sh 20
           COOK=1 timeout 200 tests/net_test.sh 20
+          COOK=1 timeout 200 tests/net_test.sh 20 competitive
           timeout 200 tests/net_test.sh 20 competitive 12
 
       - name: Export templates

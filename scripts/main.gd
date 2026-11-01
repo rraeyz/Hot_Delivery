@@ -322,7 +322,7 @@ func start_run(seed_value: int, coop_mode: bool, is_daily: bool, split_mode := f
 	daily = is_daily
 	run = RunState.new(seed_value, int(Game.save.unlock_level))
 	if mode == "competitive":
-		run.setup_competitive(Net.players.size() if Net.online else 2)
+		run.setup_competitive(2)   # always two teams: A and B (1v1, 2v1, 2v2, cooks + couriers...)
 	var ds: Array = CityGen.THEMES.keys() if is_daily else Game.districts_unlocked()
 	run.theme = ds[run.rng.randi() % ds.size()]
 	Game.save.runs += 1
@@ -475,13 +475,13 @@ func show_comp(light: Dictionary) -> void:
 	var order: Array = range(run.players)
 	order.sort_custom(func(a, b): return run.earned_by[a] > run.earned_by[b])
 	if run.finished:
-		v.add_child(UiKit.label(Game.player_name(run.winner()) + " " + Game.t("winner"), 52, UiKit.GOLD))
+		v.add_child(UiKit.label(Game.team_name(run.winner()) + " " + Game.t("winner"), 52, UiKit.GOLD))
 	else:
 		v.add_child(UiKit.label("%s %d/%d" % [Game.t("round"), run.day, RunState.ROUNDS], 44, UiKit.GOLD))
 	v.add_child(UiKit.label(Game.t("leaderboard"), 22, Color(1, 1, 1, 0.8)))
 	for rank in order.size():
 		var i: int = order[rank]
-		v.add_child(UiKit.label("%d. %s   $%d" % [rank + 1, Game.player_name(i), run.earned_by[i]], 28 if rank == 0 else 24))
+		v.add_child(UiKit.label("%d. %s   $%d" % [rank + 1, Game.team_name(i), run.earned_by[i]], 30 if rank == 0 else 26))
 	if light.get("top", []).size() > 0:
 		var h := HBoxContainer.new()
 		h.add_theme_constant_override("separation", 12)
@@ -498,13 +498,13 @@ func show_comp(light: Dictionary) -> void:
 		var ct := Game.card_text(run.cards.back())
 		v.add_child(UiKit.label("%s: %s — %s" % [Game.t("new_card"), ct[0], ct[1]], 24, UiKit.BAD.lightened(0.3)))
 	# local split shows both shops; online shows only mine
-	var mine: Array = [Net.my_index()] if Net.online else range(run.players)
+	var mine: Array = [Net.team_of(Net.my_id())] if Net.online else range(run.players)
 	var shops := HBoxContainer.new()
 	shops.add_theme_constant_override("separation", 24)
 	v.add_child(shops)
 	for p in mine:
 		var col := VBoxContainer.new()
-		col.add_child(UiKit.label("%s  $%d" % [Game.t("your_shop") if Net.online else Game.player_name(p), run.wallets[p]], 22, UiKit.GOLD))
+		col.add_child(UiKit.label("%s  $%d" % [Game.t("your_shop") if Net.online else Game.team_name(p), run.wallets[p]], 22, UiKit.GOLD))
 		for u in run.shops[p]:
 			var txt := Game.upgrade_text(u)
 			var cost: int = RunState.UPGRADES[u].cost + 15 * run.owned_by[p].count(u)
@@ -540,8 +540,8 @@ func _comp_buy(p: int, u: String) -> void:
 func request_buy(u: String) -> void:
 	if not multiplayer.is_server() or not RunState.UPGRADES.has(u):
 		return
-	var p := Net.order().find(multiplayer.get_remote_sender_id())
-	if p >= 0 and run.buy_for(p, u):
+	var p := Net.team_of(multiplayer.get_remote_sender_id())
+	if run.buy_for(p, u):
 		remote_comp.rpc(run.to_dict(), _comp_light)
 		show_comp(_comp_light)
 
@@ -588,10 +588,16 @@ func show_online() -> void:
 		for id in Net.order():
 			var info: Dictionary = Net.players[id]
 			var role := (" — " + Game.t("r_" + str(info.get("role", "drive")))) if not Net.drivers().has(id) else ""
+			role += "  [" + Game.team_label(Net.team_of(id)) + "]"
 			var l := UiKit.label(("★ " if id == 1 else "• ") + str(info.get("name", "?")) + role, 24, Color(Game.SCOOTER_COLORS[int(info.get("color", 0)) % 8]).lightened(0.3))
 			v.add_child(l)
 		v.add_child(UiKit.button("%s: %s" % [Game.t("role"), Game.t("r_" + Net.role)], func():
 			Net.role = Net.ROLES[(Net.ROLES.find(Net.role) + 1) % Net.ROLES.size()]
+			Net.update_me()
+			show_online()))
+		var my_team := Net.team_of(Net.my_id())
+		v.add_child(UiKit.button("%s: %s" % [Game.t("team"), Game.team_label(my_team)], func():
+			Net.team = 1 - Net.team_of(Net.my_id())
 			Net.update_me()
 			show_online()))
 		if Net.is_host():

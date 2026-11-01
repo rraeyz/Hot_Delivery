@@ -72,7 +72,8 @@ func _ready() -> void:
 	for i in count:
 		var s := Scooter.new()
 		s.index = i
-		s.mods = run.mods(i) if run.competitive() else mods
+		s.team = (Net.team_of(ids[i]) if Net.online else i % 2) if run.competitive() else 0
+		s.mods = run.mods(s.team) if run.competitive() else mods
 		s.coop = coop
 		s.split = split
 		s.player = i
@@ -87,6 +88,7 @@ func _ready() -> void:
 			s.passenger_ids = Net.order().filter(func(p): return Net.is_passenger(p) and Net.ride_target(p) == i)
 			s.name = "Scooter%d" % i
 		add_child(s)
+		_name_tag(s, Game.player_name(i) if not Net.online else str(Net.players[ids[i]].get("name", "?")))
 		for pid in s.passenger_ids:
 			s.add_passenger_visual(Net.players[pid].get("look", {}))
 		if client:
@@ -613,7 +615,20 @@ func _refresh_beacons() -> void:
 
 # ---------------------------------------------------------------- loop
 
+func _emote_input() -> void:
+	for e in 4:
+		if Input.is_action_just_pressed("emote_%d" % e):
+			if client:
+				netsync.emote_req.rpc_id(1, e)
+			else:
+				emote(local_index, e)
+		if split and Input.is_action_just_pressed("p2_emote_%d" % e):
+			emote(1, e)
+
+
 func _physics_process(dt: float) -> void:
+	if running or client:
+		_emote_input()
 	if client:
 		_update_arrow()
 		audio.engine(scooter.speed, 0.0)
@@ -634,6 +649,10 @@ func _physics_process(dt: float) -> void:
 	for o in orders:
 		if o.state == "carry":
 			o.t_left -= dt
+		elif has_cook and not o.get("ready", true):
+			o["wait"] = float(o.get("wait", 0.0)) + dt
+			if o.wait > 15.0:   # nobody cooked it: the kitchen staff does a so-so job
+				cook_done(o.id, 0.6)
 	_check_loose()
 	# shortcut: per-scooter logic swaps the `scooter` field; signal handlers still assume scooter 0.
 	for i in scooters.size():
@@ -663,6 +682,8 @@ func _check_pickups(pos: Vector3, sp: float) -> void:
 	for o in orders:
 		if o.state != "offer" or not o.get("ready", true):
 			continue
+		if int(o.get("team", -1)) >= 0 and clock < float(o.get("reserved_until", 0.0)) and int(o.team) != scooter.team:
+			continue   # the other team's cook made this one
 		var curb: Vector3 = city.lots[o.rest].curb
 		if pos.distance_to(curb) < 5.0:
 			if scooter.rack.is_full():
@@ -727,11 +748,14 @@ func _tutorial_tick() -> void:
 
 
 ## Cook finished an order (local host cook, or validated RPC from a client cook).
-func cook_done(order_id: int, q: float) -> void:
+func cook_done(order_id: int, q: float, team := -1) -> void:
 	var o := order_by_id(order_id)
 	if o.is_empty() or o.state != "offer" or o.get("ready", true):
 		return
 	o.ready = true
+	if run.competitive() and team >= 0:
+		o["team"] = team
+		o["reserved_until"] = clock + 12.0
 	o.q = clampf(q, 0.0, 1.0)
 	audio.play("pickup")
 	_refresh_beacons()
@@ -741,7 +765,7 @@ func submit_cook(order_id: int, q: float) -> void:
 	if client:
 		netsync.cook_result.rpc_id(1, order_id, q)
 	else:
-		cook_done(order_id, q)
+		cook_done(order_id, q, Net.team_of(Net.my_id()) if Net.online else -1)
 
 
 ## Which keys belong to the current scooter: solo = everything, coop = passenger keys, split = own pad/keys.
@@ -812,6 +836,15 @@ func _check_loose() -> void:
 		if not is_instance_valid(lf):
 			loose.erase(lf)
 			continue
+		if is_instance_valid(lf.pass_to) and lf.age < 2.5 and not lf.pass_to.rack.is_full() \
+				and lf.global_position.distance_to(lf.pass_to.rack.global_position + Vector3.UP * 0.4) < 1.8:
+			var mate: Scooter = lf.pass_to
+			loose.erase(lf)
+			mate.rack.add_item(lf.item)
+			lf.queue_free()
+			hud.popup(Game.t("caught"), UiKit.GOOD)
+			audio.play("cheer")
+			continue
 		var it: FoodItem = lf.item
 		var o := order_by_id(it.order_id)
 		if lf.global_position.y < -5.0:
@@ -853,7 +886,7 @@ func _deliver(o: Dictionary, it: FoodItem, thrown: bool, at := Vector3.INF) -> v
 	rv.integrity = it.integrity
 	rv.day = run.day
 	reviews.append(rv)
-	run.add_tip(res.tip, who)
+	run.add_tip(res.tip, scooters[who].team)
 	rv["by"] = who
 	if thrown:
 		run.stats.throws += 1
@@ -891,14 +924,68 @@ func throw_top() -> void:
 			var off := Vector3(rng.randf_range(-1, 1), rng.randf_range(-0.5, 0.5), rng.randf_range(-1, 1)).normalized() * rng.randf() * err
 			vel = (tgt + off - start) / T + Vector3(0, 4.9 * T, 0)
 			aimed = true
+	var mate: Scooter = null
 	if not aimed:
+		mate = _pass_target()
+		if mate:
+			var tgt := mate.rack.global_position + Vector3.UP * 0.5 + mate.linear_velocity * 0.6
+			var T := clampf(start.distance_to(tgt) / 12.0, 0.45, 1.2)
+			tgt = mate.rack.global_position + Vector3.UP * 0.5 + mate.linear_velocity * T
+			vel = (tgt - start) / T + Vector3(0, 4.9 * T, 0)
+			hud.popup(Game.t("pass"), UiKit.GOLD)
+	if not aimed and not mate:
 		vel = scooter.linear_velocity - scooter.global_basis.z * 7.0 + Vector3.UP * 6.0
 	scooter.rack.remove_item(it)
 	var lf := _spawn_loose(it, vis.global_transform, vel)
 	lf.global_position = start
 	lf.thrown = aimed
+	lf.pass_to = mate
 	lf.angular_velocity = Vector3(rng.randf_range(-3, 3), rng.randf_range(-6, 6), rng.randf_range(-3, 3))
 	audio.play("throw")
+
+
+## A teammate's scooter in front of us within passing range (with rack space).
+func _pass_target() -> Scooter:
+	var best: Scooter = null
+	var bd := 18.0
+	for s in scooters:
+		if s == scooter or s.team != scooter.team or s.rack.is_full() or s.is_crashed:
+			continue
+		var d: float = s.global_position.distance_to(scooter.global_position)
+		if d < bd:
+			bd = d
+			best = s
+	return best
+
+
+## Name above every scooter so players can find each other (visible through walls).
+func _name_tag(s: Scooter, text: String) -> void:
+	if scooters.size() < 2 and not Net.online:
+		return
+	var l := U.label3d(s, text, Vector3(0, 2.35, 0), 56, Color(Game.TEAM_COLORS[s.team]).lightened(0.4) if run.competitive() else Color.WHITE)
+	l.no_depth_test = true
+	l.fixed_size = true
+	l.pixel_size = 0.0012
+	l.font_size = 48
+	s.name_tag = l
+
+
+## Quick chat bubble above a scooter (keys 1-4 / d-pad).
+func emote(idx: int, e: int) -> void:
+	if idx < 0 or idx >= scooters.size():
+		return
+	var s: Scooter = scooters[idx]
+	var l := U.label3d(s, Game.t("emote_%d" % e), Vector3(0, 3.0, 0), 80, [UiKit.BAD, UiKit.GOLD, UiKit.GOOD, Color("#4cc9f0")][e])
+	l.no_depth_test = true
+	l.fixed_size = true
+	l.pixel_size = 0.0016
+	var tw := l.create_tween()
+	tw.tween_property(l, "position:y", 3.6, 2.0)
+	tw.parallel().tween_property(l, "modulate:a", 0.0, 2.0).set_delay(1.0)
+	tw.tween_callback(l.queue_free)
+	audio.play("pickup", 0.3)
+	if netsync:
+		netsync.send_fx("emote", [idx, e])
 
 
 func _spawn_loose(it: FoodItem, xf: Transform3D, vel: Vector3) -> LooseFood:
