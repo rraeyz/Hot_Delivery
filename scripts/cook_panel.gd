@@ -83,6 +83,8 @@ func finish(needle: float) -> void:
 	var q := Kitchen.quality(needle, gauge.zone)
 	world.hud.popup(Game.t("perfect_cook") if q > 0.9 else "%d%%" % int(q * 100), UiKit.GOOD if q > 0.6 else UiKit.GOLD)
 	world.submit_cook(current, q)
+	if q > 0.9:
+		SteamBridge.achieve("PERFECT_COOK")
 	_stop_cooking()
 
 

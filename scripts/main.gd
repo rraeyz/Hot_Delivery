@@ -476,6 +476,8 @@ func show_comp(light: Dictionary) -> void:
 	order.sort_custom(func(a, b): return run.earned_by[a] > run.earned_by[b])
 	if run.finished:
 		v.add_child(UiKit.label(Game.team_name(run.winner()) + " " + Game.t("winner"), 52, UiKit.GOLD))
+		if Net.online and run.winner() == Net.team_of(Net.my_id()):
+			SteamBridge.achieve("COMPETITIVE_WIN")
 	else:
 		v.add_child(UiKit.label("%s %d/%d" % [Game.t("round"), run.day, RunState.ROUNDS], 44, UiKit.GOLD))
 	v.add_child(UiKit.label(Game.t("leaderboard"), 22, Color(1, 1, 1, 0.8)))
@@ -562,6 +564,13 @@ func show_online() -> void:
 		Game.settings.name = t
 		Game.write_save())
 	v.add_child(name_e)
+	if not Net.online and SteamBridge.peer_supported():
+		v.add_child(UiKit.button(Game.t("steam_host"), func():
+			if Net.host_steam() == OK:
+				show_online()))
+		v.add_child(UiKit.label(Game.t("steam_tip"), 18, Color(1, 1, 1, 0.75)))
+	if Net.online and SteamBridge.lobby_id != 0 and Net.is_host():
+		v.add_child(UiKit.button(Game.t("invite"), SteamBridge.invite_friends))
 	if not Net.online:
 		var ip_e := LineEdit.new()
 		ip_e.text = str(Game.settings.get("last_ip", "127.0.0.1"))
@@ -657,6 +666,10 @@ func show_garage() -> void:
 	row.add_child(rr)
 	row.add_child(UiKit.button(Game.t("next_day"), func():
 		run.next_day()
+		if run.day >= 5:
+			SteamBridge.achieve("DAY_5")
+		if run.day >= 10:
+			SteamBridge.achieve("DAY_10")
 		_unlock_check()
 		Game.save.best_day = maxi(int(Game.save.best_day), run.day)
 		Game.write_save()

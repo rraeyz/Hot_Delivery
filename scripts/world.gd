@@ -843,6 +843,7 @@ func _check_loose() -> void:
 			mate.rack.add_item(lf.item)
 			lf.queue_free()
 			hud.popup(Game.t("caught"), UiKit.GOOD)
+			SteamBridge.achieve("TEAM_PASS")
 			audio.play("cheer")
 			continue
 		var it: FoodItem = lf.item
@@ -887,6 +888,12 @@ func _deliver(o: Dictionary, it: FoodItem, thrown: bool, at := Vector3.INF) -> v
 	rv.day = run.day
 	reviews.append(rv)
 	run.add_tip(res.tip, scooters[who].team)
+	if who == local_index:
+		SteamBridge.achieve("FIRST_DELIVERY")
+		if thrown:
+			SteamBridge.achieve("BALCONY_THROW")
+		if it.kind == "soup" and it.integrity > 90.0:
+			SteamBridge.achieve("SOUP_SURVIVOR")
 	rv["by"] = who
 	if thrown:
 		run.stats.throws += 1
@@ -1046,6 +1053,8 @@ func _on_crash(_s: Scooter) -> void:
 		if o.state == "carry":
 			o.crashed = true
 	hud.popup(Game.t("crash"), Color("#ef476f"), true)
+	if scooters.find(_s) == local_index:
+		SteamBridge.achieve("WIPEOUT")
 	audio.play("crash")
 	if not Net.online or scooters.find(_s) == local_index:
 		_cam_for(_s).add_trauma(0.9)

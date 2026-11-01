@@ -28,7 +28,10 @@ var team := -1           # competitive team (0 = A, 1 = B); -1 = auto (alternate
 
 
 func my_info() -> Dictionary:
-	return {"name": str(Game.settings.get("name", "Courier")), "look": Game.settings.look, "color": int(Game.settings.color),
+	var nm := str(Game.settings.get("name", ""))
+	if nm == "":
+		nm = SteamBridge.my_name() if SteamBridge.available else "Courier"
+	return {"name": nm, "look": Game.settings.look, "color": int(Game.settings.color),
 		"role": role, "team": team}
 
 
@@ -97,6 +100,26 @@ func host(port := PORT) -> int:
 	return OK
 
 
+## Steam: host on a P2P peer (no IP / port forwarding) and open the friends invite overlay.
+func host_steam() -> int:
+	if not SteamBridge.peer_supported():
+		return ERR_UNAVAILABLE
+	multiplayer.multiplayer_peer = SteamBridge.make_host_peer()
+	online = true
+	players = {1: my_info()}
+	players_changed.emit()
+	SteamBridge.host_lobby()
+	return OK
+
+
+func join_steam(host_steam_id: int) -> void:
+	if not SteamBridge.peer_supported():
+		_fail("Steam P2P unavailable")
+		return
+	multiplayer.multiplayer_peer = SteamBridge.make_client_peer(host_steam_id)
+	online = true
+
+
 func join(ip: String, port := PORT) -> int:
 	var peer := ENetMultiplayerPeer.new()
 	var err := peer.create_client(ip, port)
@@ -108,6 +131,7 @@ func join(ip: String, port := PORT) -> int:
 
 
 func leave() -> void:
+	SteamBridge.leave_lobby()
 	if multiplayer.multiplayer_peer:
 		multiplayer.multiplayer_peer.close()
 	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()

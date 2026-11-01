@@ -126,7 +126,8 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Takımlar (A/B): rekabetçide takım kasası/dükkânı; 1v1, 2v2, aşçı+kurye takımları; aşçının yaptığı sipariş 12 sn takıma ayrılır; aşçı yoksa 15 sn'de otomatik hazır
 - [x] Takım arkadaşına yemek pası (müşteri yakın değilse BOŞLUK)
 - [x] İşaretleşme: 1-4 tuşları / d-pad (YARDIM! BURAYA! HAHA! ACELE ET!), scooter üstünde isim etiketleri
-- [ ] Steam: GodotSteam ile lobi + arkadaş daveti + Steam üzerinden bağlantı (IP gerekmeden)
+- [x] Steam kodu: lobi + arkadaş daveti + P2P + başarımlar (scripts/steam_bridge.gd, STEAM.md)
+- [ ] KULLANICI: GodotSteam eklentisini projeye eklemeye onay ver / ekle (STEAM.md adım 1) — sonra Steam testleri
 
 ## Aşama 10 — Sürekli geliştirme (liste bitince buradan devam)
 - [x] İlk vardiya eğitimi (ok + kısa ipuçları: "restorana git", "yavaşla", "balkona fırlat")
