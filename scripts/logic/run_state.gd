@@ -37,6 +37,7 @@ var shop: Array = []
 var fired := false
 var stats := {"deliveries": 0, "crashes": 0, "throws": 0, "spilled": 0, "best_tip": 0}
 var theme := "bazaar"
+var tod := "noon"   # time of day of the current shift
 var unlock_level := 0   # how many extra foods are unlocked (meta progression)
 
 
@@ -115,6 +116,7 @@ func pick_quirk() -> String:
 
 func roll_chaos() -> void:
 	chaos.clear()
+	tod = "noon" if day == 1 else ["morning", "noon", "sunset", "night"][rng.randi() % 4]
 	var n := 0
 	if day >= 2:
 		n = 1

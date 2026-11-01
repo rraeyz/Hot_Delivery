@@ -25,6 +25,7 @@ var controls_enabled := true
 var color := Color("#ff6b35")
 var rack: Rack
 var visual: Node3D
+var headlight: SpotLight3D
 var rider: Node3D
 var wheels: Array = []
 var rays: Array = []
@@ -103,6 +104,14 @@ func _build_visual() -> void:
 	stem.rotation.x = -0.25
 	U.box(visual, Vector3(0.7, 0.05, 0.05), Color("#1d1d1d"), Vector3(0, 1.33, -0.72))
 	U.sphere(visual, 0.08, Color("#fff3b0"), Vector3(0, 0.95, -0.7))  # headlight
+	headlight = SpotLight3D.new()
+	headlight.position = Vector3(0, 0.95, -0.75)
+	headlight.spot_range = 22.0
+	headlight.spot_angle = 32.0
+	headlight.light_energy = 3.0
+	headlight.light_color = Color("#fff3d6")
+	headlight.visible = false
+	visual.add_child(headlight)
 	# rack plate
 	U.box(visual, Vector3(0.62, 0.04, 0.62), Color("#6c757d"), Vector3(0, 0.96, 0.5))
 	for x in [-0.29, 0.29]:

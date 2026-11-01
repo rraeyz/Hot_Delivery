@@ -4,32 +4,7 @@ extends Node3D
 
 signal shift_ended(result: Dictionary)
 
-const BUILDING_SHADER := """
-shader_type spatial;
-uniform vec3 base_color : source_color;
-varying vec3 wpos;
-varying vec3 wnorm;
-void vertex() {
-	wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	wnorm = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
-}
-void fragment() {
-	if (abs(wnorm.y) > 0.5) {
-		ALBEDO = base_color * 0.75;
-		ROUGHNESS = 0.9;
-	} else {
-		vec2 c = abs(wnorm.x) > 0.5 ? wpos.zy : wpos.xy;
-		vec2 g = fract(c / vec2(2.6, 3.0));
-		float win = step(0.22, g.x) * step(g.x, 0.78) * step(0.3, g.y) * step(g.y, 0.82);
-		win *= step(2.6, wpos.y);
-		float band = step(0.95, fract(wpos.y / 3.0));
-		vec3 col = mix(base_color, base_color * 0.82, band);
-		ALBEDO = mix(col, vec3(0.62, 0.8, 0.95), win * 0.9);
-		ROUGHNESS = mix(0.9, 0.15, win);
-		METALLIC = win * 0.2;
-	}
-}
-"""
+
 
 var run: RunState
 var city: Dictionary
@@ -93,6 +68,7 @@ func _ready() -> void:
 			s.color = Color("#4361ee")
 		add_child(s)
 		s.global_position = city.spawn + Vector3(3.0 * i, 0, 0)
+		s.headlight.visible = night > 0.1
 		s.rack.item_fell.connect(_on_item_fell)
 		s.rack.spilled.connect(_on_spilled)
 		s.crashed.connect(_on_crash)
@@ -128,42 +104,14 @@ func _ready() -> void:
 
 # ---------------------------------------------------------------- building
 
+var night := 0.0
+var lamps: Array = []
+
+
 func _build_environment() -> void:
-	var we := WorldEnvironment.new()
-	env = Environment.new()
-	var sky := Sky.new()
-	var sm := ProceduralSkyMaterial.new()
-	sm.sky_top_color = Color(city.theme.sky)
-	sm.sky_horizon_color = Color("#bde0fe")
-	sm.ground_horizon_color = Color("#bde0fe")
-	sm.ground_bottom_color = Color("#6c757d")
-	sky.sky_material = sm
-	env.background_mode = Environment.BG_SKY
-	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.5
-	env.ambient_light_sky_contribution = 0.6
-	env.ambient_light_color = Color("#fff1e0")
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.glow_enabled = true
-	env.glow_intensity = 0.3
-	if "fog" in run.chaos:
-		env.fog_enabled = true
-		env.fog_light_color = Color("#d8e2dc")
-		env.fog_density = 0.035
-		env.fog_sky_affect = 0.6
-	if "rain" in run.chaos:
-		sm.sky_top_color = Color("#5c677d")
-		sm.sky_horizon_color = Color("#979dac")
-		env.ambient_light_energy = 0.6
-	we.environment = env
-	add_child(we)
-	var sun := DirectionalLight3D.new()
-	sun.rotation = Vector3(deg_to_rad(-55), deg_to_rad(35), 0)
-	sun.light_energy = 0.6 if "rain" in run.chaos else 1.1
-	sun.shadow_enabled = true
-	sun.directional_shadow_max_distance = 70.0
-	add_child(sun)
+	var r := Look.environment(self, run.tod, city.theme, run.chaos)
+	env = r.env
+	night = r.night
 	if "rain" in run.chaos:
 		rain = CPUParticles3D.new()
 		rain.amount = 600
@@ -183,15 +131,9 @@ func _build_environment() -> void:
 
 
 func _bmat(hex: String) -> ShaderMaterial:
-	if _bmats.has(hex):
-		return _bmats[hex]
-	var sh := Shader.new()
-	sh.code = BUILDING_SHADER
-	var m := ShaderMaterial.new()
-	m.shader = sh
-	m.set_shader_parameter("base_color", Color(hex))
-	_bmats[hex] = m
-	return m
+	if not _bmats.has(hex):
+		_bmats[hex] = Look.building_mat(Color(hex), night, float(_bmats.size()) * 3.7)
+	return _bmats[hex]
 
 
 func _build_city() -> void:
@@ -200,6 +142,7 @@ func _build_city() -> void:
 	# ground
 	var g := U.static_box(self, Vector3(size + 60, 1, size + 60), Color(city.theme.ground), Vector3(size * 0.5, -0.5, size * 0.5))
 	g.collision_layer = 1
+	(g.get_child(1) as MeshInstance3D).material_override = Look.road_mat("rain" in run.chaos)
 	# grass outside city
 	U.box(self, Vector3(size + 400, 0.9, size + 400), Color(city.theme.outer), Vector3(size * 0.5, -0.52, size * 0.5))
 	# boundary walls
@@ -220,7 +163,9 @@ func _build_city() -> void:
 	for b in city.blocks:
 		var c: Vector3 = b.center
 		var col := (Color("#74c69d") if run.theme != "beach" else Color("#f4e1a1")) if b.park else Color(city.theme.walk)
-		U.static_box(self, Vector3(CityGen.BLOCK, 0.15, CityGen.BLOCK), col, c + Vector3(0, 0.075, 0))
+		var slab := U.static_box(self, Vector3(CityGen.BLOCK, 0.15, CityGen.BLOCK), col, c + Vector3(0, 0.075, 0))
+		(slab.get_child(1) as MeshInstance3D).material_override = Look.tile_mat(col, b.park and run.theme != "beach")
+		_street_furniture(c)
 		if b.park:
 			# a big jump ramp in the park
 			_ramp(c + Vector3(0, 0.15, 6), 0.0, Color("#e76f51"), 1.4)
@@ -235,7 +180,10 @@ func _build_city() -> void:
 		cs.position = Vector3(0, 1.5, 0)
 		tr.add_child(cs)
 		U.cyl(tr, 0.2, 0.25, 2.4, Color("#7f5539"), Vector3(0, 1.2, 0), 8)
-		U.sphere(tr, 1.3, Color("#52b788"), Vector3(0, 3.0, 0))
+		var leaf := Color("#52b788").lerp(Color("#2d6a4f"), rng.randf())
+		U.sphere(tr, 1.3, leaf, Vector3(0, 3.0, 0))
+		U.sphere(tr, 0.9, leaf.lightened(0.1), Vector3(0.6, 3.6, 0.2))
+		U.sphere(tr, 0.8, leaf.darkened(0.1), Vector3(-0.5, 3.4, -0.4))
 		add_child(tr)
 	# buildings
 	for i in city.lots.size():
@@ -248,6 +196,44 @@ func _build_city() -> void:
 			U.box(sb, Vector3(1.2, 0.145, 0.71), Color("#222222"), Vector3(-3.0 + s * 3.0, 0, 0))
 	for p in city.props:
 		_prop(p.kind, p.pos + Vector3(0, 0.15, 0))
+
+
+## Curbs, lamp posts at block corners, benches. Lamps light up at night.
+func _street_furniture(c: Vector3) -> void:
+	var h := CityGen.BLOCK * 0.5
+	for e in [[Vector3(0, 0.08, h), Vector3(CityGen.BLOCK, 0.17, 0.25)], [Vector3(0, 0.08, -h), Vector3(CityGen.BLOCK, 0.17, 0.25)],
+			[Vector3(h, 0.08, 0), Vector3(0.25, 0.17, CityGen.BLOCK)], [Vector3(-h, 0.08, 0), Vector3(0.25, 0.17, CityGen.BLOCK)]]:
+		U.box(self, e[1], Color("#d9d9d9"), c + e[0])
+	for k in [Vector3(1, 0, 1), Vector3(-1, 0, -1)]:
+		var p: Vector3 = c + k * (h - 0.8)
+		var lamp := Node3D.new()
+		lamp.position = p
+		add_child(lamp)
+		U.cyl(lamp, 0.07, 0.1, 5.0, Color("#2b2d42"), Vector3(0, 2.6, 0), 8)
+		U.box(lamp, Vector3(0.08, 0.08, 1.2), Color("#2b2d42"), Vector3(0, 5.1, -0.5 * k.z))
+		var bulb := U.sphere(lamp, 0.22, Color("#fff3b0"), Vector3(0, 4.95, -1.0 * k.z))
+		if night > 0.1:
+			var mat := StandardMaterial3D.new()
+			mat.albedo_color = Color("#fff3b0")
+			mat.emission_enabled = true
+			mat.emission = Color("#ffcf7a")
+			mat.emission_energy_multiplier = 4.0
+			bulb.material_override = mat
+			var l := OmniLight3D.new()
+			l.light_color = Color("#ffcf7a")
+			l.light_energy = 2.5 * night
+			l.omni_range = 14.0
+			l.position = Vector3(0, 4.6, -1.0 * k.z)
+			lamp.add_child(l)
+			lamps.append(l)
+	if rng.randf() < 0.5:
+		var bench := Node3D.new()
+		bench.position = c + Vector3(rng.randf_range(-10, 10), 0.15, h - 1.2)
+		add_child(bench)
+		U.box(bench, Vector3(1.8, 0.08, 0.5), Color("#8b5e34"), Vector3(0, 0.45, 0))
+		U.box(bench, Vector3(1.8, 0.5, 0.08), Color("#8b5e34"), Vector3(0, 0.75, 0.22))
+		for x in [-0.8, 0.8]:
+			U.box(bench, Vector3(0.06, 0.45, 0.45), Color("#2b2d42"), Vector3(x, 0.22, 0))
 
 
 func _ramp(pos: Vector3, yaw: float, c: Color, scale_h: float) -> void:

@@ -208,6 +208,10 @@ func show_settings() -> void:
 			Game.settings[key] = val
 			Game.apply_settings())
 		v.add_child(s)
+	v.add_child(UiKit.button("%s: %s" % [Game.t("quality"), Game.t("q%d" % int(Game.settings.quality))], func():
+		Game.settings.quality = (int(Game.settings.quality) + 1) % 3
+		Game.write_save()
+		show_settings()))
 	var nc := Game.colors_unlocked()
 	var cb := UiKit.button("%s %d/%d" % [Game.t("color"), int(Game.settings.color) + 1, nc], func():
 		Game.settings.color = (int(Game.settings.color) + 1) % Game.colors_unlocked()
