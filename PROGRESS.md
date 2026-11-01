@@ -27,3 +27,22 @@ Prototipi oyna ve his hakkında yaz (adımlar README.md'de). Özellikle: (1) sco
 
 ### Sıradaki
 Kullanıcı geri bildirimine göre his/denge ayarı; Steam sayfası için kapak görseli ve ekran görüntüleri; GodotSteam başarımları (Steam hesabı açılınca).
+
+
+## Oturum 2 — 1 Kasım 2026 akşam (kullanıcının ikinci tur istekleri)
+**Eklendi:**
+- Grafik: Vulkan/Forward+ (Vulkan yoksa otomatik OpenGL), ACES ton, SSAO/SSIL, hafif hacimsel sis, prosedürel asfalt/kaldırım/bina dokuları, sokak lambaları, gün saati (sabah/öğle/gün batımı/gece — gece pencereler ve lambalar yanar), scooter farı, Grafik ayarı (Düşük/Orta/Yüksek).
+- Karakter: yeni kurye modeli, KARAKTER ekranı (ten, ceket, 8 kask, kask rengi, 6 aksesuar, rastgele).
+- Online 1-4 oyuncu: ONLINE menüsü (Kur / IP ile Katıl), ev sahibi yetkili; istemci girdisi + 20 Hz anlık görüntü; bölüm sonları senkron. CI'de iki süreçli localhost testi.
+- Modlar: Normal (co-op, bir kere kira kaçırma hakkı) ve Rekabetçi (2-4 kişi; herkesin kendi kasası/dükkânı; her bölüm yeni zorluk kartı birikir; 7 bölüm; kazanan). Yerel: menüde "KAPIŞMA: 2 SCOOTER"; online: lobide Mod düğmesi.
+**Testler:** 300 birim kontrolü, fizik ölçümü, bot vardiyası, online host+istemci testi (normal ve rekabetçi).
+**Build:** `builds/TipOver-windows-v0.3.zip`.
+**Eksik / bilinen:** Online'da "yolcu olarak arkaya binme" yok; Steam lobileri yok (IP ile bağlanılıyor — internetten oynamak için ev sahibinin 24680 UDP portunu açması ya da ZeroTier/Radmin VPN gibi bir LAN programı gerekir); bölünmüş ekranda tekrar yok.
+
+### KULLANICI BEKLENİYOR (fırsat olunca)
+1. v0.3'ü indir, KARAKTER ekranında kendini yap, bir vardiya oyna.
+2. Bir arkadaşla online dene: biri ONLINE > KUR, diğeri ONLINE > IP yaz > KATIL. Aynı evde aynı Wi-Fi'da IP yeterli; farklı evlerde ücretsiz "Radmin VPN" ile ikiniz de aynı ağa girin ve oradaki IP'yi yazın.
+3. Gördüğün sorunları yaz.
+
+### Sıradaki
+Online yolcu rolü, park etmiş arabalar/yaya geçitleri, daha iyi araç modelleri, Mutfak/Paketleme rolü (Aşama 9), Steam lobileri (Steamworks sonrası).
