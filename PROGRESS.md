@@ -36,7 +36,7 @@ Kullanıcı geri bildirimine göre his/denge ayarı; Steam sayfası için kapak 
 - Online 1-4 oyuncu: ONLINE menüsü (Kur / IP ile Katıl), ev sahibi yetkili; istemci girdisi + 20 Hz anlık görüntü; bölüm sonları senkron. CI'de iki süreçli localhost testi.
 - Modlar: Normal (co-op, bir kere kira kaçırma hakkı) ve Rekabetçi (2-4 kişi; herkesin kendi kasası/dükkânı; her bölüm yeni zorluk kartı birikir; 7 bölüm; kazanan). Yerel: menüde "KAPIŞMA: 2 SCOOTER"; online: lobide Mod düğmesi.
 **Testler:** 300 birim kontrolü, fizik ölçümü, bot vardiyası, online host+istemci testi (normal ve rekabetçi).
-**Build:** `builds/TipOver-windows-v0.5.zip`.
+**Build:** `builds/TipOver-windows-v0.6.zip`.
 **Sonradan eklendi (aynı oturum):** online YOLCU rolü (birinin arkasına binip kuleyi dengele/fırlat), online AŞÇI rolü (mutfak paneli: ibreyi yeşilde durdur; iyi pişirme = sıcak/sağlam yemek; aşçı varken siparişler hazırlanmadan alınamaz), yuvarlak arabalar, park etmiş arabalar, yaya geçitleri. Build v0.4.
 **Eksik / bilinen:** Steam lobileri yok (IP ile bağlanılıyor — internetten oynamak için ev sahibinin 24680 UDP portunu açması ya da ZeroTier/Radmin VPN gibi bir LAN programı gerekir); bölünmüş ekranda tekrar yok.
 
@@ -51,8 +51,16 @@ Online yolcu rolü, park etmiş arabalar/yaya geçitleri, daha iyi araç modelle
 ## Oturum 3 — 1 Kasım 2026 gece (üçüncü tur istekleri)
 **Eklendi:** Nunito yazı tipi + büyük/gölgeli arayüz, sadeleşen menü; 7 dil (TR, EN, ES, DE, FR, PT, RU) — arayüz, yorumlar, yükseltmeler, olaylar; görsel adım 2 (bulutlu/yıldızlı gök, SDFGI + SSR yüksek ayarda, ekran kartına göre otomatik kalite, çatı detayları, parlak yuvarlak scooter); takımlar A/B (1v1, 2v2, aşçı+kurye takımları, takım kasası/dükkânı, aşçının siparişi takıma ayrılır); takım arkadaşına yemek pası; 1-4 tuşlarıyla bağırma + isim etiketleri; vardiya içi rastgele olaylar (mutlu saat, acil VIP, sağanak, yol çalışması, konvoy); Steam kodu (lobi, davet, P2P, başarımlar) — eklenti olmadan pasif.
 **Testler:** 400 birim kontrolü, fizik, pas testi, bot, online (normal/yolcu/aşçı/rekabetçi/aşçılı rekabetçi).
-**Build:** `builds/TipOver-windows-v0.5.zip` (Steam eklentisi YOK — IP ile online çalışır).
+**Build:** `builds/TipOver-windows-v0.6.zip` (Steam eklentisi YOK — IP ile online çalışır).
 
 ### KULLANICI BEKLENİYOR
 1. **GodotSteam eklentisi:** Bulutta dışarıdan gelen derlenmiş dosyaları ekleyemedim (güvenlik kuralı). Ya STEAM.md adım 1'i sen yap, ya da bana "GodotSteam'i sen ekle, onaylıyorum" yaz.
 2. Fırsat bulunca v0.5'i oyna.
+
+## Oturum 4 — 1 Kasım 2026 gece (geri bildirim düzeltmeleri)
+- Arayüz küçültüldü (yazılar, sipariş paneli, butonlar, yorum kartları, açılır yazılar) — kullanıcı "çok büyük" dedi.
+- Scooter'dan scooter'a yemek pası kaldırıldı (kullanıcı istemedi).
+- Yayalar ve kapıdaki müşteriler artık ayakta ve insan boyunda (~1,75 m).
+- Eklendi (aynı gece): yaya trafiği, rastgele şehir olayları, erişilebilirlik (tuş atama, renk körü), bölünmüş ekranda tekrar + 2. denge göstergesi, uzak silüet + deniz + çim, rekabetçi bot simülasyonu.
+- Build: `builds/TipOver-windows-v0.6.zip`.
+- Yarım kalan: statik mesh birleştirme (performans) — ilk deneme çok yavaştı, geri alındı; sonra tekrar denenecek.
