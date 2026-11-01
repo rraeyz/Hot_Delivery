@@ -66,7 +66,7 @@ func _rebuild() -> void:
 	for o in world.orders:
 		if o.state == "offer" and not o.get("ready", true):
 			var id: int = o.id
-			list.add_child(UiKit.button("%s %s" % [Game.t("cook_it"), Game.food_name(o.food).to_upper()], func(): start(id)))
+			list.add_child(UiKit.button("%s %s" % [Game.t("cook_it"), Game.up(Game.food_name(o.food))], func(): start(id)))
 
 
 func start(order_id: int) -> void:

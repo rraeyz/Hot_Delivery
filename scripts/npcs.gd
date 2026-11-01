@@ -216,3 +216,65 @@ class Convoy extends Node3D:
 			honk.emit()
 		if travelled > length + 30.0:
 			queue_free()
+
+
+## Pedestrian walking around a block on the sidewalk. Bump into one and they cartwheel away.
+class Walker extends Node3D:
+	var center := Vector3.ZERO
+	var half := 15.5
+	var t := 0.0
+	var speed := 1.3
+	var knocked := 0.0
+	var body: Node3D
+	var world_ref: Node
+	var _phase := 0.0
+	signal bumped(w: Node3D)
+
+	func setup(c: Vector3, look: Dictionary, start: float, dir_sign: float) -> void:
+		center = c
+		t = start
+		speed = randf_range(1.0, 1.7) * dir_sign
+		body = Node3D.new()
+		Courier.build(body, look)
+		body.scale = Vector3.ONE * 0.95
+		add_child(body)
+
+	func _perimeter(u: float) -> Vector3:
+		var L := half * 8.0
+		u = fposmod(u, L)
+		var side := int(u / (half * 2.0))
+		var k := fmod(u, half * 2.0) - half
+		match side:
+			0: return center + Vector3(k, 0.15, -half)
+			1: return center + Vector3(half, 0.15, k)
+			2: return center + Vector3(-k, 0.15, half)
+			_: return center + Vector3(-half, 0.15, -k)
+
+	func _physics_process(dt: float) -> void:
+		if knocked > 0.0:
+			knocked -= dt
+			if knocked <= 0.0:
+				body.rotation = Vector3.ZERO
+				body.position = Vector3.ZERO
+			return
+		t += speed * dt
+		_phase += dt * 8.0
+		var p := _perimeter(t)
+		var ahead := _perimeter(t + signf(speed) * 0.5)
+		global_position = p
+		if ahead.distance_to(p) > 0.01:
+			look_at(Vector3(ahead.x, p.y, ahead.z), Vector3.UP)
+		body.position.y = absf(sin(_phase)) * 0.05
+		if world_ref:
+			var s: Node3D = world_ref.nearest_scooter(global_position)
+			if s.global_position.distance_to(global_position) < 1.0 and absf(s.get("speed")) > 2.5:
+				knock(s.get("linear_velocity"))
+
+	func knock(v: Vector3) -> void:
+		knocked = 3.0
+		bumped.emit(self)
+		var away := Vector3(v.x, 0, v.z).normalized()
+		var tw := body.create_tween()
+		tw.tween_property(body, "position", away * 3.0 + Vector3.UP * 1.8, 0.4).set_ease(Tween.EASE_OUT)
+		tw.parallel().tween_property(body, "rotation", Vector3(PI * 3.0, 0, PI), 0.8)
+		tw.tween_property(body, "position", away * 4.0, 0.4).set_ease(Tween.EASE_IN)

@@ -372,7 +372,7 @@ func _unlock_check() -> String:
 		Game.save.unlock_level = lvl
 		run.unlock_level = maxi(run.unlock_level, lvl)
 		var names := ["burger", "drinks", "icecream", "sushi", "cake"]
-		return Game.t("unlock") % Game.food_name(names[lvl - 1]).to_upper()
+		return Game.t("unlock") % Game.up(Game.food_name(names[lvl - 1]))
 	return ""
 
 

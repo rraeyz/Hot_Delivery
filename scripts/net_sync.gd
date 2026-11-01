@@ -121,8 +121,11 @@ func _build() -> Dictionary:
 	var dogs := []
 	for d in world.dogs:
 		dogs.append(d.global_transform)
+	var wk := []
+	for w in world.walkers:
+		wk.append([w.global_transform, w.body.position, w.body.rotation])
 	return {"t": world.time_left, "m": world.run.money, "e": world.run.earned_today, "s": sc, "l": lo,
-		"k": cars, "d": dogs, "o": world.orders}
+		"k": cars, "d": dogs, "w": wk, "o": world.orders}
 
 
 @rpc("authority", "unreliable_ordered")
@@ -155,6 +158,12 @@ func _apply(dt: float) -> void:
 	var dg: Array = _snap.d
 	for i in mini(dg.size(), world.dogs.size()):
 		world.dogs[i].global_transform = world.dogs[i].global_transform.interpolate_with(dg[i], k)
+	var wl: Array = _snap.get("w", [])
+	for i in mini(wl.size(), world.walkers.size()):
+		var w: Node3D = world.walkers[i]
+		w.global_transform = w.global_transform.interpolate_with(wl[i][0], k)
+		w.body.position = wl[i][1]
+		w.body.rotation = wl[i][2]
 	_apply_loose(_snap.l, k)
 	var h := hash(_snap.o)
 	if h != _last_orders_hash:

@@ -149,7 +149,7 @@ func _rebuild_orders() -> void:
 		var v := VBoxContainer.new()
 		v.add_theme_constant_override("separation", 2)
 		p.add_child(v)
-		var name: String = Game.food_name(o.food).to_upper()
+		var name: String = Game.up(Game.food_name(o.food))
 		var q: String = (" · " + Game.t("quirk_" + o.quirk)) if o.quirk != "" else ""
 		if o.state == "offer":
 			p.add_theme_stylebox_override("panel", UiKit.style(Color(0.2, 0.2, 0.25, 0.85)))

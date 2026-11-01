@@ -42,6 +42,7 @@ var mods := {}
 var request_pickup := false
 var cars: Array = []
 var dogs: Array = []
+var walkers: Array = []
 var _bmats := {}
 var audio: Sfx
 var arrow: Node3D
@@ -127,7 +128,7 @@ func _ready() -> void:
 	hud.setup(self)
 	_spawn_npcs()
 	if client:
-		for n in cars + dogs:
+		for n in cars + dogs + walkers:
 			n.set_physics_process(false)
 		audio.music(true)
 		return
@@ -502,6 +503,16 @@ func _spawn_npcs() -> void:
 		car.honk.connect(func(_c): audio.play("horn", 0.3))
 		add_child(car)
 		cars.append(car)
+	var blocks: Array = city.blocks
+	for i in 14:
+		var b: Dictionary = blocks[rng.randi() % blocks.size()]
+		var wk := Npcs.Walker.new()
+		var look := {"skin": rng.randi() % 6, "jacket": rng.randi() % 9, "helmet": [7, 4, 2, 7][rng.randi() % 4], "helmet_color": rng.randi() % 9, "accessory": rng.randi() % 6}
+		add_child(wk)
+		wk.setup(b.center, look, rng.randf() * 120.0, 1.0 if rng.randf() < 0.5 else -1.0)
+		wk.world_ref = self
+		wk.bumped.connect(_on_walker_bumped)
+		walkers.append(wk)
 	if "dogs" in run.chaos:
 		for i in 3:
 			var d := Npcs.Dog.new()
@@ -576,7 +587,7 @@ func _refresh_beacons() -> void:
 					"text": _rest_name(city.lots[o.rest].rest) + ("" if ready else "\n" + Game.t("cooking"))}
 		else:
 			var lot: Dictionary = city.lots[o.cust]
-			var txt := Game.food_name(o.food).to_upper()
+			var txt := Game.up(Game.food_name(o.food))
 			if o.quirk != "":
 				txt += "\n" + Game.t("quirk_" + o.quirk)
 			want["c%d" % o.id] = {"pos": lot.curb, "color": Color("#06d6a0"), "text": txt, "target": _target_point(o)}
@@ -1092,6 +1103,14 @@ func _on_honk(_s: Scooter) -> void:
 	for c in get_children():
 		if c is RigidBody3D and c != scooter and c.global_position.distance_to(scooter.global_position) < 12.0:
 			(c as RigidBody3D).apply_central_impulse((c.global_position - scooter.global_position).normalized() * 30.0 * (c as RigidBody3D).mass * 0.2 + Vector3.UP * 3.0)
+
+
+func _on_walker_bumped(wk: Node3D) -> void:
+	var s := nearest_scooter(wk.global_position)
+	s.rack.jolt(3.0)
+	audio.play("thud")
+	hud.popup(["HEY!", "OOF!", "MY LEG!", "RUDE!"][rng.randi() % 4], Color("#ffd166"))
+	debug_log["walkers_hit"] = int(debug_log.get("walkers_hit", 0)) + 1
 
 
 func _on_dog_bite(_d: Node3D) -> void:

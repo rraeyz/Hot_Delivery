@@ -195,6 +195,13 @@ func chaos_text(c: String) -> Array:
 	return CHAOS_TEXT.get(settings.lang, I18n.CHAOS.get(settings.lang, CHAOS_TEXT.en)).get(c, CHAOS_TEXT.en[c])
 
 
+## Uppercase that respects Turkish dotted/dotless i (i -> İ, ı -> I).
+func up(text: String) -> String:
+	if settings.lang == "tr":
+		text = text.replace("i", "İ").replace("ı", "I")
+	return text.to_upper()
+
+
 func food_name(k: String) -> String:
 	return Reviews.food_names(settings.lang).get(k, k)
 
