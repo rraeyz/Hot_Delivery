@@ -810,6 +810,10 @@ func _autotest() -> void:
 	await get_tree().process_frame
 	if args.has("len"):
 		w.time_left = float(args.len)
+	if args.has("walker_check"):   # place a pedestrian and a bin right in front of the camera
+		var wk: Node3D = w.walkers[0]
+		wk.set_physics_process(false)
+		wk.global_position = w.scooter.global_position - w.scooter.global_basis.z * 4.0 + w.scooter.global_basis.x * 1.2
 	var bot := Autopilot.new(w)
 	var every := float(args.get("every", "3"))
 	var total := float(args.get("secs", "30"))
