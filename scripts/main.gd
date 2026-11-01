@@ -438,6 +438,7 @@ func _autotest() -> void:
 	var chaos: String = args.get("chaos", "")
 	run = RunState.new(int(args.get("seed", "3")), int(args.get("unlocks", "5")))
 	run.theme = args.get("theme", "bazaar")
+	run.tod = args.get("tod", run.tod)
 	if chaos != "":
 		run.chaos = Array(chaos.split(","))
 	if args.has("menu"):

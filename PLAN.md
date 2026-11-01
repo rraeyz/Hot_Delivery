@@ -89,12 +89,12 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 **Karar (yemek yapma):** Tam yemek pişirme EKLEMİYORUZ — Overcooked/PlateUp kopyasına döner ve kapsamı ikiye katlar; bizim farkımız scooter + yemek kulesi. Onun yerine 3-4 kişilik oyunda hafif bir **"Mutfak/Paketleme" rolü**: restoranda bir oyuncu siparişi hazırlar (çorbayı kepçeyle doldurur — fazla dolu kase daha kolay dökülür, pizzayı fırından zamanında alır, kuleyi doğru sırayla dizer) ve kuryeye verir. Böylece restoran ↔ kurye takım oyunu oluşur ama oyunun kalbi teslimat kalır.
 
 ## Aşama 5 — Görsel yenileme (Vulkan / Forward+)
-- [ ] Forward+ görüntüleyici (Vulkan yoksa otomatik OpenGL'e düşer), AgX/ACES ton, SSAO, SSIL, glow, volumetrik sis, kaliteli gölgeler
-- [ ] Grafik kalitesi ayarı (Düşük = eski görünüm, Orta, Yüksek)
-- [ ] Prosedürel dokular: asfalt (gürültü + normal), kaldırım taşı, bina cephesi (pencere çerçevesi, kat bantları, kapı/vitrin), çatı detayları
+- [x] Forward+ görüntüleyici (Vulkan yoksa otomatik OpenGL'e düşer), AgX/ACES ton, SSAO, SSIL, glow, volumetrik sis, kaliteli gölgeler
+- [x] Grafik kalitesi ayarı (Düşük = eski görünüm, Orta, Yüksek)
+- [x] Prosedürel dokular: asfalt (gürültü + normal), kaldırım taşı, bina cephesi (pencere çerçevesi, kat bantları, kapı/vitrin), çatı detayları
 - [ ] Sokak detayları: kaldırım kenarı, yaya geçidi, sokak lambası, ağaç, bank, tabela, park etmiş arabalar
 - [ ] Daha iyi araç ve scooter modelleri (yuvarlatılmış şekiller), far ışıkları
-- [ ] Gün saati (sabah / öğle / gün batımı / gece — gece lambalar yanar) her vardiyada değişir
+- [x] Gün saati (sabah / öğle / gün batımı / gece — gece lambalar yanar) her vardiyada değişir
 
 ## Aşama 6 — Karakter özelleştirme
 - [ ] Yeni kurye modeli (kafa, gövde, kollar, bacaklar, eller; basit animasyon: el sallama, düşme)

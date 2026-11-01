@@ -163,11 +163,14 @@ static func environment(parent: Node, tod: String, theme: Dictionary, chaos: Arr
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 	env.ambient_light_energy = d[6] * (1.2 if rainy else 1.0)
+	env.ambient_light_sky_contribution = 0.55
+	env.ambient_light_color = Color(d[2])
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
-	env.tonemap_mode = Environment.TONE_MAPPER_AGX if q > 0 else Environment.TONE_MAPPER_FILMIC
-	env.tonemap_white = 6.0
+	env.tonemap_mode = Environment.TONE_MAPPER_ACES
+	env.tonemap_exposure = 1.1
+	env.tonemap_white = 3.0
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 1.15
+	env.adjustment_saturation = 1.25
 	env.adjustment_contrast = 1.05
 	env.glow_enabled = true
 	env.glow_intensity = 0.5 if tod == "night" else 0.25
@@ -179,12 +182,12 @@ static func environment(parent: Node, tod: String, theme: Dictionary, chaos: Arr
 	if q >= 2:
 		env.ssil_enabled = true
 		env.volumetric_fog_enabled = true
-		env.volumetric_fog_density = 0.004 if tod != "night" else 0.01
+		env.volumetric_fog_density = 0.0012 if tod != "night" else 0.006
 		env.volumetric_fog_albedo = Color(d[5])
 		env.volumetric_fog_anisotropy = 0.6
 	env.fog_enabled = true
 	env.fog_light_color = Color(d[5])
-	env.fog_density = 0.002
+	env.fog_density = 0.0007
 	env.fog_aerial_perspective = 0.4
 	if "fog" in chaos:
 		env.fog_density = 0.035
