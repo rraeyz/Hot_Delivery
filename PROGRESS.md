@@ -1,11 +1,13 @@
 # PROGRESS
 
-Saatlik tetikleyici: `trig_01YGVX4aggfGhdgvnmukKuyB` — 1 Kasım 12:42 UTC itibarıyla KAPALI (geriye sadece kullanıcıya bağlı işler kaldı). Kullanıcı geri bildirim verince yeniden açılabilir.
+Saatlik tetikleyici: `trig_01YGVX4aggfGhdgvnmukKuyB` — AÇIK (her saat :08'de). Kullanıcı günlerce açık kalmasını istedi; kapatma.
 
 ## Test komutları
 - Birim testleri: `godot --headless --path . -s tests/run_tests.gd`
 - Fizik hissi ölçümü: `godot --headless --path . --fixed-fps 60 res://tests/sim_drive.tscn`
-- Bot bir vardiya oynar: `godot --headless --path . --fixed-fps 60 res://tests/bot_shift.tscn -- --days=3`
+- Bot bir vardiya oynar: `godot --headless --path . --fixed-fps 60 res://tests/bot_shift.tscn -- --days=3` (`--len=60` kısa vardiya, `--elevator` bozuk asansör)
+- Online: `tests/net_test.sh 15` (`RIDE=1` / `COOK=1`); tekrar testi: host'a `--len=8 --crash=3`
+- Performans: `godot --headless --path . res://tests/perf_count.tscn`
 - Görsel test (Xvfb): `xvfb-run -a godot --path . --rendering-driver opengl3 --fixed-fps 30 -- --autotest --out=/tmp/shots --secs=20 --every=4`
 - Windows çıktısı: `godot --headless --path . --export-release "Windows Desktop" build/windows/TipOver.exe` (şablonlar ~/.local/share/godot/export_templates/4.6.2.stable)
 
@@ -64,3 +66,10 @@ Online yolcu rolü, park etmiş arabalar/yaya geçitleri, daha iyi araç modelle
 - Eklendi (aynı gece): yaya trafiği, rastgele şehir olayları, erişilebilirlik (tuş atama, renk körü), bölünmüş ekranda tekrar + 2. denge göstergesi, uzak silüet + deniz + çim, rekabetçi bot simülasyonu.
 - Build: `builds/TipOver-windows-v0.6.zip`.
 - Yarım kalan: statik mesh birleştirme (performans) — ilk deneme çok yavaştı, geri alındı; sonra tekrar denenecek.
+
+## Oturum 5 — 1 Kasım 2026 gece (performans + yeni içerik)
+- Occlusion culling: her binada kutu oklüder; şehir 3×3 parçaya bölünüp birleştiriliyor, düz renkli malzemeler tek vertex-renkli mesh oluyor. Çizim nesnesi ~3000 → ~300. (Oklüderin kendi katkısı küçük: %3-6; asıl kazanç birleştirmeden.)
+- Yeni olay: BOZUK ASANSÖR — 30 sn boyunca kapıda teslim için 4 kat merdiven beklemesi, ya da balkona fırlat.
+- Online tekrar: günün en büyük kazası (tüm scooter'larla) herkesin ekranında oynuyor; tekrar yazıları 7 dilde.
+- Online testteki ara sıra çıkan yanlış "FAIL" düzeltildi (oyuncu önce çıkınca).
+- Build: `builds/TipOver-windows-v0.7.zip`.
