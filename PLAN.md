@@ -81,3 +81,43 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [ ] İsmi seç
 - [ ] Steamworks hesabı + 100$ (Steam sayfası için)
 - [ ] Arkadaşla co-op testi
+
+---
+# İKİNCİ TUR (kullanıcı isteği, 1 Kasım 2026)
+İstekler: 2 kişiden fazla oyuncu, online; Normal (co-op) + Rekabetçi mod (PlateUp gibi: her bölüm yeni zorluk, kazanılan parayla işi kolaylaştıran şeyler); grafik seviyesi yükselmeli (Vulkan); karakter özelleştirme; yemek yapma fikrine öneri.
+
+**Karar (yemek yapma):** Tam yemek pişirme EKLEMİYORUZ — Overcooked/PlateUp kopyasına döner ve kapsamı ikiye katlar; bizim farkımız scooter + yemek kulesi. Onun yerine 3-4 kişilik oyunda hafif bir **"Mutfak/Paketleme" rolü**: restoranda bir oyuncu siparişi hazırlar (çorbayı kepçeyle doldurur — fazla dolu kase daha kolay dökülür, pizzayı fırından zamanında alır, kuleyi doğru sırayla dizer) ve kuryeye verir. Böylece restoran ↔ kurye takım oyunu oluşur ama oyunun kalbi teslimat kalır.
+
+## Aşama 5 — Görsel yenileme (Vulkan / Forward+)
+- [ ] Forward+ görüntüleyici (Vulkan yoksa otomatik OpenGL'e düşer), AgX/ACES ton, SSAO, SSIL, glow, volumetrik sis, kaliteli gölgeler
+- [ ] Grafik kalitesi ayarı (Düşük = eski görünüm, Orta, Yüksek)
+- [ ] Prosedürel dokular: asfalt (gürültü + normal), kaldırım taşı, bina cephesi (pencere çerçevesi, kat bantları, kapı/vitrin), çatı detayları
+- [ ] Sokak detayları: kaldırım kenarı, yaya geçidi, sokak lambası, ağaç, bank, tabela, park etmiş arabalar
+- [ ] Daha iyi araç ve scooter modelleri (yuvarlatılmış şekiller), far ışıkları
+- [ ] Gün saati (sabah / öğle / gün batımı / gece — gece lambalar yanar) her vardiyada değişir
+
+## Aşama 6 — Karakter özelleştirme
+- [ ] Yeni kurye modeli (kafa, gövde, kollar, bacaklar, eller; basit animasyon: el sallama, düşme)
+- [ ] Özelleştirme ekranı: ten rengi, ceket rengi, kask tipi (klasik/kedi kulağı/korsan/şef şapkası…), kask rengi, aksesuar (gözlük/bıyık/atkı), scooter rengi
+- [ ] Ayarlar kayıt dosyasında; online oyunda diğer oyunculara gönderilir
+
+## Aşama 7 — Online çok oyunculu (1-4 kişi)
+- [ ] Ağ mimarisi: ev sahibi yetkili (host simüle eder, istemciler girdi yollar), Godot ENet ile
+- [ ] Senkronizasyon: scooter'lar, yemek kulesi, düşen yemekler, siparişler, para, olaylar; ara karelerde yumuşatma
+- [ ] Lobi ekranı: Oluştur / IP ile katıl / LAN; oyuncu listesi, hazır, karakter görünümü
+- [ ] Otomatik test: iki ekransız Godot süreci localhost üzerinden bağlanıp vardiya oynar
+- [ ] Her oyuncu kendi scooter'ında; isteyen "yolcu" olarak birinin arkasına biner (sürücü + yolcu online)
+- [ ] Steam lobileri (GodotSteam, App ID 480 ile geliştirme) — KULLANICI: Steamworks hesabı sonrası gerçek App ID
+
+## Aşama 8 — Modlar
+- [ ] **Normal (co-op, 1-4):** ortak kasa, kira; kira kaçırılırsa 1 uyarı hakkı
+- [ ] **Rekabetçi (2-4):** her oyuncu/ekip kendi şirketi ve kasası; aynı siparişler için yarış; her bölüm sonunda yeni **zorluk kartı** kalıcı eklenir (yağmur hep var, müşteriler sabırsız, köprü kapalı, köpek sürüsü…); bölümler arası herkes kendi parasıyla dükkândan yükseltme alır; 7 bölüm sonunda en zengin kazanır (bölüm sonunda kirayı ödeyemeyen elenir)
+- [ ] Rekabetçi oyuncular arası etkileşim: korna ile itme, başkasının düşen yemeğini çalma (bahşişi düşük), yolu kesme
+- [ ] Mod seçim ekranı + kurallar ekranı
+
+## Aşama 9 — Mutfak/Paketleme rolü
+- [ ] Restoran içi küçük alan: çorba kepçesi, pizza fırını, paketleme tezgâhı
+- [ ] Mutfak oyuncusu siparişi hazırlar, kurye alır; tek kişilikte otomatik
+
+## Aşama 10 — Sürekli geliştirme (liste bitince buradan devam)
+- [ ] Yeni yemekler / olaylar / yükseltmeler, oyuncu geri bildirimine göre denge, performans, hata düzeltme
