@@ -104,6 +104,23 @@ void fragment() {
 }
 """
 
+const WATER_SHADER := """
+shader_type spatial;
+render_mode cull_disabled;
+varying vec3 wpos;
+void vertex() {
+	wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	VERTEX.y += sin(wpos.x * 0.15 + TIME * 1.3) * 0.25 + sin(wpos.z * 0.21 + TIME * 0.9) * 0.18;
+}
+void fragment() {
+	float fres = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
+	ALBEDO = mix(vec3(0.02, 0.32, 0.45), vec3(0.35, 0.75, 0.85), fres);
+	ROUGHNESS = 0.05;
+	METALLIC = 0.1;
+	SPECULAR = 0.8;
+}
+"""
+
 const SKY_SHADER := """
 shader_type sky;
 uniform vec3 top : source_color = vec3(0.3, 0.6, 0.9);

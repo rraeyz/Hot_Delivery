@@ -255,6 +255,7 @@ func _build_city() -> void:
 		U.sphere(tr, 0.9, leaf.lightened(0.1), Vector3(0.6, 3.6, 0.2))
 		U.sphere(tr, 0.8, leaf.darkened(0.1), Vector3(-0.5, 3.4, -0.4))
 		add_child(tr)
+	_backdrop()
 	# buildings
 	for i in city.lots.size():
 		_build_lot(city.lots[i])
@@ -304,6 +305,54 @@ func _street_furniture(c: Vector3) -> void:
 		U.box(bench, Vector3(1.8, 0.5, 0.08), Color("#8b5e34"), Vector3(0, 0.75, 0.22))
 		for x in [-0.8, 0.8]:
 			U.box(bench, Vector3(0.06, 0.45, 0.45), Color("#2b2d42"), Vector3(x, 0.22, 0))
+
+
+## Distant skyline, sea (beach) and park grass: depth beyond the playable grid.
+func _backdrop() -> void:
+	var size: float = city.size
+	var mid := Vector3(size * 0.5, 0, size * 0.5)
+	var beach := run.theme == "beach"
+	var tall := 3.0 if run.theme == "downtown" else 1.0
+	var pal: Array = city.theme.palette
+	for i in 90:
+		var a := TAU * i / 90.0 + rng.randf_range(-0.03, 0.03)
+		var r := size * 0.5 + rng.randf_range(45.0, 140.0)
+		var p := mid + Vector3(cos(a), 0, sin(a)) * r
+		if beach and cos(a) > 0.3:
+			continue   # leave the sea side open
+		var w := rng.randf_range(10, 22)
+		var h := rng.randf_range(8, 26) * tall * (1.0 if rng.randf() > 0.15 else 2.0)
+		var mi := MeshInstance3D.new()
+		var bm := BoxMesh.new()
+		bm.size = Vector3(w, h, w)
+		mi.mesh = bm
+		mi.material_override = _bmat(pal[rng.randi() % pal.size()])
+		mi.position = p + Vector3(0, h * 0.5 - 0.5, 0)
+		mi.rotation.y = rng.randf() * PI
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(mi)
+	if beach:
+		var sea := MeshInstance3D.new()
+		var pm := PlaneMesh.new()
+		pm.size = Vector2(600, 900)
+		pm.subdivide_width = 60
+		pm.subdivide_depth = 90
+		sea.mesh = pm
+		var m := ShaderMaterial.new()
+		m.shader = Look.shader(Look.WATER_SHADER)
+		sea.material_override = m
+		sea.position = Vector3(size + 40.0 + 300.0, -0.35, size * 0.5)
+		add_child(sea)
+	# grass tufts in parks
+	var tufts := []
+	for b in city.blocks:
+		if not b.park or beach:
+			continue
+		for i in 260:
+			var p: Vector3 = b.center + Vector3(rng.randf_range(-16, 16), 0.15, rng.randf_range(-16, 16))
+			tufts.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.6, 1.3)), p + Vector3(0, 0.12, 0)))
+	if tufts.size() > 0:
+		_multimesh(tufts, Vector3(0.08, 0.25, 0.4), Color("#40916c"))
 
 
 func _multimesh(xforms: Array, size: Vector3, c: Color) -> void:
