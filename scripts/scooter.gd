@@ -113,7 +113,6 @@ func _build_visual() -> void:
 
 static func _build_courier(parent: Node3D, c: Color) -> void:
 	U.cyl(parent, 0.2, 0.24, 0.55, c, Vector3(0, 0.3, 0))       # torso
-	U.box(parent, Vector3(0.5, 0.5, 0.25), Color("#ffd166"), Vector3(0, 0.4, 0.25))  # giant backpack
 	U.sphere(parent, 0.17, Color("#f1c27d"), Vector3(0, 0.72, -0.02))  # head
 	var helmet := U.sphere(parent, 0.2, c.darkened(0.2), Vector3(0, 0.78, 0))
 	helmet.scale = Vector3(1, 0.75, 1.05)

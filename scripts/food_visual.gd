@@ -10,12 +10,16 @@ const COLORS := {
 
 
 ## Returns the root node. If the food has a liquid surface, it is stored as meta "liquid".
+const SCALE := 1.35  # oversized on purpose: the food is the star of the camera
+
+
 static func build(kind: String) -> Node3D:
 	var root := Node3D.new()
+	root.scale = Vector3.ONE * SCALE
 	match kind:
 		"pizza":
-			U.box(root, Vector3(0.55, 0.11, 0.55), Color("#d9a066"), Vector3(0, 0.055, 0))
-			U.box(root, Vector3(0.56, 0.02, 0.2), Color("#e63946"), Vector3(0, 0.1, 0))
+			U.box(root, Vector3(0.55, 0.11, 0.55), Color("#f1e3c8"), Vector3(0, 0.055, 0))
+			U.box(root, Vector3(0.56, 0.115, 0.14), Color("#e63946"), Vector3(0, 0.055, 0))
 			var tag := U.box(root, Vector3(0.18, 0.005, 0.18), Color("#ffffff"), Vector3(0.15, 0.113, 0.15))
 			tag.rotation.y = 0.4
 		"soup":
@@ -72,5 +76,5 @@ static func shape(kind: String) -> Shape3D:
 	var w := 0.5
 	if kind == "icecream":
 		w = 0.24
-	b.size = Vector3(w, maxf(0.12, d.height), minf(w, 0.45))
+	b.size = Vector3(w, maxf(0.12, d.height), minf(w, 0.45)) * SCALE
 	return b

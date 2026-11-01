@@ -177,7 +177,7 @@ func _build_city() -> void:
 	var size: float = city.size
 	var half_road := CityGen.ROAD * 0.5
 	# ground
-	var g := U.static_box(self, Vector3(size + 60, 1, size + 60), Color("#4a4e57"), Vector3(size * 0.5, -0.5, size * 0.5))
+	var g := U.static_box(self, Vector3(size + 60, 1, size + 60), Color("#2f3238"), Vector3(size * 0.5, -0.5, size * 0.5))
 	g.collision_layer = 1
 	# grass outside city
 	U.box(self, Vector3(size + 400, 0.9, size + 400), Color("#7cb518"), Vector3(size * 0.5, -0.52, size * 0.5))

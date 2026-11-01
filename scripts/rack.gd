@@ -151,7 +151,7 @@ func _rebuild() -> void:
 		pivots.append(pivot)
 		visuals.append(v)
 		parent = pivot
-		y = it.height()
+		y = it.height() * FoodVisual.SCALE
 	_update_visuals()
 
 

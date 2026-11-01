@@ -400,16 +400,19 @@ func _autotest() -> void:
 	start_day()
 	var w := world
 	await get_tree().process_frame
-	for k in ["pizza", "soup", "burger"]:
-		var it := FoodItem.new(k)
-		w.scooter.rack.add_item(it)
-	var plan: Array = [[1.0, 0.0], [1.0, 0.0], [1.0, 0.3], [0.6, -0.6], [-1.0, 0.0], [1.0, 0.0], [1.0, 0.8], [1.0, 0.0]]
+	var bot := Autopilot.new(w)
+	var every := float(args.get("every", "3"))
+	var total := float(args.get("secs", "30"))
+	var t := 0.0
+	var next_shot := every
 	var shots := 0
-	for i in plan.size() * 2:
-		var step: Array = plan[int(i / 2.0)]
-		w.scooter.external_input = {"throttle": step[0], "steer": step[1]}
-		await get_tree().create_timer(0.5).timeout
-		get_viewport().get_texture().get_image().save_png("%s/shot_%02d.png" % [out, shots])
-		shots += 1
-		print("t=%.1f speed=%.1f pos=%s items=%d loose=%d crashed=%s danger=%.2f" % [w.clock, w.scooter.speed, w.scooter.global_position, w.scooter.rack.items.size(), w.loose.size(), w.scooter.is_crashed, w.scooter.rack.danger()])
+	while t < total and w.running:
+		w.scooter.external_input = bot.drive(get_physics_process_delta_time())
+		await get_tree().physics_frame
+		t += get_physics_process_delta_time()
+		if t >= next_shot:
+			next_shot += every
+			get_viewport().get_texture().get_image().save_png("%s/shot_%02d.png" % [out, shots])
+			shots += 1
+			print("t=%.1f speed=%.1f items=%d loose=%d crashed=%s money=%d" % [t, w.scooter.speed, w.scooter.rack.items.size(), w.loose.size(), w.scooter.is_crashed, run.money])
 	get_tree().quit()

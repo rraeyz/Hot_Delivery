@@ -1,0 +1,49 @@
+name: test-and-build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GODOT_VERSION: 4.6.2
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          unzip -q Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          sudo mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
+
+      - name: Import project
+        run: timeout 300 godot --headless --path . --import || true
+
+      - name: Unit tests
+        run: timeout 120 godot --headless --path . -s tests/run_tests.gd
+
+      - name: Physics feel benchmark
+        run: timeout 300 godot --headless --path . --fixed-fps 60 res://tests/sim_drive.tscn
+
+      - name: Bot plays a shift
+        run: timeout 600 godot --headless --path . --fixed-fps 60 res://tests/bot_shift.tscn -- --len=120
+
+      - name: Export templates
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          unzip -q -j Godot_v${GODOT_VERSION}-stable_export_templates.tpz 'templates/windows_release_x86_64.exe' 'templates/version.txt' -d ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+
+      - name: Export Windows
+        run: |
+          mkdir -p build/windows
+          timeout 300 godot --headless --path . --export-release "Windows Desktop" build/windows/TipOver.exe
+          ls -la build/windows
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TipOver-windows
+          path: build/windows
