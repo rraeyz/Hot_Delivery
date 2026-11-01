@@ -13,7 +13,7 @@ const TODS := {
 
 const ROAD_SHADER := """
 shader_type spatial;
-uniform vec3 tint : source_color = vec3(0.19, 0.2, 0.22);
+uniform vec3 tint : source_color = vec3(0.27, 0.28, 0.3);
 uniform float wet = 0.0;
 varying vec3 wpos;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -104,6 +104,41 @@ void fragment() {
 }
 """
 
+const SKY_SHADER := """
+shader_type sky;
+uniform vec3 top : source_color = vec3(0.3, 0.6, 0.9);
+uniform vec3 horizon : source_color = vec3(0.8, 0.9, 1.0);
+uniform vec3 cloud_color : source_color = vec3(1.0);
+uniform float cloud_cover = 0.35;
+uniform float stars = 0.0;
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p) {
+	vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+}
+float fbm(vec2 p) { float v = 0.0; float a = 0.5; for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; } return v; }
+void sky() {
+	vec3 d = EYEDIR;
+	float h = clamp(d.y, 0.0, 1.0);
+	vec3 col = mix(horizon, top, pow(h, 0.55));
+	if (d.y < 0.0) { col = horizon * 0.7; }
+	// sun disk + glow
+	float sd = dot(d, LIGHT0_DIRECTION);
+	col += LIGHT0_COLOR * (smoothstep(0.9993, 0.9997, sd) * 8.0 + pow(max(sd, 0.0), 64.0) * 0.35) * LIGHT0_ENERGY;
+	// clouds on a flat layer
+	if (d.y > 0.02) {
+		vec2 uv = d.xz / d.y * 0.6 + vec2(TIME * 0.004, 0.0);
+		float c = smoothstep(1.0 - cloud_cover, 1.0 - cloud_cover + 0.35, fbm(uv * 1.3));
+		col = mix(col, cloud_color * (0.85 + 0.25 * fbm(uv * 3.0)), c * smoothstep(0.02, 0.2, d.y) * 0.9);
+	}
+	if (stars > 0.0 && d.y > 0.0) {
+		vec2 g = floor(d.xz / (d.y + 0.3) * 160.0);
+		col += vec3(step(0.9975, hash(g))) * stars * h;
+	}
+	COLOR = col;
+}
+"""
+
 static var _shaders := {}
 
 
@@ -148,16 +183,18 @@ static func environment(parent: Node, tod: String, theme: Dictionary, chaos: Arr
 	var we := WorldEnvironment.new()
 	var env := Environment.new()
 	var sky := Sky.new()
-	var sm := ProceduralSkyMaterial.new()
-	sm.sky_top_color = Color(d[4]) if tod != "noon" else Color(theme.sky)
-	sm.sky_horizon_color = Color(d[5])
-	sm.ground_horizon_color = Color(d[5])
-	sm.ground_bottom_color = Color(d[5]).darkened(0.6)
-	sm.sun_angle_max = 20.0
-	sm.sky_curve = 0.12
+	var sm := ShaderMaterial.new()
+	sm.shader = shader(SKY_SHADER)
+	var top := Color(d[4]) if tod != "noon" else Color(theme.sky)
+	var hor := Color(d[5])
 	if rainy:
-		sm.sky_top_color = sm.sky_top_color.lerp(Color("#5c677d"), 0.7)
-		sm.sky_horizon_color = sm.sky_horizon_color.lerp(Color("#979dac"), 0.7)
+		top = top.lerp(Color("#5c677d"), 0.7)
+		hor = hor.lerp(Color("#979dac"), 0.7)
+	sm.set_shader_parameter("top", top)
+	sm.set_shader_parameter("horizon", hor)
+	sm.set_shader_parameter("cloud_cover", 0.75 if rainy else (0.35 if tod != "night" else 0.25))
+	sm.set_shader_parameter("cloud_color", Color("#ffffff") if tod != "night" else Color("#2a3355"))
+	sm.set_shader_parameter("stars", 1.0 if tod == "night" else 0.0)
 	sky.sky_material = sm
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
@@ -179,7 +216,12 @@ static func environment(parent: Node, tod: String, theme: Dictionary, chaos: Arr
 		env.ssao_enabled = true
 		env.ssao_radius = 1.2
 		env.ssao_intensity = 1.6
+		env.ssil_enabled = true
 	if q >= 2:
+		env.sdfgi_enabled = true            # bounce light: the biggest "it looks real" switch
+		env.sdfgi_use_occlusion = true
+		env.sdfgi_energy = 0.8
+		env.ssr_enabled = rainy or tod == "night"
 		env.ssil_enabled = true
 		env.volumetric_fog_enabled = true
 		env.volumetric_fog_density = 0.0012 if tod != "night" else 0.006

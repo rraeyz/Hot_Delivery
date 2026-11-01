@@ -722,6 +722,8 @@ func _toast(msg: String) -> void:
 func _autotest() -> void:
 	if args.has("lang"):
 		Game.settings.lang = args.lang
+	if args.has("quality"):
+		Game.settings.quality = int(args.quality)
 	var out: String = args.get("out", "user://autotest")
 	DirAccess.make_dir_recursive_absolute(out)
 	if args.has("nethost") or args.has("netjoin"):

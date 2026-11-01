@@ -116,6 +116,9 @@ func _ready() -> void:
 	if settings.lang == "" or not settings.lang in I18n.LANGS:
 		var os_lang := OS.get_locale_language()
 		settings.lang = os_lang if os_lang in I18n.LANGS else "en"
+	if not settings.has("quality_auto"):
+		settings.quality_auto = true
+		settings.quality = _guess_quality()
 	_setup_input()
 	apply_settings()
 
@@ -144,6 +147,17 @@ func player_name(i: int) -> String:
 		if i < ids.size():
 			return str(Net.players[ids[i]].get("name", "P%d" % (i + 1)))
 	return "P%d" % (i + 1)
+
+
+## First launch: integrated / software GPUs get Medium, everything else High (SDFGI).
+func _guess_quality() -> int:
+	var gpu := RenderingServer.get_video_adapter_name().to_lower()
+	if RenderingServer.get_current_rendering_method() != "forward_plus":
+		return 0
+	for weak in ["intel", "llvmpipe", "uhd", "iris", "mali", "adreno", "vega 8", "radeon graphics"]:
+		if weak in gpu:
+			return 1
+	return 2
 
 
 func t(key: String) -> String:

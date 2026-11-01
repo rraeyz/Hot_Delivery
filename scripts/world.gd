@@ -360,6 +360,7 @@ func _build_lot(lot: Dictionary) -> void:
 	mi.material_override = _bmat(lot.color)
 	sb.add_child(mi)
 	add_child(sb)
+	_roof_details(c + Vector3(0, 0.15, 0), s, Color(lot.color))
 	var side: Vector3 = lot.side
 	var yaw := atan2(side.x, side.z)
 	# door
@@ -397,6 +398,31 @@ func _build_lot(lot: Dictionary) -> void:
 		l.billboard = BaseMaterial3D.BILLBOARD_DISABLED
 		l.outline_modulate = rc.darkened(0.5)
 		l.outline_size = 24
+
+
+## Parapet, plinth, AC units, water tanks and antennas: cheap silhouettes that sell the city.
+func _roof_details(base: Vector3, s: Vector3, c: Color) -> void:
+	var top := base + Vector3(0, s.y, 0)
+	var trim := c.darkened(0.3)
+	for e in [[Vector3(0, 0.25, s.z * 0.5), Vector3(s.x + 0.2, 0.5, 0.25)], [Vector3(0, 0.25, -s.z * 0.5), Vector3(s.x + 0.2, 0.5, 0.25)],
+			[Vector3(s.x * 0.5, 0.25, 0), Vector3(0.25, 0.5, s.z)], [Vector3(-s.x * 0.5, 0.25, 0), Vector3(0.25, 0.5, s.z)]]:
+		U.box(self, e[1], trim, top + e[0])
+	U.box(self, Vector3(s.x + 0.12, 0.6, s.z + 0.12), c.darkened(0.45), base + Vector3(0, 0.3, 0))   # plinth
+	var k := rng.randi() % 4
+	for i in k:
+		var p := top + Vector3(rng.randf_range(-s.x, s.x) * 0.3, 0, rng.randf_range(-s.z, s.z) * 0.3)
+		match rng.randi() % 3:
+			0:
+				U.box(self, Vector3(1.2, 0.8, 0.9), Color("#ced4da"), p + Vector3(0, 0.4, 0))
+				U.cyl(self, 0.3, 0.3, 0.05, Color("#495057"), p + Vector3(0, 0.83, 0), 10)
+			1:
+				U.cyl(self, 0.7, 0.7, 1.4, Color("#8d6e63"), p + Vector3(0, 1.6, 0), 12)
+				U.cyl(self, 0.0, 0.75, 0.4, Color("#5d4037"), p + Vector3(0, 2.5, 0), 12)
+				for a in 4:
+					U.cyl(self, 0.05, 0.05, 1.0, Color("#3e2723"), p + Vector3(cos(a * PI / 2) * 0.5, 0.5, sin(a * PI / 2) * 0.5), 4)
+			2:
+				U.cyl(self, 0.03, 0.03, 2.5, Color("#6c757d"), p + Vector3(0, 1.25, 0), 4)
+				U.box(self, Vector3(0.9, 0.04, 0.04), Color("#6c757d"), p + Vector3(0, 2.1, 0))
 
 
 func _rest_color(k: String) -> Color:

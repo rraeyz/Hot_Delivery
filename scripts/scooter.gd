@@ -106,9 +106,34 @@ func _build_visual() -> void:
 	add_child(visual)
 	# deck + body
 	U.box(visual, Vector3(0.42, 0.12, 1.35), Color("#2b2d42"), Vector3(0, 0.38, 0))
-	U.box(visual, Vector3(0.5, 0.35, 0.6), color, Vector3(0, 0.6, 0.35))
-	U.box(visual, Vector3(0.46, 0.1, 0.55), Color("#1d1d1d"), Vector3(0, 0.82, 0.3))  # seat
-	U.box(visual, Vector3(0.36, 0.5, 0.18), color, Vector3(0, 0.62, -0.58))  # front shield
+	# rounded, glossy body (a squashed capsule) instead of boxes
+	var paint := U.mat(color, false, 0.25)
+	var body := MeshInstance3D.new()
+	var bm := CapsuleMesh.new()
+	bm.radius = 0.27
+	bm.height = 0.8
+	body.mesh = bm
+	body.rotation.x = PI / 2
+	body.scale = Vector3(1.0, 1.0, 0.75)
+	body.position = Vector3(0, 0.62, 0.33)
+	body.material_override = paint
+	visual.add_child(body)
+	var seat := MeshInstance3D.new()
+	var sm := CapsuleMesh.new()
+	sm.radius = 0.2
+	sm.height = 0.62
+	seat.mesh = sm
+	seat.rotation.x = PI / 2
+	seat.scale = Vector3(1.1, 1.0, 0.35)
+	seat.position = Vector3(0, 0.84, 0.3)
+	seat.material_override = U.mat(Color("#1d1d1d"), false, 0.5)
+	visual.add_child(seat)
+	var shield := U.box(visual, Vector3(0.38, 0.55, 0.16), color, Vector3(0, 0.64, -0.58))
+	shield.material_override = paint
+	shield.rotation.x = 0.18
+	for x in [-0.34, 0.34]:   # mirrors
+		U.cyl(visual, 0.01, 0.01, 0.25, Color("#adb5bd"), Vector3(x, 1.42, -0.72), 6)
+		U.sphere(visual, 0.05, Color("#dee2e6"), Vector3(x, 1.55, -0.72)).scale = Vector3(1, 0.7, 0.4)
 	var stem := U.cyl(visual, 0.03, 0.03, 0.8, Color("#adb5bd"), Vector3(0, 0.95, -0.62))
 	stem.rotation.x = -0.25
 	U.box(visual, Vector3(0.7, 0.05, 0.05), Color("#1d1d1d"), Vector3(0, 1.33, -0.72))
