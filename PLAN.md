@@ -65,16 +65,16 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Sıcak yemekte buhar efekti (buhar azaldıkça soğuyor)
 - [x] Fareyle denge (tek kişilik)
 - [x] Kapıda müşteri figürü + tepki (sevinç/öfke)
-- [ ] Bot ile menü arka planı (attract mode)
+- [ ] (isteğe bağlı) Bot ile menü arka planı
 - [x] Felaket tekrarı (en büyük kaza ağır çekim)
 - [ ] Efektler: buhar, çorba lekesi, parçacıklar, ekran sarsıntısı
 - [x] Mahalleler: Çarşı, Sahil (4. gün rekoru açar), Şehir Merkezi (7. gün) — yokuş yerine rampa/yükseklik farkı
 - [x] Kozmetikler: 8 scooter rengi, her 2 günlük rekorda biri açılır
 - [x] Her 3. gün düğün pastası "boss" siparişi
 - [x] Sıkışınca otomatik kurtarma (R de aynı)
-- [ ] Denge geçişi (para hızı, kira eğrisi)
-- [ ] Steam mağaza metinleri + kapak/ekran görüntüleri (oyundan)
-- [ ] GodotSteam (başarımlar) — isteğe bağlı
+- [ ] Denge geçişi (para hızı, kira eğrisi) — KULLANICI geri bildirimi bekleniyor
+- [x] Steam mağaza metinleri (STORE.md) + oyundan ekran görüntüleri (marketing/)
+- [ ] GodotSteam (başarımlar) — Steamworks hesabı + App ID bekleniyor
 
 ## Kullanıcının yapacakları (sırası gelince PROGRESS.md'de "KULLANICI BEKLENİYOR" yazar)
 - [ ] Prototipi oyna, his hakkında 3 cümle yaz
