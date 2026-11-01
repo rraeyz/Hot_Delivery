@@ -572,8 +572,13 @@ func show_online() -> void:
 		v.add_child(UiKit.label(Game.t("players") + " (%d/%d)" % [Net.players.size(), Net.MAX_PLAYERS], 24))
 		for id in Net.order():
 			var info: Dictionary = Net.players[id]
-			var l := UiKit.label(("★ " if id == 1 else "• ") + str(info.get("name", "?")), 24, Color(Game.SCOOTER_COLORS[int(info.get("color", 0)) % 8]).lightened(0.3))
+			var role := (" — " + Game.t("passenger")) if Net.is_passenger(id) else ""
+			var l := UiKit.label(("★ " if id == 1 else "• ") + str(info.get("name", "?")) + role, 24, Color(Game.SCOOTER_COLORS[int(info.get("color", 0)) % 8]).lightened(0.3))
 			v.add_child(l)
+		v.add_child(UiKit.button("%s: %s" % [Game.t("role"), Game.t("passenger" if Net.want_ride else "driver")], func():
+			Net.want_ride = not Net.want_ride
+			Net.update_me()
+			show_online()))
 		if Net.is_host():
 			v.add_child(UiKit.button("%s: %s" % [Game.t("mode"), Game.t("m_" + online_mode)], func():
 				online_mode = "competitive" if online_mode == "normal" else "normal"
@@ -755,6 +760,7 @@ func _autotest() -> void:
 ##   godot --headless --fixed-fps 60 --path . -- --autotest --netjoin=127.0.0.1 --secs=40
 func _autotest_net() -> void:
 	var secs := float(args.get("secs", "30"))
+	Net.want_ride = args.has("ride")
 	if args.has("nethost"):
 		Net.host()
 		var waited := 0.0
@@ -793,7 +799,7 @@ func _autotest_net() -> void:
 		moved.append(snappedf(w.scooters[i].global_position.distance_to(start_pos[i]), 0.1))
 	print("NET %s scooters=%d local=%d moved=%s money=%d orders=%d deliveries=%d" % ["host" if Net.is_host() else "client",
 		w.scooters.size(), w.local_index, moved, run.money, w.orders.size(), w.reviews.size()])
-	var ok: bool = w.scooters.size() >= 2 and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
+	var ok: bool = Net.players.size() >= 2 and w.scooters.size() == Net.drivers().size() and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
 	print("NET RESULT ", "PASS" if ok else "FAIL")
 	if Net.is_host():
 		await get_tree().create_timer(3.0).timeout   # let the client finish first

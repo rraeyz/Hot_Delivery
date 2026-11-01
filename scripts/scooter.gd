@@ -52,6 +52,8 @@ var index := 0                # position in World.scooters
 var remote := false           # host-side scooter driven by a network player
 var net_pending := {}         # button presses received from that player
 var net_seen := {}
+var passenger_ids: Array = []      # online players riding on the back
+var passenger_balance := Vector2.ZERO
 var _mouse_bal := Vector2.ZERO
 
 
@@ -139,6 +141,15 @@ func _build_visual() -> void:
 
 
 ## Rebuild the rider after the look changed (character screen).
+## Show riders standing on the back step, holding the tower.
+func add_passenger_visual(l: Dictionary) -> void:
+	var p := Node3D.new()
+	Courier.build(p, l)
+	p.position = Vector3(0.42 * (1 if visual.get_child_count() % 2 == 0 else -1), 0.55, 0.62)
+	p.scale = Vector3.ONE * 0.9
+	visual.add_child(p)
+
+
 func set_look(l: Dictionary) -> void:
 	look = l
 	for c in rider.get_children():
@@ -166,7 +177,7 @@ func read_input() -> void:
 	if external_input.size() > 0:
 		throttle = external_input.get("throttle", 0.0)
 		steer = external_input.get("steer", 0.0)
-		rack.balance = external_input.get("balance", Vector2.ZERO)
+		rack.balance = (external_input.get("balance", Vector2.ZERO) + passenger_balance).limit_length(1.0)
 		return
 	var pre := "p1_" if player == 0 else "p2d_"
 	var gas := Input.get_action_strength(pre + "throttle")
@@ -187,7 +198,7 @@ func read_input() -> void:
 	if player == 0:
 		bal += _mouse_bal.limit_length(1.0)  # mouse balances too (passenger in co-op, anyone solo)
 	_mouse_bal *= 0.8
-	rack.balance = bal.limit_length(1.0)
+	rack.balance = (bal + passenger_balance).limit_length(1.0)
 
 
 func _physics_process(dt: float) -> void:

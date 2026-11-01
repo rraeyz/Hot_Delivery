@@ -38,7 +38,10 @@ jobs:
           ! grep -q "SCRIPT ERROR" bot.log
 
       - name: Online smoke test (host + client on localhost)
-        run: timeout 200 tests/net_test.sh 25
+        run: |
+          timeout 200 tests/net_test.sh 25
+          RIDE=1 timeout 200 tests/net_test.sh 20
+          timeout 200 tests/net_test.sh 20 competitive 12
 
       - name: Export templates
         run: |

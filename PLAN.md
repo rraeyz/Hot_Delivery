@@ -106,7 +106,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Senkronizasyon: scooter'lar, yemek kulesi, düşen yemekler, siparişler, para, olaylar; ara karelerde yumuşatma
 - [x] Lobi ekranı: Oluştur / IP ile katıl / LAN; oyuncu listesi, hazır, karakter görünümü
 - [x] Otomatik test: iki ekransız Godot süreci localhost üzerinden bağlanıp vardiya oynar
-- [ ] Her oyuncu kendi scooter'ında; isteyen "yolcu" olarak birinin arkasına biner (sürücü + yolcu online)
+- [x] Her oyuncu kendi scooter'ında; isteyen "yolcu" olarak birinin arkasına biner (sürücü + yolcu online)
 - [ ] Steam lobileri (GodotSteam, App ID 480 ile geliştirme) — KULLANICI: Steamworks hesabı sonrası gerçek App ID
 
 ## Aşama 8 — Modlar

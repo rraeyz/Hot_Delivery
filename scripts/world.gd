@@ -61,7 +61,7 @@ func _ready() -> void:
 	add_child(audio)
 	_build_environment()
 	_build_city()
-	var ids: Array = Net.order() if Net.online else []
+	var ids: Array = Net.drivers() if Net.online else []
 	var count := ids.size() if Net.online else (2 if split else 1)
 	local_index = Net.my_index() if Net.online else 0
 	client = Net.online and not Net.is_host()
@@ -79,9 +79,12 @@ func _ready() -> void:
 			s.player = 0
 			s.look = info.get("look", Courier.default_look(i))
 			s.color = Color(Game.SCOOTER_COLORS[int(info.get("color", i)) % Game.SCOOTER_COLORS.size()])
-			s.remote = i != local_index and not client
+			s.remote = ids[i] != Net.my_id() and not client
+			s.passenger_ids = Net.order().filter(func(p): return Net.is_passenger(p) and Net.ride_target(p) == i)
 			s.name = "Scooter%d" % i
 		add_child(s)
+		for pid in s.passenger_ids:
+			s.add_passenger_visual(Net.players[pid].get("look", {}))
 		if client:
 			s.freeze = true
 			s.set_physics_process(false)
@@ -650,8 +653,10 @@ func _check_hand_delivery(pos: Vector3, sp: float) -> void:
 
 ## Which keys belong to the current scooter: solo = everything, coop = passenger keys, split = own pad/keys.
 func _pressed(what: String) -> bool:
+	if scooter.take(what):   # network driver or passenger pressed it
+		return true
 	if scooter.remote:
-		return scooter.take(what)
+		return false
 	if Net.online:
 		return Input.is_action_just_pressed("solo_" + what) or Input.is_action_just_pressed("p2_" + what)
 	if split:

@@ -33,6 +33,16 @@ func _physics_process(dt: float) -> void:
 
 func _send_input() -> void:
 	var s: Scooter = world.scooter
+	if Net.is_passenger(Net.my_id()):
+		var bal := Vector2(Input.get_action_strength("p2_bal_right") + Input.get_action_strength("solo_bal_right") - Input.get_action_strength("p2_bal_left") - Input.get_action_strength("solo_bal_left"),
+			Input.get_action_strength("p2_bal_fwd") + Input.get_action_strength("solo_bal_fwd") - Input.get_action_strength("p2_bal_back") - Input.get_action_strength("solo_bal_back"))
+		bal += s._mouse_bal.limit_length(1.0)
+		s._mouse_bal *= 0.8
+		for b in ["throw", "pickup"]:
+			if Input.is_action_just_pressed("solo_" + b) or Input.is_action_just_pressed("p2_" + b):
+				_btn[b] += 1
+		inp_from_client.rpc_id(1, {"pass": true, "balance": bal.limit_length(1.0), "btn": _btn.duplicate()})
+		return
 	var inp: Dictionary
 	if s.external_input.size() > 0:     # bot / autotest
 		inp = s.external_input.duplicate()
@@ -57,10 +67,24 @@ func _send_input() -> void:
 func inp_from_client(inp: Dictionary) -> void:
 	if not multiplayer.is_server():
 		return
-	var idx := Net.order().find(multiplayer.get_remote_sender_id())
+	var sender := multiplayer.get_remote_sender_id()
+	var passenger := Net.is_passenger(sender)
+	var idx := Net.ride_target(sender) if passenger else Net.drivers().find(sender)
 	if idx < 0 or idx >= world.scooters.size():
 		return
 	var s: Scooter = world.scooters[idx]
+	if passenger:
+		var pb = inp.get("balance", Vector2.ZERO)
+		s.passenger_balance = (pb as Vector2).limit_length(1.0) if pb is Vector2 else Vector2.ZERO
+		var pbtn = inp.get("btn", {})
+		if pbtn is Dictionary:
+			for b in ["throw", "pickup"]:
+				var key: String = "p_" + b
+				var n := int(pbtn.get(b, 0))
+				if n > int(s.net_seen.get(key, 0)):
+					s.net_pending[b] = int(s.net_pending.get(b, 0)) + mini(3, n - int(s.net_seen.get(key, 0)))
+					s.net_seen[key] = n
+		return
 	# clamp everything coming from the network
 	var bal = inp.get("balance", Vector2.ZERO)
 	s.external_input = {"throttle": clampf(float(inp.get("throttle", 0.0)), -1.0, 1.0),

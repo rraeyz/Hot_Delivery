@@ -22,8 +22,39 @@ func _ready() -> void:
 	multiplayer.server_disconnected.connect(func(): _fail("host left"))
 
 
+var want_ride := false   # lobby choice: ride on the back of a driver instead of driving
+
+
 func my_info() -> Dictionary:
-	return {"name": str(Game.settings.get("name", "Courier")), "look": Game.settings.look, "color": int(Game.settings.color)}
+	return {"name": str(Game.settings.get("name", "Courier")), "look": Game.settings.look, "color": int(Game.settings.color),
+		"ride": want_ride}
+
+
+## Players who drive their own scooter, in scooter order.
+func drivers() -> Array:
+	var d := order().filter(func(id): return not players[id].get("ride", false))
+	if d.is_empty() and players.size() > 0:
+		d = [order()[0]]   # someone has to drive
+	return d
+
+
+## Driver index a passenger rides with: passengers are spread over drivers round-robin.
+func ride_target(id: int) -> int:
+	var passengers := order().filter(func(p): return not drivers().has(p))
+	return maxi(0, passengers.find(id)) % maxi(1, drivers().size())
+
+
+func is_passenger(id: int) -> bool:
+	return players.has(id) and not drivers().has(id)
+
+
+func update_me() -> void:
+	if multiplayer.is_server():
+		players[1] = my_info()
+		sync_players.rpc(players)
+		players_changed.emit()
+	elif online:
+		register.rpc_id(1, my_info())
 
 
 func host(port := PORT) -> int:
@@ -79,7 +110,9 @@ func order() -> Array:
 
 
 func my_index() -> int:
-	return maxi(0, order().find(my_id()))
+	if is_passenger(my_id()):
+		return ride_target(my_id())
+	return maxi(0, drivers().find(my_id()))
 
 
 func _on_connected() -> void:
@@ -114,7 +147,7 @@ func register(info: Dictionary) -> void:
 		return
 	# never trust the client's dictionary blindly: keep only known keys with sane types
 	players[id] = {"name": str(info.get("name", "Courier")).substr(0, 16), "look": info.get("look", {}) if info.get("look") is Dictionary else {},
-		"color": int(info.get("color", 0)) % 8}
+		"color": int(info.get("color", 0)) % 8, "ride": bool(info.get("ride", false))}
 	sync_players.rpc(players)
 	players_changed.emit()
 
