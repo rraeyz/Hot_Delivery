@@ -182,3 +182,19 @@ func test_run_deterministic(t) -> void:
 		b.next_day()
 	t.check(a.chaos == b.chaos, "same seed = same chaos (daily run)")
 	t.check(a.pick_food() == b.pick_food(), "same seed = same orders")
+
+
+func test_city_gen(t) -> void:
+	var a := CityGen.generate(5)
+	var b := CityGen.generate(5)
+	t.check(a.lots.size() > 40, "city has lots (%d)" % a.lots.size())
+	t.check(a.rest_ids.size() == 5, "5 restaurants")
+	t.check(a.lots[a.rest_ids[0]].center == b.lots[b.rest_ids[0]].center, "deterministic city")
+	for k in FoodItem.DEFS:
+		var r := CityGen.rest_for(a, k)
+		t.check(a.lots[r].rest == CityGen.FOOD_REST[k], "restaurant for " + k)
+	for lot in a.lots:
+		t.check(lot.balcony.y < lot.size.y + 0.1, "balcony below roof")
+		t.check(lot.door.distance_to(lot.curb) < 12.0, "curb near door")
+	var c := CityGen.generate(6)
+	t.check(c.lots[0].size != a.lots[0].size, "different seed differs")

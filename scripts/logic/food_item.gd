@@ -6,21 +6,21 @@ extends RefCounted
 # sens: how much acceleration tilts it, stiff/damp: spring, fall_limit: radians,
 # fragility: damage from jolts, heat_loss: points per second, cold: melts instead of cooling.
 const DEFS := {
-	"pizza": {"pay": 10, "sens": 0.55, "stiff": 30.0, "damp": 5.0, "fall_limit": 0.85, "fragility": 0.4,
+	"pizza": {"pay": 10, "sens": 0.5, "stiff": 30.0, "damp": 5.0, "fall_limit": 0.85, "fragility": 0.4,
 		"heat_loss": 0.32, "cold": false, "liquid": false, "height": 0.12, "unlock": 0},
-	"soup": {"pay": 14, "sens": 0.45, "stiff": 34.0, "damp": 6.0, "fall_limit": 0.9, "fragility": 0.1,
+	"soup": {"pay": 14, "sens": 0.4, "stiff": 34.0, "damp": 6.0, "fall_limit": 0.9, "fragility": 0.1,
 		"heat_loss": 0.28, "cold": false, "liquid": true, "height": 0.22, "unlock": 0,
-		"slosh_sens": 1.0, "slosh_k": 16.0, "slosh_c": 1.1, "spill_thr": 0.5, "spill_rate": 140.0},
-	"burger": {"pay": 12, "sens": 0.9, "stiff": 24.0, "damp": 4.0, "fall_limit": 0.7, "fragility": 0.7,
+		"slosh_sens": 0.8, "slosh_k": 16.0, "slosh_c": 2.4, "spill_thr": 0.55, "spill_rate": 140.0},
+	"burger": {"pay": 12, "sens": 0.7, "stiff": 24.0, "damp": 4.0, "fall_limit": 0.7, "fragility": 0.7,
 		"heat_loss": 0.38, "cold": false, "liquid": false, "height": 0.34, "unlock": 1},
 	"drinks": {"pay": 12, "sens": 0.6, "stiff": 30.0, "damp": 5.0, "fall_limit": 0.8, "fragility": 0.2,
 		"heat_loss": 0.22, "cold": true, "liquid": true, "height": 0.26, "unlock": 2,
-		"slosh_sens": 1.2, "slosh_k": 20.0, "slosh_c": 1.4, "spill_thr": 0.42, "spill_rate": 110.0},
-	"icecream": {"pay": 13, "sens": 0.8, "stiff": 26.0, "damp": 4.5, "fall_limit": 0.75, "fragility": 0.5,
+		"slosh_sens": 0.9, "slosh_k": 20.0, "slosh_c": 2.6, "spill_thr": 0.5, "spill_rate": 110.0},
+	"icecream": {"pay": 13, "sens": 0.65, "stiff": 26.0, "damp": 4.5, "fall_limit": 0.75, "fragility": 0.5,
 		"heat_loss": 0.6, "cold": true, "liquid": false, "height": 0.36, "unlock": 3},
 	"sushi": {"pay": 16, "sens": 0.5, "stiff": 30.0, "damp": 6.0, "fall_limit": 0.9, "fragility": 1.2,
 		"heat_loss": 0.18, "cold": true, "liquid": false, "height": 0.1, "unlock": 4},
-	"cake": {"pay": 45, "sens": 1.3, "stiff": 18.0, "damp": 3.5, "fall_limit": 0.6, "fragility": 0.9,
+	"cake": {"pay": 45, "sens": 1.0, "stiff": 18.0, "damp": 3.5, "fall_limit": 0.6, "fragility": 0.9,
 		"heat_loss": 0.15, "cold": true, "liquid": false, "height": 0.6, "unlock": 5},
 }
 
@@ -95,7 +95,7 @@ func fall_limit() -> float:
 ## level: 0 = bottom of the stack. balance: player input (-1..1 each axis).
 ## Returns the amount of liquid spilled this step.
 func step(dt: float, accel: Vector2, level: int, balance: Vector2, mods: Dictionary = {}) -> float:
-	var sn: float = sens * mods.get("wobble_mult", 1.0) * (1.0 + 0.35 * level)
+	var sn: float = sens * mods.get("wobble_mult", 1.0) * (1.0 + 0.3 * level)
 	var soft := 1.0 - clampf(tilt.length() / limit, 0.0, 1.0) * 0.6
 	var assist: float = mods.get("gyro", 0.0)
 	var bp: float = mods.get("balance_power", 7.0)
