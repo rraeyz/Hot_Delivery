@@ -46,6 +46,7 @@ class Car extends AnimatableBody3D:
 	var speed := 8.0
 	var cur_speed := 8.0
 	var scooter: Scooter
+	var world_ref: Node   # World; untyped to avoid a class cycle
 	var rng := RandomNumberGenerator.new()
 	var impatience := 0.0
 	signal honk(car: Node3D)
@@ -91,8 +92,9 @@ class Car extends AnimatableBody3D:
 		var right := Vector3(-fwd.z, 0, fwd.x)
 		var target_speed := speed
 		impatience = maxf(0.0, impatience - dt * 0.5)
-		if scooter and impatience < 2.0:
-			var to_s := scooter.global_position - global_position
+		if world_ref and impatience < 2.0:
+			var near_s: Node3D = world_ref.nearest_scooter(global_position)
+			var to_s := near_s.global_position - global_position
 			if to_s.dot(fwd) > 0.0 and to_s.dot(fwd) < 8.0 and absf(to_s.dot(right)) < 2.2:
 				target_speed = 0.0
 				impatience += dt * 1.5   # after ~2 s of waiting they lose patience and push through
@@ -112,6 +114,7 @@ class Car extends AnimatableBody3D:
 
 class Dog extends CharacterBody3D:
 	var scooter: Scooter
+	var world_ref: Node
 	var home := Vector3.ZERO
 	var bark_cd := 0.0
 	var legs: Array = []
@@ -145,6 +148,8 @@ class Dog extends CharacterBody3D:
 		bark_cd -= dt
 		var target := home
 		var chasing := false
+		if world_ref:
+			scooter = world_ref.nearest_scooter(global_position)
 		if scooter and scooter.global_position.distance_to(global_position) < 35.0 and not scooter.is_crashed:
 			target = scooter.global_position
 			chasing = true

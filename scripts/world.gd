@@ -470,6 +470,7 @@ func _spawn_npcs() -> void:
 		var col := Color.from_hsv(rng.randf(), 0.6, 0.9)
 		car.setup(n, Vector2i(rng.randi_range(0, n), rng.randi_range(0, n)), col, rng.randi())
 		car.scooter = scooter
+		car.world_ref = self
 		car.honk.connect(func(_c): audio.play("horn", 0.3))
 		add_child(car)
 		cars.append(car)
@@ -479,6 +480,7 @@ func _spawn_npcs() -> void:
 			var lot: Dictionary = city.lots[rng.randi() % city.lots.size()]
 			d.setup(lot.curb + Vector3(0, 0.3, 0))
 			d.scooter = scooter
+			d.world_ref = self
 			d.bit.connect(_on_dog_bite)
 			add_child(d)
 			dogs.append(d)
@@ -661,6 +663,14 @@ func _check_hand_delivery(pos: Vector3, sp: float) -> void:
 		if pos.distance_to(city.lots[o.cust].curb) < 5.0:
 			scooter.rack.remove_item(it)
 			_deliver(o, it, false)
+
+
+func nearest_scooter(p: Vector3) -> Scooter:
+	var best: Scooter = scooters[0]
+	for s in scooters:
+		if s.global_position.distance_squared_to(p) < best.global_position.distance_squared_to(p):
+			best = s
+	return best
 
 
 ## First-run hints, one step at a time.
@@ -952,8 +962,9 @@ func _on_honk(_s: Scooter) -> void:
 
 func _on_dog_bite(_d: Node3D) -> void:
 	audio.play("bark")
-	scooter.rack.jolt(4.5)
-	for it in scooter.rack.items:
+	var victim := nearest_scooter(_d.global_position)
+	victim.rack.jolt(4.5)
+	for it in victim.rack.items:
 		it.tilt_vel += Vector2(rng.randf_range(-1, 1), rng.randf_range(-1, 1)) * 2.0
 	hud.popup("WOOF!", Color("#ffd166"))
 

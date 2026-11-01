@@ -121,7 +121,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 
 ## Aşama 10 — Sürekli geliştirme (liste bitince buradan devam)
 - [x] İlk vardiya eğitimi (ok + kısa ipuçları: "restorana git", "yavaşla", "balkona fırlat")
-- [ ] Köpek ve güvercinler en yakın scooter'ı hedeflesin (çok oyunculu)
+- [x] Köpek ve güvercinler en yakın scooter'ı hedeflesin (çok oyunculu)
 - [ ] Bölünmüş ekranda 2. oyuncunun denge göstergesi + tekrar (replay)
 - [ ] Online'da tekrar (en büyük kaza herkese gösterilsin)
 - [ ] Yeni olay: düğün konvoyu (raporda vardı) — korna çalan araba dizisi yolu kapatır
