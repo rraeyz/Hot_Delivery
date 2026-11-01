@@ -37,7 +37,7 @@ static func compute(item: FoodItem, ctx: Dictionary) -> Dictionary:
 	elif quirk == "yeet":
 		tip *= 0.25
 	tip *= 1.0 + 0.2 * mini(combo, 5)
-	tip *= mods.get("tip_mult", 1.0)
+	tip *= mods.get("tip_mult", 1.0) * mods.get("day_pay_mult", 1.0)
 
 	var score := 0.45 * item.integrity / 100.0 + 0.35 * item.heat / 100.0
 	score += 0.2 if time_left > 0.0 else 0.0

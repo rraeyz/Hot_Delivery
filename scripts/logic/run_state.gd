@@ -64,7 +64,7 @@ func mods() -> Dictionary:
 		"accel_mult": 1.0, "slosh_mult": 1.0, "wobble_mult": 1.0, "spill_thr_mult": 1.0,
 		"grip_mult": 1.0, "gyro": 0.0, "tape": 0, "pickup_radius": 2.5, "throw_mult": 2.0,
 		"throw_accuracy": 1.0, "tip_mult": 1.0, "bonus_star": 0, "horn_power": 0.0,
-		"balance_power": 7.0, "heat_bonus_thr": 80.0}
+		"balance_power": 7.0, "heat_bonus_thr": 80.0, "day_pay_mult": 1.0 + 0.08 * (day - 1)}
 	for u in owned:
 		var um: Dictionary = UPGRADES[u].mods
 		for k in um:

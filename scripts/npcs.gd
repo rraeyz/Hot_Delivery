@@ -12,7 +12,8 @@ class Car extends AnimatableBody3D:
 	var cur_speed := 8.0
 	var scooter: Scooter
 	var rng := RandomNumberGenerator.new()
-	var pushed_until := 0.0
+	var impatience := 0.0
+	signal honk(car: Node3D)
 
 	func setup(n: int, start: Vector2i, c: Color, s: int) -> void:
 		grid_n = n
@@ -62,10 +63,15 @@ class Car extends AnimatableBody3D:
 		var fwd := (b - a).normalized()
 		var right := Vector3(-fwd.z, 0, fwd.x)
 		var target_speed := speed
-		if scooter:
+		impatience = maxf(0.0, impatience - dt * 0.5)
+		if scooter and impatience < 2.0:
 			var to_s := scooter.global_position - global_position
 			if to_s.dot(fwd) > 0.0 and to_s.dot(fwd) < 8.0 and absf(to_s.dot(right)) < 2.2:
 				target_speed = 0.0
+				impatience += dt * 1.5   # after ~2 s of waiting they lose patience and push through
+				if impatience >= 2.0:
+					honk.emit(self)
+					impatience = 5.0
 		cur_speed = move_toward(cur_speed, target_speed, dt * 12.0)
 		t += cur_speed * dt / CityGen.PITCH
 		if t >= 1.0:

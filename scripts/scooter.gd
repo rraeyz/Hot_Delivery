@@ -241,8 +241,8 @@ func _physics_process(dt: float) -> void:
 	_smooth_accel = _smooth_accel.lerp(a2, 0.5)
 	local_accel = _smooth_accel
 	jolt_cooldown -= dt
-	if max_comp_speed > 1.4 and jolt_cooldown <= 0.0:
-		var s: float = max_comp_speed * 1.3 * mods.get("jolt_mult", 1.0)
+	if max_comp_speed > 3.0 and jolt_cooldown <= 0.0:
+		var s: float = minf(max_comp_speed * 0.4, 7.0) * mods.get("jolt_mult", 1.0)
 		rack.jolt(s)
 		jolted.emit(s)
 		jolt_cooldown = 0.15

@@ -54,6 +54,7 @@ var still_time := 0.0
 var gust_timer := 6.0
 var pigeon_busy := false
 var mods := {}
+var request_pickup := false
 var cars: Array = []
 var dogs: Array = []
 var _bmats := {}
@@ -379,6 +380,7 @@ func _spawn_npcs() -> void:
 		var col := Color.from_hsv(rng.randf(), 0.6, 0.9)
 		car.setup(n, Vector2i(rng.randi_range(0, n), rng.randi_range(0, n)), col, rng.randi())
 		car.scooter = scooter
+		car.honk.connect(func(_c): audio.play("horn", 0.3))
 		add_child(car)
 		cars.append(car)
 	if "dogs" in run.chaos:
@@ -553,12 +555,13 @@ func _check_hand_delivery(pos: Vector3, sp: float) -> void:
 
 func _check_loose_pickup(pos: Vector3, sp: float) -> void:
 	var r: float = mods.get("pickup_radius", 2.5)
-	var pressed := Input.is_action_just_pressed("p2_pickup") or (not coop and Input.is_action_just_pressed("solo_pickup"))
+	var pressed := request_pickup or Input.is_action_just_pressed("p2_pickup") or (not coop and Input.is_action_just_pressed("solo_pickup"))
+	request_pickup = false
 	for lf in loose.duplicate():
 		if not is_instance_valid(lf) or lf.age < 0.8:
 			continue
 		var d: float = lf.global_position.distance_to(pos)
-		if (d < 2.0 and sp < 6.0) or (pressed and d < r + 1.0):
+		if (d < 2.6 and sp < 6.0) or (pressed and d < r + 1.0):
 			if scooter.rack.is_full():
 				continue
 			loose.erase(lf)
@@ -670,6 +673,7 @@ func _spawn_loose(it: FoodItem, xf: Transform3D, vel: Vector3) -> LooseFood:
 
 
 func _on_item_fell(it: FoodItem, xf: Transform3D, vel: Vector3) -> void:
+	debug_log.falls += 1
 	_spawn_loose(it, xf, vel)
 	hud.popup(Game.t("fell"), Color("#ef476f"))
 	audio.play("fall")
@@ -699,6 +703,7 @@ func _on_spilled(it: FoodItem, amount: float) -> void:
 
 
 func _on_crash(_s: Scooter) -> void:
+	debug_log.crash_speeds.append(snappedf(_s._prev_vel.length(), 0.1))
 	run.stats.crashes += 1
 	for o in orders:
 		if o.state == "carry":
@@ -708,7 +713,11 @@ func _on_crash(_s: Scooter) -> void:
 	camera.add_trauma(0.9)
 
 
+var debug_log := {"jolts": [], "falls": 0, "crash_speeds": []}
+
+
 func _on_jolt(s: float) -> void:
+	debug_log.jolts.append(snappedf(s, 0.1))
 	if s > 2.5:
 		camera.add_trauma(minf(0.4, s * 0.05))
 		audio.play("bump")
