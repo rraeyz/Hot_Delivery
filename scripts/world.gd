@@ -492,6 +492,7 @@ func _refresh_beacons() -> void:
 func _physics_process(dt: float) -> void:
 	if not running:
 		return
+	_record()
 	clock += dt
 	time_left -= dt
 	if time_left <= 0.0:
@@ -704,6 +705,10 @@ func _on_spilled(it: FoodItem, amount: float) -> void:
 
 
 func _on_crash(_s: Scooter) -> void:
+	var sp := _s._prev_vel.length()
+	if sp > best_crash_speed and _rec_after < 0:
+		_rec_after = Replay.AFTER
+		_rec_speed = sp
 	debug_log.crash_speeds.append(snappedf(_s._prev_vel.length(), 0.1))
 	run.stats.crashes += 1
 	for o in orders:
@@ -898,11 +903,53 @@ func _splat(pos: Vector3, c: Color) -> void:
 
 # ---------------------------------------------------------------- end
 
+var _rec: Array = []
+var _rec_tick := 0
+var _rec_after := -1
+var _rec_speed := 0.0
+var best_crash: Array = []
+var best_crash_speed := 0.0
+var skip_replay := false
+
+
+## Ring buffer at 30 Hz; after a crash we keep recording a bit, then keep the clip if it's the biggest.
+func _record() -> void:
+	_rec_tick += 1
+	if _rec_tick % 2:
+		return
+	_rec.append(Replay.capture(self))
+	if _rec_after < 0 and _rec.size() > Replay.KEEP:
+		_rec.pop_front()
+	if _rec_after >= 0:
+		_rec_after -= 1
+		if _rec_after == 0:
+			best_crash = _rec.duplicate()
+			best_crash_speed = _rec_speed
+			_rec_after = -1
+			_rec = _rec.slice(_rec.size() - Replay.KEEP)
+
+
 func _end_shift() -> void:
 	running = false
 	scooter.controls_enabled = false
 	audio.music(false)
 	audio.play("whistle")
+	if _rec_after >= 0:   # crash happened in the last seconds: keep what we have
+		best_crash = _rec.duplicate()
+	if best_crash.size() > 10 and not skip_replay:
+		scooter.visible = false
+		for lf in loose:
+			if is_instance_valid(lf):
+				lf.visible = false
+		hud.visible = false
+		var rp := Replay.new()
+		add_child(rp)
+		rp.play(best_crash, camera)
+		await rp.finished
+		rp.queue_free()
+		camera.current = true
+		scooter.visible = true
+		hud.visible = true
 	var top := reviews.duplicate()
 	top.sort_custom(func(a, b): return Reviews.funny_score(a.tag, a.stars) > Reviews.funny_score(b.tag, b.stars))
 	shift_ended.emit({"reviews": reviews, "top": top.slice(0, 3), "earned": run.earned_today})

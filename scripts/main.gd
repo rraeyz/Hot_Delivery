@@ -235,6 +235,8 @@ func _unlock_check() -> String:
 
 func show_summary(result: Dictionary) -> void:
 	var paid := run.end_shift()
+	if world:
+		world.hud.visible = false
 	var root := _screen()
 	var v := _center_box(root, 900)
 	v.add_child(UiKit.label(Game.t("shift_over") + " — " + Game.t("day") + " %d" % run.day, 44, UiKit.GOLD))
@@ -400,14 +402,19 @@ func _autotest() -> void:
 	start_day()
 	var w := world
 	await get_tree().process_frame
+	if args.has("len"):
+		w.time_left = float(args.len)
 	var bot := Autopilot.new(w)
 	var every := float(args.get("every", "3"))
 	var total := float(args.get("secs", "30"))
 	var t := 0.0
 	var next_shot := every
 	var shots := 0
-	while t < total and w.running:
+	while t < total and is_instance_valid(w):
 		w.scooter.external_input = bot.drive(get_physics_process_delta_time())
+		if args.has("crash") and t >= float(args.crash):
+			args.erase("crash")
+			w.scooter.crash(-w.scooter.global_basis.z * 12.0)
 		await get_tree().physics_frame
 		t += get_physics_process_delta_time()
 		if t >= next_shot:
