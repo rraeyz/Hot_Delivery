@@ -271,3 +271,9 @@ func test_competitive(t) -> void:
 	m.setup_competitive(2)
 	m.cards = ["impatient", "greedy"]
 	t.check(m.mods(0).timer_mult < 1.0 and m.mods(0).capacity == 4, "card effects apply")
+
+
+func test_cook_quality(t) -> void:
+	t.check(Kitchen.quality(0.5, 0.5) == 1.0, "dead center = perfect")
+	t.check(Kitchen.quality(0.9, 0.2) == 0.0, "way off = ruined")
+	t.check(Kitchen.quality(0.55, 0.5) > Kitchen.quality(0.7, 0.5), "closer is better")

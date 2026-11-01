@@ -33,6 +33,8 @@ func _physics_process(dt: float) -> void:
 
 func _send_input() -> void:
 	var s: Scooter = world.scooter
+	if Net.is_cook(Net.my_id()):
+		return
 	if Net.is_passenger(Net.my_id()):
 		var bal := Vector2(Input.get_action_strength("p2_bal_right") + Input.get_action_strength("solo_bal_right") - Input.get_action_strength("p2_bal_left") - Input.get_action_strength("solo_bal_left"),
 			Input.get_action_strength("p2_bal_fwd") + Input.get_action_strength("solo_bal_fwd") - Input.get_action_strength("p2_bal_back") - Input.get_action_strength("solo_bal_back"))
@@ -242,3 +244,9 @@ func fx(kind: String, args: Array) -> void:
 		"trauma":
 			if args[0] == Net.my_index():
 				world.camera.add_trauma(args[1])
+
+
+@rpc("any_peer", "reliable")
+func cook_result(order_id: int, q: float) -> void:
+	if multiplayer.is_server() and Net.is_cook(multiplayer.get_remote_sender_id()):
+		world.cook_done(order_id, q)

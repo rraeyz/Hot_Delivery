@@ -22,17 +22,18 @@ func _ready() -> void:
 	multiplayer.server_disconnected.connect(func(): _fail("host left"))
 
 
-var want_ride := false   # lobby choice: ride on the back of a driver instead of driving
+const ROLES := ["drive", "ride", "cook"]
+var role := "drive"      # lobby choice: drive a scooter, ride on someone's back, or cook at the restaurants
 
 
 func my_info() -> Dictionary:
 	return {"name": str(Game.settings.get("name", "Courier")), "look": Game.settings.look, "color": int(Game.settings.color),
-		"ride": want_ride}
+		"role": role}
 
 
 ## Players who drive their own scooter, in scooter order.
 func drivers() -> Array:
-	var d := order().filter(func(id): return not players[id].get("ride", false))
+	var d := order().filter(func(id): return players[id].get("role", "drive") == "drive")
 	if d.is_empty() and players.size() > 0:
 		d = [order()[0]]   # someone has to drive
 	return d
@@ -40,12 +41,20 @@ func drivers() -> Array:
 
 ## Driver index a passenger rides with: passengers are spread over drivers round-robin.
 func ride_target(id: int) -> int:
-	var passengers := order().filter(func(p): return not drivers().has(p))
+	var passengers := order().filter(func(p): return is_passenger(p))
 	return maxi(0, passengers.find(id)) % maxi(1, drivers().size())
 
 
 func is_passenger(id: int) -> bool:
-	return players.has(id) and not drivers().has(id)
+	return players.has(id) and not drivers().has(id) and players[id].get("role", "drive") == "ride"
+
+
+func is_cook(id: int) -> bool:
+	return players.has(id) and not drivers().has(id) and players[id].get("role", "drive") == "cook"
+
+
+func cooks() -> Array:
+	return order().filter(func(id): return is_cook(id))
 
 
 func update_me() -> void:
@@ -147,7 +156,7 @@ func register(info: Dictionary) -> void:
 		return
 	# never trust the client's dictionary blindly: keep only known keys with sane types
 	players[id] = {"name": str(info.get("name", "Courier")).substr(0, 16), "look": info.get("look", {}) if info.get("look") is Dictionary else {},
-		"color": int(info.get("color", 0)) % 8, "ride": bool(info.get("ride", false))}
+		"color": int(info.get("color", 0)) % 8, "role": str(info.get("role", "drive")) if str(info.get("role", "drive")) in ROLES else "drive"}
 	sync_players.rpc(players)
 	players_changed.emit()
 

@@ -23,7 +23,10 @@ jobs:
         run: timeout 300 godot --headless --path . --import || true
 
       - name: Unit tests
-        run: timeout 120 godot --headless --path . -s tests/run_tests.gd
+        run: |
+          set -o pipefail
+          timeout 120 godot --headless --path . -s tests/run_tests.gd 2>&1 | tee unit.log
+          ! grep -q "SCRIPT ERROR" unit.log
 
       - name: Physics feel benchmark
         run: |
@@ -41,6 +44,7 @@ jobs:
         run: |
           timeout 200 tests/net_test.sh 25
           RIDE=1 timeout 200 tests/net_test.sh 20
+          COOK=1 timeout 200 tests/net_test.sh 20
           timeout 200 tests/net_test.sh 20 competitive 12
 
       - name: Export templates

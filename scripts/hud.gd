@@ -10,6 +10,7 @@ var meter: DangerMeter
 var popups: Control
 var review_box: VBoxContainer
 var hint: Label
+var cook_panel: CookPanel
 var _refresh := 0.0
 
 
@@ -77,6 +78,13 @@ func setup(w: World) -> void:
 	hint.size = Vector2(1000, 24)
 	hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	root.add_child(hint)
+	if Net.online and Net.is_cook(Net.my_id()):
+		var cp := CookPanel.new()
+		cp.set_anchors_preset(Control.PRESET_CENTER_LEFT)
+		cp.position = Vector2(16, -120)
+		root.add_child(cp)
+		cp.setup(w)
+		cook_panel = cp
 	if w.run.chaos.size() > 0:
 		var names := []
 		for c in w.run.chaos:

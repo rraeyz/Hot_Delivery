@@ -116,8 +116,8 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Mod seçim ekranı + kurallar ekranı
 
 ## Aşama 9 — Mutfak/Paketleme rolü
-- [ ] Restoran içi küçük alan: çorba kepçesi, pizza fırını, paketleme tezgâhı
-- [ ] Mutfak oyuncusu siparişi hazırlar, kurye alır; tek kişilikte otomatik
+- [x] Mutfak paneli: siparişi seç, ibreyi yeşil bölgede durdur (yemeğe göre hız); iyi zamanlama = daha sıcak/sağlam yemek
+- [x] Aşçı rolü (online): siparişler hazırlanmadan alınamaz (gri ışık 'HAZIRLANIYOR'); aşçı yoksa otomatik hazır
 
 ## Aşama 10 — Sürekli geliştirme (liste bitince buradan devam)
 - [ ] Yeni yemekler / olaylar / yükseltmeler, oyuncu geri bildirimine göre denge, performans, hata düzeltme

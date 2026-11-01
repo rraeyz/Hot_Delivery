@@ -13,6 +13,7 @@ var split := false        # two scooters, split screen
 var client := false       # online client: draws host snapshots, simulates nothing
 var local_index := 0
 var netsync: NetSync
+var has_cook := false     # an online player cooks: orders must be prepared before pickup
 var scooters: Array = []
 var cameras: Array = []
 var arrows: Array = []
@@ -64,6 +65,7 @@ func _ready() -> void:
 	var ids: Array = Net.drivers() if Net.online else []
 	var count := ids.size() if Net.online else (2 if split else 1)
 	local_index = Net.my_index() if Net.online else 0
+	has_cook = Net.online and Net.cooks().size() > 0
 	client = Net.online and not Net.is_host()
 	for i in count:
 		var s := Scooter.new()
@@ -499,7 +501,7 @@ func _spawn_offer(food := "") -> void:
 		total *= 0.6
 	total *= float(mods.get("timer_mult", 1.0))
 	orders.append({"id": next_order_id, "food": food, "rest": rest, "cust": cust, "quirk": quirk,
-		"state": "offer", "t_total": total, "t_left": total, "crashed": false})
+		"state": "offer", "t_total": total, "t_left": total, "crashed": false, "ready": not has_cook, "q": 1.0})
 	next_order_id += 1
 	_refresh_beacons()
 
@@ -531,7 +533,11 @@ func _refresh_beacons() -> void:
 	var want := {}
 	for o in active_orders():
 		if o.state == "offer":
-			want["r%d" % o.rest] = {"pos": city.lots[o.rest].curb, "color": Color("#ff9f1c"), "text": _rest_name(city.lots[o.rest].rest)}
+			var ready: bool = o.get("ready", true)
+			var key := "r%d_%s" % [o.rest, ready]
+			if ready or not want.has("r%d_true" % o.rest):
+				want[key] = {"pos": city.lots[o.rest].curb, "color": Color("#ff9f1c") if ready else Color("#adb5bd"),
+					"text": _rest_name(city.lots[o.rest].rest) + ("" if ready else "\n" + Game.t("cooking"))}
 		else:
 			var lot: Dictionary = city.lots[o.cust]
 			var txt := Game.food_name(o.food).to_upper()
@@ -624,7 +630,7 @@ func _check_pickups(pos: Vector3, sp: float) -> void:
 	if sp > 4.5:
 		return
 	for o in orders:
-		if o.state != "offer":
+		if o.state != "offer" or not o.get("ready", true):
 			continue
 		var curb: Vector3 = city.lots[o.rest].curb
 		if pos.distance_to(curb) < 5.0:
@@ -633,6 +639,9 @@ func _check_pickups(pos: Vector3, sp: float) -> void:
 				continue
 			var it := FoodItem.new(o.food)
 			it.order_id = o.id
+			var q: float = o.get("q", 1.0)   # the cook's timing sets how fresh it leaves the kitchen
+			it.heat = 60.0 + 40.0 * q
+			it.integrity = 70.0 + 30.0 * q
 			scooter.rack.add_item(it)
 			o.state = "carry"
 			audio.play("pickup")
@@ -649,6 +658,24 @@ func _check_hand_delivery(pos: Vector3, sp: float) -> void:
 		if pos.distance_to(city.lots[o.cust].curb) < 5.0:
 			scooter.rack.remove_item(it)
 			_deliver(o, it, false)
+
+
+## Cook finished an order (local host cook, or validated RPC from a client cook).
+func cook_done(order_id: int, q: float) -> void:
+	var o := order_by_id(order_id)
+	if o.is_empty() or o.state != "offer" or o.get("ready", true):
+		return
+	o.ready = true
+	o.q = clampf(q, 0.0, 1.0)
+	audio.play("pickup")
+	_refresh_beacons()
+
+
+func submit_cook(order_id: int, q: float) -> void:
+	if client:
+		netsync.cook_result.rpc_id(1, order_id, q)
+	else:
+		cook_done(order_id, q)
 
 
 ## Which keys belong to the current scooter: solo = everything, coop = passenger keys, split = own pad/keys.

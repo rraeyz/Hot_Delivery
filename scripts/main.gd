@@ -572,11 +572,11 @@ func show_online() -> void:
 		v.add_child(UiKit.label(Game.t("players") + " (%d/%d)" % [Net.players.size(), Net.MAX_PLAYERS], 24))
 		for id in Net.order():
 			var info: Dictionary = Net.players[id]
-			var role := (" — " + Game.t("passenger")) if Net.is_passenger(id) else ""
+			var role := (" — " + Game.t("r_" + str(info.get("role", "drive")))) if not Net.drivers().has(id) else ""
 			var l := UiKit.label(("★ " if id == 1 else "• ") + str(info.get("name", "?")) + role, 24, Color(Game.SCOOTER_COLORS[int(info.get("color", 0)) % 8]).lightened(0.3))
 			v.add_child(l)
-		v.add_child(UiKit.button("%s: %s" % [Game.t("role"), Game.t("passenger" if Net.want_ride else "driver")], func():
-			Net.want_ride = not Net.want_ride
+		v.add_child(UiKit.button("%s: %s" % [Game.t("role"), Game.t("r_" + Net.role)], func():
+			Net.role = Net.ROLES[(Net.ROLES.find(Net.role) + 1) % Net.ROLES.size()]
 			Net.update_me()
 			show_online()))
 		if Net.is_host():
@@ -760,7 +760,7 @@ func _autotest() -> void:
 ##   godot --headless --fixed-fps 60 --path . -- --autotest --netjoin=127.0.0.1 --secs=40
 func _autotest_net() -> void:
 	var secs := float(args.get("secs", "30"))
-	Net.want_ride = args.has("ride")
+	Net.role = "ride" if args.has("ride") else ("cook" if args.has("cook") else "drive")
 	if args.has("nethost"):
 		Net.host()
 		var waited := 0.0
@@ -786,8 +786,17 @@ func _autotest_net() -> void:
 	var bot := Autopilot.new(w)
 	var t := 0.0
 	var start_pos: Array = w.scooters.map(func(s): return s.global_position)
+	var cooked := 0
 	while t < secs and is_instance_valid(w):
-		w.scooter.external_input = bot.drive(1.0 / 60.0)
+		if Net.is_cook(Net.my_id()):
+			if int(t * 60.0) % 90 == 0:
+				for o in w.orders:
+					if o.state == "offer" and not o.get("ready", true):
+						w.submit_cook(o.id, 0.8)
+						cooked += 1
+						break
+		else:
+			w.scooter.external_input = bot.drive(1.0 / 60.0)
 		await get_tree().physics_frame
 		t += 1.0 / 60.0
 	if not is_instance_valid(w):
@@ -800,6 +809,10 @@ func _autotest_net() -> void:
 	print("NET %s scooters=%d local=%d moved=%s money=%d orders=%d deliveries=%d" % ["host" if Net.is_host() else "client",
 		w.scooters.size(), w.local_index, moved, run.money, w.orders.size(), w.reviews.size()])
 	var ok: bool = Net.players.size() >= 2 and w.scooters.size() == Net.drivers().size() and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
+	if Net.cooks().size() > 0:
+		var ready := w.orders.filter(func(o): return o.get("ready", true) or o.state != "offer").size()
+		print("NET cook: cooked=%d ready_or_taken=%d" % [cooked, ready])
+		ok = ok and ready > 0
 	print("NET RESULT ", "PASS" if ok else "FAIL")
 	if Net.is_host():
 		await get_tree().create_timer(3.0).timeout   # let the client finish first

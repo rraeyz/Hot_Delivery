@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 godot --headless --path . -- --autotest --nethost --secs="$SECS" --mode="$MODE" --len="${3:-999}" > /tmp/net_host.log 2>&1 &
 HOST=$!
 sleep 3
-godot --headless --path . -- --autotest --netjoin=127.0.0.1 --secs="$SECS" ${RIDE:+--ride} > /tmp/net_client.log 2>&1
+godot --headless --path . -- --autotest --netjoin=127.0.0.1 --secs="$SECS" ${RIDE:+--ride} ${COOK:+--cook} > /tmp/net_client.log 2>&1
 CLIENT=$?
 wait $HOST
 HOSTRC=$?
