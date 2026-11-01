@@ -804,9 +804,13 @@ func _pressed(what: String) -> bool:
 	return Input.is_action_just_pressed("solo_" + what) or Input.is_action_just_pressed("p2_" + what)
 
 
+var split_layer: CanvasLayer
+
+
 func _build_split_screen() -> void:
 	var layer := CanvasLayer.new()
 	layer.layer = -1
+	split_layer = layer
 	add_child(layer)
 	var box := HBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -1417,7 +1421,10 @@ func _end_shift() -> void:
 	audio.play("whistle")
 	if _rec_after >= 0:   # crash happened in the last seconds: keep what we have
 		best_crash = _rec.duplicate()
-	if best_crash.size() > 10 and not skip_replay and not split:  # shortcut: no replay in split screen
+	if best_crash.size() > 10 and not skip_replay:
+		if split:
+			split_layer.visible = false
+			get_viewport().disable_3d = false
 		scooter.visible = false
 		for lf in loose:
 			if is_instance_valid(lf):
@@ -1431,6 +1438,9 @@ func _end_shift() -> void:
 		camera.current = true
 		scooter.visible = true
 		hud.visible = true
+		if split:
+			split_layer.visible = true
+			get_viewport().disable_3d = true
 	var top := reviews.duplicate()
 	top.sort_custom(func(a, b): return Reviews.funny_score(a.tag, a.stars) > Reviews.funny_score(b.tag, b.stars))
 	shift_ended.emit({"reviews": reviews, "top": top.slice(0, 3), "earned": run.earned_today})

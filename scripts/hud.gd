@@ -11,6 +11,7 @@ var popups: Control
 var review_box: VBoxContainer
 var hint: Label
 var cook_panel: CookPanel
+var meter2: DangerMeter
 var _refresh := 0.0
 
 
@@ -59,8 +60,14 @@ func setup(w: World) -> void:
 	meter = DangerMeter.new()
 	meter.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	meter.size = Vector2(140, 140)
-	meter.position = Vector2(-70, -170)
+	meter.position = Vector2(-390 if w.split else -70, -170)   # set before add_child: offsets from the anchor
 	root.add_child(meter)
+	if w.split:
+		meter2 = DangerMeter.new()
+		meter2.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+		meter2.size = Vector2(140, 140)
+		meter2.position = Vector2(250, -170)
+		root.add_child(meter2)
 	popups = Control.new()
 	popups.set_anchors_preset(Control.PRESET_FULL_RECT)
 	popups.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -116,19 +123,25 @@ func _process(dt: float) -> void:
 	timer_label.text = "%d:%02d" % [int(tl / 60.0), int(tl) % 60]
 	timer_label.add_theme_color_override("font_color", UiKit.BAD if tl < 20.0 else Color.WHITE)
 	var rack := world.scooter.rack
-	meter.tilt = Vector2.ZERO
-	if rack.items.size() > 0:
-		var top: FoodItem = rack.items.back()
-		meter.tilt = rack.top_tilt() / top.limit
-	meter.danger = rack.danger()
-	meter.count = rack.items.size()
-	meter.queue_redraw()
+	_meter(meter, rack)
+	if meter2 and world.scooters.size() > 1:
+		_meter(meter2, world.scooters[1].rack)
 	if world.clock > 25.0:
 		hint.modulate.a = maxf(0.0, hint.modulate.a - dt * 0.5)
 	_refresh -= dt
 	if _refresh <= 0.0:
 		_refresh = 0.2
 		_rebuild_orders()
+
+
+func _meter(m: DangerMeter, rack: Rack) -> void:
+	m.tilt = Vector2.ZERO
+	if rack.items.size() > 0:
+		var top: FoodItem = rack.items.back()
+		m.tilt = rack.top_tilt() / top.limit
+	m.danger = rack.danger()
+	m.count = rack.items.size()
+	m.queue_redraw()
 
 
 func _rebuild_orders() -> void:
