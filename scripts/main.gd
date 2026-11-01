@@ -1,7 +1,7 @@
 extends Node
 ## Game flow: menu -> shift -> summary -> garage -> next shift ... -> fired.
 
-const UNLOCK_DAYS := [2, 3, 4, 5, 6]   # reaching these days unlocks burger, drinks, ice cream, sushi, cake
+const UNLOCK_DAYS := [2, 3, 4, 5, 6, 7, 8]   # reaching these days unlocks burger, drinks, ice cream, sushi, cake, jelly, coffee
 
 var run: RunState
 var world: World
@@ -161,7 +161,7 @@ func _build_menu_scene() -> void:
 	s.controls_enabled = false
 	s.set_physics_process(false)
 	turntable.add_child(s)
-	for k in ["pizza", "pizza", "soup", "burger", "cake"]:
+	for k in ["pizza", "coffee", "soup", "jelly", "cake"]:
 		s.rack.mods = {"capacity": 9}
 		s.rack.add_item(FoodItem.new(k))
 	s.rack.items[3].tilt = Vector2(0.12, 0.05)
@@ -409,7 +409,7 @@ func _unlock_check() -> String:
 	if lvl > int(Game.save.unlock_level):
 		Game.save.unlock_level = lvl
 		run.unlock_level = maxi(run.unlock_level, lvl)
-		var names := ["burger", "drinks", "icecream", "sushi", "cake"]
+		var names := ["burger", "drinks", "icecream", "sushi", "cake", "jelly", "coffee"]
 		return Game.t("unlock") % Game.up(Game.food_name(names[lvl - 1]))
 	return ""
 

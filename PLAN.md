@@ -142,4 +142,5 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Erişilebilirlik: renk körü dostu işaretler, tuş atama ekranı
 - [x] Performans: occlusion culling (her binada kutu oklüder) + parçalı ve vertex-renkli mesh birleştirme (3000 → ~300 çizim nesnesi), tests/perf_count.tscn
 - [ ] Steam başarımları listesi (GodotSteam gelince bağlanacak)
+- [x] Yeni yemekler: dev JÖLE (çok sallanır ama kırılmaz, 7. gün açılır) ve 4'lü KAHVE tepsisi (en ufak frende döker, 8. gün açılır)
 - [ ] Yeni yemekler / olaylar / yükseltmeler, oyuncu geri bildirimine göre denge, hata düzeltme

@@ -230,11 +230,11 @@ const UI := {
 }
 
 const FOOD := {
-	"es": {"pizza": "pizza", "soup": "sopa", "burger": "hamburguesa", "drinks": "bebidas", "icecream": "helado", "sushi": "sushi", "cake": "tarta de boda"},
-	"de": {"pizza": "Pizza", "soup": "Suppe", "burger": "Burger", "drinks": "Getränke", "icecream": "Eis", "sushi": "Sushi", "cake": "Hochzeitstorte"},
-	"fr": {"pizza": "pizza", "soup": "soupe", "burger": "burger", "drinks": "boissons", "icecream": "glace", "sushi": "sushi", "cake": "pièce montée"},
-	"pt": {"pizza": "pizza", "soup": "sopa", "burger": "hambúrguer", "drinks": "bebidas", "icecream": "sorvete", "sushi": "sushi", "cake": "bolo de casamento"},
-	"ru": {"pizza": "пицца", "soup": "суп", "burger": "бургер", "drinks": "напитки", "icecream": "мороженое", "sushi": "суши", "cake": "свадебный торт"},
+	"es": {"pizza": "pizza", "soup": "sopa", "burger": "hamburguesa", "drinks": "bebidas", "icecream": "helado", "sushi": "sushi", "cake": "tarta de boda", "jelly": "gelatina", "coffee": "café"},
+	"de": {"pizza": "Pizza", "soup": "Suppe", "burger": "Burger", "drinks": "Getränke", "icecream": "Eis", "sushi": "Sushi", "cake": "Hochzeitstorte", "jelly": "Wackelpudding", "coffee": "Kaffee"},
+	"fr": {"pizza": "pizza", "soup": "soupe", "burger": "burger", "drinks": "boissons", "icecream": "glace", "sushi": "sushi", "cake": "pièce montée", "jelly": "gelée", "coffee": "café"},
+	"pt": {"pizza": "pizza", "soup": "sopa", "burger": "hambúrguer", "drinks": "bebidas", "icecream": "sorvete", "sushi": "sushi", "cake": "bolo de casamento", "jelly": "gelatina", "coffee": "café"},
+	"ru": {"pizza": "пицца", "soup": "суп", "burger": "бургер", "drinks": "напитки", "icecream": "мороженое", "sushi": "суши", "cake": "свадебный торт", "jelly": "желе", "coffee": "кофе"},
 }
 
 const UPGRADES := {

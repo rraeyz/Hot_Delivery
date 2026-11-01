@@ -46,6 +46,32 @@ func test_hard_brake_spills_soup(t) -> void:
 	t.check(spilled_lid < spilled, "lid upgrade reduces spill")
 
 
+func test_new_foods(t) -> void:
+	var j := FoodItem.new("jelly")
+	var p := FoodItem.new("pizza")
+	var jmax := 0.0
+	var pmax := 0.0
+	for i in 120:
+		var a := Vector2(0, -6.0) if i < 20 else Vector2.ZERO
+		j.step(1.0 / 60.0, a, 0, Vector2.ZERO)
+		p.step(1.0 / 60.0, a, 0, Vector2.ZERO)
+		jmax = maxf(jmax, j.tilt.length())
+		pmax = maxf(pmax, p.tilt.length())
+	t.check(jmax > pmax * 1.5, "jelly wobbles much more than pizza (%.2f vs %.2f)" % [jmax, pmax])
+	t.check(jmax < j.fall_limit(), "a normal brake does not drop the jelly")
+	j.jolt(8.0, Vector2.UP)
+	t.check(j.integrity > 95.0, "jelly shrugs off a bump")
+	var c := FoodItem.new("coffee")
+	var s := FoodItem.new("soup")
+	var cs := _sim(c, Vector2(0, -8.0), 1.0)
+	var ss := _sim(s, Vector2(0, -8.0), 1.0)
+	t.check(cs > ss, "coffee spills before soup on a medium brake (%.1f vs %.1f)" % [cs, ss])
+	t.check(_sim(FoodItem.new("coffee"), Vector2(0, 1.5), 3.0) == 0.0, "coffee survives gentle driving")
+	var rs := RunState.new(1, 7)
+	t.check("jelly" in rs.food_pool() and "coffee" in rs.food_pool(), "full unlocks include the new foods")
+	t.check(not ("coffee" in RunState.new(1, 5).food_pool()), "coffee stays locked before its unlock")
+
+
 func test_brake_tilts_forward(t) -> void:
 	var p := FoodItem.new("pizza")
 	_sim(p, Vector2(0, -8.0), 0.5)

@@ -3,7 +3,7 @@ extends PanelContainer
 ## The cook's job: pick an order, then stop the needle in the green zone.
 ## Better timing = hotter, more intact food for the couriers.
 
-const SPEED := {"soup": 2.4, "pizza": 1.7, "cake": 3.2, "sushi": 2.8, "drinks": 2.2, "burger": 2.0, "icecream": 2.6}
+const SPEED := {"soup": 2.4, "pizza": 1.7, "cake": 3.2, "sushi": 2.8, "drinks": 2.2, "burger": 2.0, "icecream": 2.6, "jelly": 2.0, "coffee": 2.9}
 
 var world: World
 var list: VBoxContainer

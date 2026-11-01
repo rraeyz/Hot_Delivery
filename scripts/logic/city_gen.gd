@@ -8,7 +8,7 @@ const ROAD := 12.0
 const BLOCK := 34.0
 const REST_KINDS := ["pizza", "soup", "burger", "dessert", "sushi"]
 const FOOD_REST := {"pizza": "pizza", "soup": "soup", "burger": "burger", "drinks": "burger",
-	"icecream": "dessert", "cake": "dessert", "sushi": "sushi"}
+	"icecream": "dessert", "cake": "dessert", "sushi": "sushi", "jelly": "dessert", "coffee": "pizza"}
 const PALETTE := ["#f4a261", "#e76f51", "#2a9d8f", "#e9c46a", "#8ecae6", "#ffb4a2", "#b5838d",
 	"#90be6d", "#f9c74f", "#cdb4db", "#a8dadc", "#ffd6a5"]
 

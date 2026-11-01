@@ -4,9 +4,9 @@ extends RefCounted
 
 const FOOD_NAMES := {
 	"en": {"pizza": "pizza", "soup": "soup", "burger": "burger", "drinks": "drinks",
-		"icecream": "ice cream", "sushi": "sushi", "cake": "wedding cake"},
+		"icecream": "ice cream", "sushi": "sushi", "cake": "wedding cake", "jelly": "jelly", "coffee": "coffee"},
 	"tr": {"pizza": "pizza", "soup": "çorba", "burger": "hamburger", "drinks": "içecekler",
-		"icecream": "dondurma", "sushi": "suşi", "cake": "düğün pastası"},
+		"icecream": "dondurma", "sushi": "suşi", "cake": "düğün pastası", "jelly": "jöle", "coffee": "kahve"},
 }
 
 const NAMES := ["Ayşe K.", "Mike T.", "Yuki S.", "Olu A.", "Sofia R.", "Mehmet D.", "Priya N.",

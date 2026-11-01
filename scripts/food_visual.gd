@@ -5,7 +5,7 @@ extends RefCounted
 const COLORS := {
 	"pizza": Color("#ffb703"), "soup": Color("#f77f00"), "burger": Color("#8d5524"),
 	"drinks": Color("#e63946"), "icecream": Color("#ffafcc"), "sushi": Color("#ffffff"),
-	"cake": Color("#fff0f5"),
+	"cake": Color("#fff0f5"), "jelly": Color("#80ed99"), "coffee": Color("#6f4e37"),
 }
 
 
@@ -66,6 +66,20 @@ static func build(kind: String) -> Node3D:
 			U.sphere(root, 0.04, Color("#e63946"), Vector3(0, 0.55, 0))
 			U.box(root, Vector3(0.04, 0.08, 0.02), Color("#222222"), Vector3(-0.03, 0.57, 0))
 			U.box(root, Vector3(0.04, 0.08, 0.02), Color("#ffffff"), Vector3(0.03, 0.57, 0))
+		"jelly":
+			U.cyl(root, 0.28, 0.28, 0.025, Color("#f8f9fa"), Vector3(0, 0.012, 0))  # plate
+			var j := U.cyl(root, 0.2, 0.24, 0.24, Color("#80ed99"), Vector3(0, 0.145, 0), 10)
+			j.material_override = U.mat(Color(0.5, 0.93, 0.6, 0.8), false, 0.15)
+			U.cyl(root, 0.15, 0.2, 0.05, Color("#57cc99"), Vector3(0, 0.29, 0), 10)
+			U.sphere(root, 0.045, Color("#e63946"), Vector3(0, 0.34, 0))
+		"coffee":
+			U.box(root, Vector3(0.36, 0.025, 0.36), Color("#8d6e63"), Vector3(0, 0.012, 0))
+			for i in 4:
+				var p := Vector3(-0.09 + (i % 2) * 0.18, 0.09, -0.09 + int(i / 2.0) * 0.18)
+				U.cyl(root, 0.06, 0.05, 0.15, Color("#fefae0"), p)
+				var c := U.cyl(root, 0.055, 0.055, 0.012, Color("#6f4e37"), p + Vector3(0, 0.07, 0))
+				if i == 0:
+					root.set_meta("liquid", c)
 	return root
 
 

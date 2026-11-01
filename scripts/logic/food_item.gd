@@ -22,6 +22,13 @@ const DEFS := {
 		"heat_loss": 0.18, "cold": true, "liquid": false, "height": 0.1, "unlock": 4},
 	"cake": {"pay": 45, "sens": 1.0, "stiff": 18.0, "damp": 3.5, "fall_limit": 0.6, "fragility": 0.9,
 		"heat_loss": 0.15, "cold": true, "liquid": false, "height": 0.6, "unlock": 5},
+	# giant jelly: wobbles wildly (soft spring, little damping) but almost never breaks
+	"jelly": {"pay": 13, "sens": 0.9, "stiff": 13.0, "damp": 1.6, "fall_limit": 1.1, "fragility": 0.05,
+		"heat_loss": 0.25, "cold": true, "liquid": false, "height": 0.3, "unlock": 6},
+	# tray of 4 coffees: hot, short, spills at the slightest brake
+	"coffee": {"pay": 11, "sens": 0.45, "stiff": 36.0, "damp": 6.0, "fall_limit": 0.9, "fragility": 0.15,
+		"heat_loss": 0.45, "cold": false, "liquid": true, "height": 0.2, "unlock": 7,
+		"slosh_sens": 1.15, "slosh_k": 24.0, "slosh_c": 2.2, "spill_thr": 0.4, "spill_rate": 120.0},
 }
 
 var kind: String

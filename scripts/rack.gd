@@ -177,3 +177,6 @@ func _update_visuals() -> void:
 			s.visible = it.integrity > 3.0
 			if it.kind == "soup":
 				s.position.y = 0.06 + 0.13 * it.integrity / 100.0
+		if it.kind == "jelly":   # squash and stretch with the wobble
+			var sq := clampf(it.tilt_vel.length() * 0.05, 0.0, 0.22)
+			v.scale = FoodVisual.SCALE * Vector3(1.0 + sq, 1.0 - sq, 1.0 + sq)
