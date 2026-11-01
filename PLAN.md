@@ -35,7 +35,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Yerden geri alma (E)
 - [x] Kaza: kurye uçar, yemekler saçılır, 2 sn sonra kalkar
 - [x] Ekran görüntüsüyle görsel kontrol (Xvfb) + his ayarı
-- [x] Windows .exe (prototip: builds/TipOver-windows-v0.1.zip)
+- [x] Windows .exe (prototip: builds/TipOver-windows-v0.2.zip)
 - [ ] KULLANICI testi: "sürmek eğlenceli mi?"
 
 ## Aşama 2 — Tek kişilik tam oyun

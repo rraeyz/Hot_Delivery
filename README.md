@@ -5,7 +5,7 @@ Berbat bir scooter'la, arkadaki yemek kulesini devirmeden ve soğutmadan teslim 
 - Plan: [PLAN.md](PLAN.md) · İlerleme: [PROGRESS.md](PROGRESS.md) · Lisanslar: [CREDITS.md](CREDITS.md)
 
 ## En kolay yol: hazır .exe (Windows)
-1. GitHub'da bu dalda `builds/TipOver-windows-v0.1.zip` dosyasına tıkla > **Download** (sağ üstte indirme simgesi).
+1. GitHub'da bu dalda `builds/TipOver-windows-v0.2.zip` dosyasına tıkla > **Download** (sağ üstte indirme simgesi).
 2. Zip'e sağ tıkla > **Tümünü ayıkla**.
 3. `TipOver.exe`'ye çift tıkla. Windows "bilinmeyen yayıncı" derse: **Ek bilgi > Yine de çalıştır** (imzasız olduğu için normal).
 
