@@ -910,16 +910,6 @@ func _check_loose() -> void:
 		if not is_instance_valid(lf):
 			loose.erase(lf)
 			continue
-		if is_instance_valid(lf.pass_to) and lf.age < 2.5 and not lf.pass_to.rack.is_full() \
-				and lf.global_position.distance_to(lf.pass_to.rack.global_position + Vector3.UP * 0.4) < 1.8:
-			var mate: Scooter = lf.pass_to
-			loose.erase(lf)
-			mate.rack.add_item(lf.item)
-			lf.queue_free()
-			hud.popup(Game.t("caught"), UiKit.GOOD)
-			SteamBridge.achieve("TEAM_PASS")
-			audio.play("cheer")
-			continue
 		var it: FoodItem = lf.item
 		var o := order_by_id(it.order_id)
 		if lf.global_position.y < -5.0:
@@ -1007,38 +997,14 @@ func throw_top() -> void:
 			var off := Vector3(rng.randf_range(-1, 1), rng.randf_range(-0.5, 0.5), rng.randf_range(-1, 1)).normalized() * rng.randf() * err
 			vel = (tgt + off - start) / T + Vector3(0, 4.9 * T, 0)
 			aimed = true
-	var mate: Scooter = null
 	if not aimed:
-		mate = _pass_target()
-		if mate:
-			var tgt := mate.rack.global_position + Vector3.UP * 0.5 + mate.linear_velocity * 0.6
-			var T := clampf(start.distance_to(tgt) / 12.0, 0.45, 1.2)
-			tgt = mate.rack.global_position + Vector3.UP * 0.5 + mate.linear_velocity * T
-			vel = (tgt - start) / T + Vector3(0, 4.9 * T, 0)
-			hud.popup(Game.t("pass"), UiKit.GOLD)
-	if not aimed and not mate:
 		vel = scooter.linear_velocity - scooter.global_basis.z * 7.0 + Vector3.UP * 6.0
 	scooter.rack.remove_item(it)
 	var lf := _spawn_loose(it, vis.global_transform, vel)
 	lf.global_position = start
 	lf.thrown = aimed
-	lf.pass_to = mate
 	lf.angular_velocity = Vector3(rng.randf_range(-3, 3), rng.randf_range(-6, 6), rng.randf_range(-3, 3))
 	audio.play("throw")
-
-
-## A teammate's scooter in front of us within passing range (with rack space).
-func _pass_target() -> Scooter:
-	var best: Scooter = null
-	var bd := 18.0
-	for s in scooters:
-		if s == scooter or s.team != scooter.team or s.rack.is_full() or s.is_crashed:
-			continue
-		var d: float = s.global_position.distance_to(scooter.global_position)
-		if d < bd:
-			bd = d
-			best = s
-	return best
 
 
 ## Name above every scooter so players can find each other (visible through walls).
@@ -1365,14 +1331,14 @@ func _customer_reaction(lot: Dictionary, stars: int) -> void:
 	var side: Vector3 = lot.side
 	c.global_position = lot.door + side * 0.8 + Vector3(0, 0.15, 0)
 	c.rotation.y = atan2(side.x, side.z)
-	var shirt := Color.from_hsv(rng.randf(), 0.6, 0.9)
-	U.cyl(c, 0.22, 0.26, 0.8, shirt, Vector3(0, 0.6, 0))
-	U.sphere(c, 0.22, Color.from_hsv(0.08, rng.randf_range(0.2, 0.6), rng.randf_range(0.4, 0.95)), Vector3(0, 1.2, 0))
-	U.cyl(c, 0.08, 0.08, 0.4, Color("#264653"), Vector3(-0.1, 0.2, 0))
-	U.cyl(c, 0.08, 0.08, 0.4, Color("#264653"), Vector3(0.1, 0.2, 0))
+	var fig := Node3D.new()
+	Courier.build(fig, {"skin": rng.randi() % 6, "jacket": rng.randi() % 9, "helmet": 7, "accessory": rng.randi() % 6}, true)
+	fig.scale = Vector3.ONE * 1.15
+	fig.position.y = 0.68
+	c.add_child(fig)
 	var happy := stars >= 4
 	var txt := (["YUM!", "WOW!", "YES!"] if happy else (["UGH.", "...", "HMPF"] if stars <= 2 else ["OK."]))
-	var l := U.label3d(c, txt[rng.randi() % txt.size()], Vector3(0, 1.9, 0), 90, UiKit.GOOD if happy else (UiKit.BAD if stars <= 2 else Color.WHITE))
+	var l := U.label3d(c, txt[rng.randi() % txt.size()], Vector3(0, 2.2, 0), 90, UiKit.GOOD if happy else (UiKit.BAD if stars <= 2 else Color.WHITE))
 	l.no_depth_test = true
 	var tw := c.create_tween()
 	if happy:

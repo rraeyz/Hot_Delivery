@@ -27,13 +27,13 @@ class Gauge extends Control:
 
 func setup(w: World) -> void:
 	world = w
-	custom_minimum_size = Vector2(420, 0)
+	custom_minimum_size = Vector2(300, 0)
 	var v := VBoxContainer.new()
 	add_child(v)
-	title = UiKit.label(Game.t("kitchen"), 28, UiKit.GOLD)
+	title = UiKit.label(Game.t("kitchen"), 19, UiKit.GOLD)
 	v.add_child(title)
 	gauge = Gauge.new()
-	gauge.custom_minimum_size = Vector2(390, 36)
+	gauge.custom_minimum_size = Vector2(276, 26)
 	gauge.visible = false
 	v.add_child(gauge)
 	list = VBoxContainer.new()

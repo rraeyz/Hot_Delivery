@@ -124,7 +124,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Diller: İspanyolca, Almanca, Fransızca, Portekizce, Rusça (+ Türkçe, İngilizce)
 - [x] Görsel adım 2: bulutlu/yıldızlı gökyüzü, SDFGI (Yüksek), SSR, ekran kartına göre otomatik kalite, çatı detayları, parlak yuvarlak scooter
 - [x] Takımlar (A/B): rekabetçide takım kasası/dükkânı; 1v1, 2v2, aşçı+kurye takımları; aşçının yaptığı sipariş 12 sn takıma ayrılır; aşçı yoksa 15 sn'de otomatik hazır
-- [x] Takım arkadaşına yemek pası (müşteri yakın değilse BOŞLUK)
+- [x] ~~Takım arkadaşına yemek pası~~ — kullanıcı istemedi, kaldırıldı
 - [x] İşaretleşme: 1-4 tuşları / d-pad (YARDIM! BURAYA! HAHA! ACELE ET!), scooter üstünde isim etiketleri
 - [x] Steam kodu: lobi + arkadaş daveti + P2P + başarımlar (scripts/steam_bridge.gd, STEAM.md)
 - [x] Vardiya içi rastgele şehir olayları (40-70 sn'de bir): mutlu saat, acil VIP sipariş, ani sağanak, yol çalışması, düğün konvoyu

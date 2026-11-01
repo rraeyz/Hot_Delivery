@@ -30,12 +30,12 @@ static func theme() -> Theme:
 		return _theme
 	_theme = Theme.new()
 	_theme.default_font = font(800)
-	_theme.default_font_size = 26
+	_theme.default_font_size = 18
 	var b := style(ACCENT, 16)
-	b.content_margin_left = 28
-	b.content_margin_right = 28
-	b.content_margin_top = 12
-	b.content_margin_bottom = 12
+	b.content_margin_left = 18
+	b.content_margin_right = 18
+	b.content_margin_top = 7
+	b.content_margin_bottom = 7
 	b.shadow_color = Color(0, 0, 0, 0.25)
 	b.shadow_size = 6
 	b.shadow_offset = Vector2(0, 3)
@@ -52,19 +52,19 @@ static func theme() -> Theme:
 	_theme.set_stylebox("pressed", "Button", bh)
 	_theme.set_stylebox("focus", "Button", bf)
 	_theme.set_stylebox("disabled", "Button", bd)
-	_theme.set_font_size("font_size", "Button", 30)
-	_theme.set_font_size("font_size", "LineEdit", 28)
-	_theme.set_font_size("font_size", "CheckButton", 28)
+	_theme.set_font_size("font_size", "Button", 20)
+	_theme.set_font_size("font_size", "LineEdit", 19)
+	_theme.set_font_size("font_size", "CheckButton", 19)
 	_theme.set_color("font_color", "Button", Color.WHITE)
 	_theme.set_color("font_outline_color", "Label", Color(0, 0, 0, 0.6))
-	_theme.set_constant("outline_size", "Label", 8)
+	_theme.set_constant("outline_size", "Label", 5)
 	var panel := style(Color(0.09, 0.16, 0.27, 0.9), 20)
 	panel.shadow_color = Color(0, 0, 0, 0.3)
-	panel.shadow_size = 10
-	panel.content_margin_left = 18
-	panel.content_margin_right = 18
-	panel.content_margin_top = 12
-	panel.content_margin_bottom = 12
+	panel.shadow_size = 6
+	panel.content_margin_left = 12
+	panel.content_margin_right = 12
+	panel.content_margin_top = 7
+	panel.content_margin_bottom = 7
 	_theme.set_stylebox("panel", "PanelContainer", panel)
 	var le := style(Color(1, 1, 1, 0.95), 12)
 	le.border_color = ACCENT

@@ -228,6 +228,7 @@ class Walker extends Node3D:
 	var body: Node3D
 	var world_ref: Node
 	var _phase := 0.0
+	const BASE_Y := 0.68
 	signal bumped(w: Node3D)
 
 	func setup(c: Vector3, look: Dictionary, start: float, dir_sign: float) -> void:
@@ -235,8 +236,9 @@ class Walker extends Node3D:
 		t = start
 		speed = randf_range(1.0, 1.7) * dir_sign
 		body = Node3D.new()
-		Courier.build(body, look)
-		body.scale = Vector3.ONE * 0.95
+		Courier.build(body, look, true)
+		body.scale = Vector3.ONE * 1.15   # ~1.75 m tall: feet at -0.59, head top ~1.1
+		body.position.y = BASE_Y
 		add_child(body)
 
 	func _perimeter(u: float) -> Vector3:
@@ -255,7 +257,7 @@ class Walker extends Node3D:
 			knocked -= dt
 			if knocked <= 0.0:
 				body.rotation = Vector3.ZERO
-				body.position = Vector3.ZERO
+				body.position = Vector3(0, BASE_Y, 0)
 			return
 		t += speed * dt
 		_phase += dt * 8.0
@@ -264,10 +266,10 @@ class Walker extends Node3D:
 		global_position = p
 		if ahead.distance_to(p) > 0.01:
 			look_at(Vector3(ahead.x, p.y, ahead.z), Vector3.UP)
-		body.position.y = absf(sin(_phase)) * 0.05
+		body.position.y = BASE_Y + absf(sin(_phase)) * 0.05
 		if world_ref:
 			var s: Node3D = world_ref.nearest_scooter(global_position)
-			if s.global_position.distance_to(global_position) < 1.0 and absf(s.get("speed")) > 2.5:
+			if s.global_position.distance_to(global_position) < 1.1 and absf(s.get("speed")) > 2.5:
 				knock(s.get("linear_velocity"))
 
 	func knock(v: Vector3) -> void:

@@ -13,7 +13,7 @@ Ben bulut ortamında dışarıdan gelen derlenmiş dosyaları (dll/so) projeye k
 1. https://partner.steamgames.com — Steam Direct ücreti 100$ (tek masraf).
 2. Uygulama oluşturunca **App ID** alırsın. `scripts/steam_bridge.gd` içindeki `APP_ID := 480` satırını o sayıyla değiştir (480 = Valve'ın test uygulaması "Spacewar").
 3. Steamworks > Başarımlar bölümüne şu API adlarıyla başarım ekle:
-   FIRST_DELIVERY, BALCONY_THROW, SOUP_SURVIVOR, WIPEOUT, DAY_5, DAY_10, COMPETITIVE_WIN, PERFECT_COOK, TEAM_PASS
+   FIRST_DELIVERY, BALCONY_THROW, SOUP_SURVIVOR, WIPEOUT, DAY_5, DAY_10, COMPETITIVE_WIN, PERFECT_COOK
 4. Steamworks > Remote Play: "Remote Play Together" açık olsun (yerel 2 kişilik modlar internetten oynanır).
 
 ## Nasıl çalışır

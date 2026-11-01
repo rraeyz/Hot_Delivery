@@ -8,7 +8,7 @@ signal join_failed(reason: String)
 
 const APP_ID := 480          # Spacewar test app; replace with the real App ID after Steamworks setup
 const ACHIEVEMENTS := ["FIRST_DELIVERY", "BALCONY_THROW", "SOUP_SURVIVOR", "WIPEOUT", "DAY_5", "DAY_10",
-	"COMPETITIVE_WIN", "PERFECT_COOK", "TEAM_PASS"]
+	"COMPETITIVE_WIN", "PERFECT_COOK"]
 
 var steam: Object = null     # the "Steam" singleton when available
 var available := false

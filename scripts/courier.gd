@@ -31,7 +31,7 @@ static func cycle(look: Dictionary, slot: String, dir: int) -> Dictionary:
 	return l
 
 
-static func build(parent: Node3D, look: Dictionary) -> void:
+static func build(parent: Node3D, look: Dictionary, standing := false) -> void:
 	var skin := Color(SKINS[int(look.get("skin", 0)) % SKINS.size()])
 	var jacket := Color(JACKETS[int(look.get("jacket", 0)) % JACKETS.size()])
 	var hc := Color(JACKETS[int(look.get("helmet_color", 1)) % JACKETS.size()])
@@ -51,15 +51,24 @@ static func build(parent: Node3D, look: Dictionary) -> void:
 	# eyes look forward (-Z)
 	for x in [-0.06, 0.06]:
 		U.sphere(parent, 0.028, Color("#1d1d1d"), Vector3(x, 0.8, -0.16))
-	# arms reaching for the handlebar + hands
-	for x in [-0.25, 0.25]:
-		var arm := U.cyl(parent, 0.065, 0.06, 0.5, jacket, Vector3(x, 0.42, -0.25))
-		arm.rotation.x = 1.15
-		U.sphere(parent, 0.065, skin, Vector3(x * 1.05, 0.33, -0.48))
-	for x in [-0.12, 0.12]:
-		var leg := U.cyl(parent, 0.075, 0.07, 0.5, Color("#264653"), Vector3(x, 0.02, -0.18))
-		leg.rotation.x = 1.3
-		U.box(parent, Vector3(0.12, 0.08, 0.2), Color("#1d1d1d"), Vector3(x, -0.12, -0.42))  # shoes
+	if standing:
+		# arms hanging, legs straight down (pedestrians)
+		for x in [-0.26, 0.26]:
+			U.cyl(parent, 0.06, 0.055, 0.5, jacket, Vector3(x, 0.32, 0))
+			U.sphere(parent, 0.06, skin, Vector3(x, 0.05, 0))
+		for x in [-0.1, 0.1]:
+			U.cyl(parent, 0.075, 0.07, 0.6, Color("#264653"), Vector3(x, -0.25, 0))
+			U.box(parent, Vector3(0.12, 0.08, 0.22), Color("#1d1d1d"), Vector3(x, -0.55, -0.04))
+	else:
+		# arms reaching for the handlebar + hands
+		for x in [-0.25, 0.25]:
+			var arm := U.cyl(parent, 0.065, 0.06, 0.5, jacket, Vector3(x, 0.42, -0.25))
+			arm.rotation.x = 1.15
+			U.sphere(parent, 0.065, skin, Vector3(x * 1.05, 0.33, -0.48))
+		for x in [-0.12, 0.12]:
+			var leg := U.cyl(parent, 0.075, 0.07, 0.5, Color("#264653"), Vector3(x, 0.02, -0.18))
+			leg.rotation.x = 1.3
+			U.box(parent, Vector3(0.12, 0.08, 0.2), Color("#1d1d1d"), Vector3(x, -0.12, -0.42))  # shoes
 	match helmet:
 		"classic":
 			U.sphere(parent, 0.2, hc, Vector3(0, 0.86, 0)).scale = Vector3(1, 0.75, 1.05)
