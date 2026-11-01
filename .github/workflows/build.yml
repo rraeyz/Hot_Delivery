@@ -26,10 +26,16 @@ jobs:
         run: timeout 120 godot --headless --path . -s tests/run_tests.gd
 
       - name: Physics feel benchmark
-        run: timeout 300 godot --headless --path . --fixed-fps 60 res://tests/sim_drive.tscn
+        run: |
+          set -o pipefail
+          timeout 300 godot --headless --path . --fixed-fps 60 res://tests/sim_drive.tscn 2>&1 | tee sim.log
+          ! grep -q "SCRIPT ERROR" sim.log
 
       - name: Bot plays a shift
-        run: timeout 600 godot --headless --path . --fixed-fps 60 res://tests/bot_shift.tscn -- --len=120
+        run: |
+          set -o pipefail
+          timeout 600 godot --headless --path . --fixed-fps 60 res://tests/bot_shift.tscn -- --len=120 2>&1 | tee bot.log
+          ! grep -q "SCRIPT ERROR" bot.log
 
       - name: Export templates
         run: |

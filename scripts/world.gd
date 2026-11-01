@@ -621,6 +621,7 @@ func _deliver(o: Dictionary, it: FoodItem, thrown: bool, at := Vector3.INF) -> v
 	if it.spilled:
 		run.stats.spilled += 1
 	hud.review(rv)
+	_customer_reaction(city.lots[o.cust], res.stars)
 	var txt := "+$%d" % res.tip
 	if combo > 0:
 		txt += "  x%d COMBO" % (combo + 1)
@@ -821,6 +822,36 @@ func _update_arrow() -> void:
 
 
 # ---------------------------------------------------------------- fx
+
+## A little customer pops out of the door and cheers or stomps.
+func _customer_reaction(lot: Dictionary, stars: int) -> void:
+	var c := Node3D.new()
+	add_child(c)
+	var side: Vector3 = lot.side
+	c.global_position = lot.door + side * 0.8 + Vector3(0, 0.15, 0)
+	c.rotation.y = atan2(side.x, side.z)
+	var shirt := Color.from_hsv(rng.randf(), 0.6, 0.9)
+	U.cyl(c, 0.22, 0.26, 0.8, shirt, Vector3(0, 0.6, 0))
+	U.sphere(c, 0.22, Color.from_hsv(0.08, rng.randf_range(0.2, 0.6), rng.randf_range(0.4, 0.95)), Vector3(0, 1.2, 0))
+	U.cyl(c, 0.08, 0.08, 0.4, Color("#264653"), Vector3(-0.1, 0.2, 0))
+	U.cyl(c, 0.08, 0.08, 0.4, Color("#264653"), Vector3(0.1, 0.2, 0))
+	var happy := stars >= 4
+	var txt := (["YUM!", "WOW!", "YES!"] if happy else (["UGH.", "...", "HMPF"] if stars <= 2 else ["OK."]))
+	var l := U.label3d(c, txt[rng.randi() % txt.size()], Vector3(0, 1.9, 0), 90, UiKit.GOOD if happy else (UiKit.BAD if stars <= 2 else Color.WHITE))
+	l.no_depth_test = true
+	var tw := c.create_tween()
+	if happy:
+		for i in 3:
+			tw.tween_property(c, "position:y", c.position.y + 0.6, 0.15).set_ease(Tween.EASE_OUT)
+			tw.tween_property(c, "position:y", c.position.y, 0.15).set_ease(Tween.EASE_IN)
+	else:
+		for i in 4:
+			tw.tween_property(c, "rotation:z", 0.25, 0.08)
+			tw.tween_property(c, "rotation:z", -0.25, 0.08)
+		tw.tween_property(c, "rotation:z", 0.0, 0.08)
+	tw.tween_interval(1.0)
+	tw.tween_property(c, "scale", Vector3(0.01, 0.01, 0.01), 0.25)
+	tw.tween_callback(c.queue_free)
 
 func _burst(pos: Vector3, c: Color, amount: int, speed: float, size: float, life: float) -> void:
 	var p := CPUParticles3D.new()

@@ -78,3 +78,33 @@ static func shape(kind: String) -> Shape3D:
 		w = 0.24
 	b.size = Vector3(w, maxf(0.12, d.height), minf(w, 0.45)) * SCALE
 	return b
+
+
+## Rising steam; the rack stops it when the food gets cold.
+static func steam() -> CPUParticles3D:
+	var p := CPUParticles3D.new()
+	p.amount = 10
+	p.lifetime = 0.9
+	p.local_coords = true
+	p.direction = Vector3.UP
+	p.spread = 12.0
+	p.gravity = Vector3(0, 0.6, 0)
+	p.initial_velocity_min = 0.5
+	p.initial_velocity_max = 0.9
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+	p.emission_sphere_radius = 0.15
+	p.scale_amount_min = 0.6
+	p.scale_amount_max = 1.4
+	var curve := Curve.new()
+	curve.add_point(Vector2(0, 0.3))
+	curve.add_point(Vector2(0.5, 1.0))
+	curve.add_point(Vector2(1, 0.0))
+	p.scale_amount_curve = curve
+	var m := SphereMesh.new()
+	m.radius = 0.04
+	m.height = 0.08
+	m.radial_segments = 6
+	m.rings = 3
+	m.material = U.mat(Color(1, 1, 1, 0.35), true)
+	p.mesh = m
+	return p

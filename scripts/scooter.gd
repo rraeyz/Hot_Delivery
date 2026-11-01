@@ -42,7 +42,13 @@ var _smooth_accel := Vector2.ZERO
 var crash_count := 0
 var _gas_ramp := 0.0
 var _brake_ramp := 0.0
-var external_input := {}    # used by tests / autopilot: {"throttle":1, "steer":0, ...}
+var external_input := {}
+var _mouse_bal := Vector2.ZERO
+
+
+func _unhandled_input(e: InputEvent) -> void:
+	if e is InputEventMouseMotion and controls_enabled:
+		_mouse_bal += Vector2(e.relative.x, -e.relative.y) * 0.015    # used by tests / autopilot: {"throttle":1, "steer":0, ...}
 
 
 func _ready() -> void:
@@ -146,6 +152,8 @@ func read_input() -> void:
 	var bal := Vector2(_axis("p2_bal_left", "p2_bal_right"), _axis("p2_bal_back", "p2_bal_fwd"))
 	if not coop:
 		bal += Vector2(_axis("solo_bal_left", "solo_bal_right"), _axis("solo_bal_back", "solo_bal_fwd"))
+	bal += _mouse_bal.limit_length(1.0)  # mouse balances too (passenger in co-op, anyone solo)
+	_mouse_bal *= 0.8
 	rack.balance = bal.limit_length(1.0)
 
 

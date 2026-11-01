@@ -148,6 +148,11 @@ func _rebuild() -> void:
 		parent.add_child(pivot)
 		var v := FoodVisual.build(it.kind)
 		pivot.add_child(v)
+		if not it.is_cold():
+			var st := FoodVisual.steam()
+			st.position.y = it.height() * FoodVisual.SCALE
+			pivot.add_child(st)
+			v.set_meta("steam", st)
 		pivots.append(pivot)
 		visuals.append(v)
 		parent = pivot
@@ -161,6 +166,9 @@ func _update_visuals() -> void:
 		var p: Node3D = pivots[i]
 		p.rotation = Vector3(-it.tilt.y, 0, -it.tilt.x)
 		var v: Node3D = visuals[i]
+		if v.has_meta("steam"):
+			var st: CPUParticles3D = v.get_meta("steam")
+			st.emitting = it.heat > 35.0
 		if v.has_meta("liquid"):
 			var s: MeshInstance3D = v.get_meta("liquid")
 			s.rotation = Vector3(-it.slosh.y * 0.7, 0, -it.slosh.x * 0.7)
