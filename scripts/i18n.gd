@@ -8,6 +8,7 @@ const NAMES := {"en": "English", "tr": "Türkçe", "es": "Español", "de": "Deut
 
 const UI := {
 	"es": {
+		"keys": "TECLAS", "press_key": "Pulsa una tecla...", "colorblind": "MODO DALTÓNICO", "a_p1_throttle": "Gas", "a_p1_brake": "Freno", "a_p1_left": "Izquierda", "a_p1_right": "Derecha", "a_solo_throw": "Lanzar", "a_solo_pickup": "Recoger", "a_p1_horn": "Bocina", "a_p1_reset": "Levantarse", "steam_host": "CREAR EN STEAM (invitar amigos)", "steam_tip": "Tus amigos entran desde Steam o con tu invitación. Sin IP.", "invite": "INVITAR AMIGOS",
 		"ev_happy": "¡HORA FELIZ! Propinas x1,5 durante 20 s", "ev_rush": "¡PEDIDO URGENTE! El VIP paga el doble", "ev_shower": "¡CHAPARRÓN! Calles resbaladizas", "ev_roadworks": "¡OBRAS! Una calle cerrada.",
 		"team": "EQUIPO", "pass": "¡PASE!", "caught": "¡ATRAPADO!", "emote_0": "¡AYUDA!", "emote_1": "¡AQUÍ!", "emote_2": "¡JAJA!", "emote_3": "¡RÁPIDO!",
 		"accessory": "Accesorio", "back": "VOLVER", "bazaar": "Bazar", "beach": "Playa", "best": "Mejor día: %d",
@@ -51,6 +52,7 @@ const UI := {
 		"your_name": "Tu nombre", "your_shop": "TU TIENDA",
 	},
 	"de": {
+		"keys": "TASTEN", "press_key": "Taste drücken...", "colorblind": "FARBENBLIND-MODUS", "a_p1_throttle": "Gas", "a_p1_brake": "Bremse", "a_p1_left": "Links", "a_p1_right": "Rechts", "a_solo_throw": "Werfen", "a_solo_pickup": "Aufheben", "a_p1_horn": "Hupe", "a_p1_reset": "Aufstehen", "steam_host": "AUF STEAM HOSTEN (Freunde einladen)", "steam_tip": "Freunde treten über Steam oder deine Einladung bei. Keine IP nötig.", "invite": "FREUNDE EINLADEN",
 		"ev_happy": "HAPPY HOUR! 20 s lang Trinkgeld x1,5", "ev_rush": "EILAUFTRAG! VIP zahlt doppelt", "ev_shower": "PLATZREGEN! Rutschige Straßen", "ev_roadworks": "BAUSTELLE! Eine Straße ist gesperrt.",
 		"team": "TEAM", "pass": "PASS!", "caught": "GEFANGEN!", "emote_0": "HILFE!", "emote_1": "HIERHER!", "emote_2": "HAHA!", "emote_3": "BEEIL DICH!",
 		"accessory": "Accessoire", "back": "ZURÜCK", "bazaar": "Basar", "beach": "Strand", "best": "Bester Tag: %d",
@@ -94,6 +96,7 @@ const UI := {
 		"your_name": "Dein Name", "your_shop": "DEIN LADEN",
 	},
 	"fr": {
+		"keys": "TOUCHES", "press_key": "Appuie sur une touche...", "colorblind": "MODE DALTONIEN", "a_p1_throttle": "Gaz", "a_p1_brake": "Frein", "a_p1_left": "Gauche", "a_p1_right": "Droite", "a_solo_throw": "Lancer", "a_solo_pickup": "Ramasser", "a_p1_horn": "Klaxon", "a_p1_reset": "Se relever", "steam_host": "HÉBERGER SUR STEAM (inviter des amis)", "steam_tip": "Tes amis rejoignent via Steam ou ton invitation. Pas d'IP.", "invite": "INVITER DES AMIS",
 		"ev_happy": "HAPPY HOUR ! Pourboires x1,5 pendant 20 s", "ev_rush": "COMMANDE URGENTE ! Le VIP paie double", "ev_shower": "AVERSE ! Routes glissantes", "ev_roadworks": "TRAVAUX ! Une rue est fermée.",
 		"team": "ÉQUIPE", "pass": "PASSE !", "caught": "ATTRAPÉ !", "emote_0": "À L'AIDE !", "emote_1": "PAR ICI !", "emote_2": "HAHA !", "emote_3": "VITE !",
 		"accessory": "Accessoire", "back": "RETOUR", "bazaar": "Bazar", "beach": "Plage", "best": "Meilleur jour : %d",
@@ -137,6 +140,7 @@ const UI := {
 		"your_name": "Ton nom", "your_shop": "TA BOUTIQUE",
 	},
 	"pt": {
+		"keys": "TECLAS", "press_key": "Aperte uma tecla...", "colorblind": "MODO DALTÔNICO", "a_p1_throttle": "Acelerar", "a_p1_brake": "Frear", "a_p1_left": "Esquerda", "a_p1_right": "Direita", "a_solo_throw": "Arremessar", "a_solo_pickup": "Pegar", "a_p1_horn": "Buzina", "a_p1_reset": "Levantar", "steam_host": "HOSPEDAR NA STEAM (convidar amigos)", "steam_tip": "Amigos entram pela Steam ou pelo seu convite. Sem IP.", "invite": "CONVIDAR AMIGOS",
 		"ev_happy": "HAPPY HOUR! Gorjetas x1,5 por 20 s", "ev_rush": "PEDIDO URGENTE! VIP paga o dobro", "ev_shower": "TORÓ! Ruas escorregadias", "ev_roadworks": "OBRAS! Uma rua foi fechada.",
 		"team": "TIME", "pass": "PASSE!", "caught": "PEGOU!", "emote_0": "SOCORRO!", "emote_1": "AQUI!", "emote_2": "HAHA!", "emote_3": "RÁPIDO!",
 		"accessory": "Acessório", "back": "VOLTAR", "bazaar": "Bazar", "beach": "Praia", "best": "Melhor dia: %d",
@@ -180,6 +184,7 @@ const UI := {
 		"your_name": "Seu nome", "your_shop": "SUA LOJA",
 	},
 	"ru": {
+		"keys": "КЛАВИШИ", "press_key": "Нажми клавишу...", "colorblind": "РЕЖИМ ДЛЯ ДАЛЬТОНИКОВ", "a_p1_throttle": "Газ", "a_p1_brake": "Тормоз", "a_p1_left": "Влево", "a_p1_right": "Вправо", "a_solo_throw": "Бросить", "a_solo_pickup": "Поднять", "a_p1_horn": "Гудок", "a_p1_reset": "Встать", "steam_host": "СОЗДАТЬ В STEAM (пригласить друзей)", "steam_tip": "Друзья заходят через Steam или по приглашению. IP не нужен.", "invite": "ПРИГЛАСИТЬ ДРУЗЕЙ",
 		"ev_happy": "СЧАСТЛИВЫЙ ЧАС! Чаевые x1,5 на 20 с", "ev_rush": "СРОЧНЫЙ ЗАКАЗ! VIP платит вдвое", "ev_shower": "ЛИВЕНЬ! Скользкие дороги", "ev_roadworks": "РЕМОНТ ДОРОГИ! Улица перекрыта.",
 		"team": "КОМАНДА", "pass": "ПАС!", "caught": "ПОЙМАЛ!", "emote_0": "ПОМОГИ!", "emote_1": "СЮДА!", "emote_2": "ХА-ХА!", "emote_3": "БЫСТРЕЕ!",
 		"accessory": "Аксессуар", "back": "НАЗАД", "bazaar": "Базар", "beach": "Пляж", "best": "Лучший день: %d",

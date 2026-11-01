@@ -133,13 +133,13 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 ## Aşama 10 — Sürekli geliştirme (liste bitince buradan devam)
 - [x] İlk vardiya eğitimi (ok + kısa ipuçları: "restorana git", "yavaşla", "balkona fırlat")
 - [x] Köpek ve güvercinler en yakın scooter'ı hedeflesin (çok oyunculu)
-- [ ] Bölünmüş ekranda 2. oyuncunun denge göstergesi + tekrar (replay)
+- [x] Bölünmüş ekranda 2. oyuncunun denge göstergesi + tekrar (replay)
 - [ ] Online'da tekrar (en büyük kaza herkese gösterilsin)
 - [x] Yeni olay: düğün konvoyu (raporda vardı) — korna çalan araba dizisi yolu kapatır
 - [ ] Yeni olay: bozuk asansör / merdiven teslimatı (yaya kısmı) — araştır, küçük tut
 - [ ] Rekabetçi denge: 2-4 bot ile simülasyon, kart zorluğu ve dükkân fiyatları
 - [ ] Yorumlar için daha fazla dil (ES, DE, PT-BR, RU) — dünya pazarı
-- [ ] Erişilebilirlik: renk körü dostu işaretler, tuş atama ekranı
+- [x] Erişilebilirlik: renk körü dostu işaretler, tuş atama ekranı
 - [ ] Performans: çizim çağrısı sayımı, uzak binalarda basit materyal, düşük ayarda gölgeler kapalı
 - [ ] Steam başarımları listesi (GodotSteam gelince bağlanacak)
 - [ ] Yeni yemekler / olaylar / yükseltmeler, oyuncu geri bildirimine göre denge, hata düzeltme

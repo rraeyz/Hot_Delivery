@@ -583,14 +583,14 @@ func _refresh_beacons() -> void:
 			var ready: bool = o.get("ready", true)
 			var key := "r%d_%s" % [o.rest, ready]
 			if ready or not want.has("r%d_true" % o.rest):
-				want[key] = {"pos": city.lots[o.rest].curb, "color": Color("#ff9f1c") if ready else Color("#adb5bd"),
+				want[key] = {"pos": city.lots[o.rest].curb, "color": Game.beacon_color("rest") if ready else Color("#adb5bd"),
 					"text": _rest_name(city.lots[o.rest].rest) + ("" if ready else "\n" + Game.t("cooking"))}
 		else:
 			var lot: Dictionary = city.lots[o.cust]
 			var txt := Game.up(Game.food_name(o.food))
 			if o.quirk != "":
 				txt += "\n" + Game.t("quirk_" + o.quirk)
-			want["c%d" % o.id] = {"pos": lot.curb, "color": Color("#06d6a0"), "text": txt, "target": _target_point(o)}
+			want["c%d" % o.id] = {"pos": lot.curb, "color": Game.beacon_color("cust"), "text": txt, "target": _target_point(o)}
 	for k in beacons.keys():
 		if not want.has(k):
 			beacons[k].queue_free()

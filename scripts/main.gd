@@ -232,6 +232,36 @@ func _set_look(l: Dictionary) -> void:
 	show_character()
 
 
+var _rebinding := ""
+
+
+func show_keys() -> void:
+	var root := _screen()
+	var v := _center_box(root, 640)
+	v.add_child(UiKit.label(Game.t("keys"), 48, UiKit.GOLD))
+	var g := GridContainer.new()
+	g.columns = 2
+	g.add_theme_constant_override("h_separation", 30)
+	for a in Game.REBINDABLE:
+		g.add_child(UiKit.label(Game.t("a_" + a), 26))
+		var label := Game.t("press_key") if _rebinding == a else Game.key_name(a)
+		g.add_child(UiKit.button(label, func():
+			_rebinding = a
+			show_keys()))
+	v.add_child(g)
+	v.add_child(UiKit.button(Game.t("back"), show_settings))
+	_focus_first(v)
+
+
+func _input(e: InputEvent) -> void:
+	if _rebinding != "" and e is InputEventKey and e.pressed and not e.echo:
+		if e.physical_keycode != KEY_ESCAPE:
+			Game.rebind(_rebinding, e.physical_keycode)
+		_rebinding = ""
+		get_viewport().set_input_as_handled()
+		show_keys()
+
+
 func show_controls() -> void:
 	var root := _screen()
 	var v := _center_box(root, 900)
@@ -301,6 +331,14 @@ func show_settings() -> void:
 		Game.settings.fullscreen = on
 		Game.apply_settings())
 	v.add_child(fs)
+	var cb2 := CheckButton.new()
+	cb2.text = Game.t("colorblind")
+	cb2.button_pressed = Game.settings.get("colorblind", false)
+	cb2.toggled.connect(func(on):
+		Game.settings.colorblind = on
+		Game.write_save())
+	v.add_child(cb2)
+	v.add_child(UiKit.button(Game.t("keys"), show_keys))
 	v.add_child(UiKit.button(Game.t("controls"), show_controls))
 	var cr := UiKit.label(Game.t("credits"), 16, Color(1, 1, 1, 0.6))
 	cr.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
