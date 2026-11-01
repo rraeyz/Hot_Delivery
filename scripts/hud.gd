@@ -42,24 +42,24 @@ func setup(w: World) -> void:
 	var top := PanelContainer.new()
 	top.position = Vector2(16, 16)
 	root.add_child(top)
-	status = UiKit.label("", 24)
+	status = UiKit.label("", 28)
 	top.add_child(status)
-	timer_label = UiKit.label("", 44, Color.WHITE)
+	timer_label = UiKit.label("", 60, Color.WHITE)
 	timer_label.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	timer_label.position = Vector2(-80, 10)
-	timer_label.size = Vector2(160, 60)
+	timer_label.position = Vector2(-110, 6)
+	timer_label.size = Vector2(220, 80)
 	root.add_child(timer_label)
 	orders_box = VBoxContainer.new()
 	orders_box.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	orders_box.position = Vector2(-330, 16)
-	orders_box.custom_minimum_size = Vector2(314, 0)
+	orders_box.position = Vector2(-356, 16)
+	orders_box.custom_minimum_size = Vector2(340, 0)
 	orders_box.add_theme_constant_override("separation", 8)
 	root.add_child(orders_box)
 	meter = DangerMeter.new()
 	meter.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	meter.size = Vector2(110, 110)
-	meter.position = Vector2(-55, -130)
+	meter.size = Vector2(140, 140)
+	meter.position = Vector2(-70, -170)
 	root.add_child(meter)
 	popups = Control.new()
 	popups.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -67,8 +67,8 @@ func setup(w: World) -> void:
 	root.add_child(popups)
 	review_box = VBoxContainer.new()
 	review_box.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	review_box.position = Vector2(16, -260)
-	review_box.custom_minimum_size = Vector2(440, 0)
+	review_box.position = Vector2(16, -300)
+	review_box.custom_minimum_size = Vector2(520, 0)
 	review_box.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	root.add_child(review_box)
 	var hint_key := "hint_split" if w.split else ("hint_coop" if w.coop else "hint")
@@ -76,11 +76,11 @@ func setup(w: World) -> void:
 		hint_key = "hint_cook"
 	elif Net.online and Net.is_passenger(Net.my_id()):
 		hint_key = "hint_ride"
-	hint = UiKit.label(Game.t(hint_key), 18, Color(1, 1, 1, 0.85))
+	hint = UiKit.label(Game.t(hint_key), 22, Color(1, 1, 1, 0.9))
 	hint.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hint.position = Vector2(-500, -14)
-	hint.size = Vector2(1000, 24)
+	hint.position = Vector2(-640, -44)
+	hint.size = Vector2(1280, 32)
 	hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	root.add_child(hint)
 	if Net.online and Net.is_cook(Net.my_id()):
@@ -134,7 +134,7 @@ func _process(dt: float) -> void:
 func _rebuild_orders() -> void:
 	for c in orders_box.get_children():
 		c.queue_free()
-	var head := UiKit.label(Game.t("orders"), 20, UiKit.GOLD)
+	var head := UiKit.label(Game.t("orders"), 26, UiKit.GOLD)
 	orders_box.add_child(head)
 	var carried := {}
 	for it in world.scooter.rack.items:
@@ -153,21 +153,21 @@ func _rebuild_orders() -> void:
 		var q: String = (" · " + Game.t("quirk_" + o.quirk)) if o.quirk != "" else ""
 		if o.state == "offer":
 			p.add_theme_stylebox_override("panel", UiKit.style(Color(0.2, 0.2, 0.25, 0.85)))
-			v.add_child(UiKit.label("%s%s" % [name, q], 20, Color("#ff9f1c")))
-			v.add_child(UiKit.label("%s %s · %dm" % [Game.t("pickup"), world._rest_name(world.city.lots[o.rest].rest), int(world.scooter.global_position.distance_to(world.city.lots[o.rest].curb))], 16, Color(1, 1, 1, 0.8)))
+			v.add_child(UiKit.label("%s%s" % [name, q], 23, Color("#ff9f1c")))
+			v.add_child(UiKit.label("%s %s · %dm" % [Game.t("pickup"), world._rest_name(world.city.lots[o.rest].rest), int(world.scooter.global_position.distance_to(world.city.lots[o.rest].curb))], 18, Color(1, 1, 1, 0.85)))
 		else:
 			var it: FoodItem = carried.get(o.id)
 			var tleft: float = o.t_left
 			var tcol := Color.WHITE if tleft > 0 else UiKit.BAD
-			v.add_child(UiKit.label("%s%s   %s" % [name, q, ("%ds" % int(tleft)) if tleft > 0 else "LATE"], 20, tcol))
+			v.add_child(UiKit.label("%s%s   %s" % [name, q, ("%ds" % int(tleft)) if tleft > 0 else "LATE"], 23, tcol))
 			if it:
 				v.add_child(_bar(it.heat, Color("#4cc9f0") if it.is_cold() else Color("#f3722c")))
 				v.add_child(_bar(it.integrity, UiKit.GOOD))
 			var dist := int(world.scooter.global_position.distance_to(world.city.lots[o.cust].curb))
-			v.add_child(UiKit.label("%s · %dm" % [Game.t("deliver"), dist], 16, Color(1, 1, 1, 0.8)))
+			v.add_child(UiKit.label("%s · %dm" % [Game.t("deliver"), dist], 18, Color(1, 1, 1, 0.85)))
 		orders_box.add_child(p)
 	if not any:
-		orders_box.add_child(UiKit.label(Game.t("no_orders"), 18))
+		orders_box.add_child(UiKit.label(Game.t("no_orders"), 22))
 
 
 func _bar(v: float, c: Color) -> ProgressBar:
@@ -175,7 +175,7 @@ func _bar(v: float, c: Color) -> ProgressBar:
 	b.max_value = 100
 	b.value = v
 	b.show_percentage = false
-	b.custom_minimum_size = Vector2(280, 10)
+	b.custom_minimum_size = Vector2(300, 12)
 	var fg := StyleBoxFlat.new()
 	fg.bg_color = c
 	fg.set_corner_radius_all(5)
@@ -193,11 +193,12 @@ var _banner: Label
 ## Persistent instruction line under the timer ("" hides it).
 func banner(text: String) -> void:
 	if not _banner:
-		_banner = UiKit.label("", 26, UiKit.GOLD)
+		_banner = UiKit.label("", 32, UiKit.GOLD)
 		_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
 		_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		_banner.position = Vector2(-450, 70)
-		_banner.size = Vector2(900, 40)
+		_banner.position = Vector2(-640, 86)
+		_banner.size = Vector2(1280, 50)
+		_banner.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		_banner.add_theme_constant_override("outline_size", 10)
 		popups.add_child(_banner)
 	_banner.text = text
@@ -207,13 +208,13 @@ func banner(text: String) -> void:
 func popup(text: String, c: Color, big := false, life := 1.3, y_off := 0.0) -> void:
 	if world and world.netsync:
 		world.netsync.send_fx("popup", [text, c.to_html(), big])
-	var l := UiKit.label(text, 64 if big else 40, c)
-	l.add_theme_constant_override("outline_size", 14)
+	var l := UiKit.label(text, 84 if big else 54, c)
+	l.add_theme_constant_override("outline_size", 18)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.set_anchors_preset(Control.PRESET_CENTER)
-	l.size = Vector2(1000, 90)
-	l.position = Vector2(-500, -180 + y_off + popups.get_child_count() * 10)
-	l.pivot_offset = Vector2(500, 45)
+	l.size = Vector2(1400, 110)
+	l.position = Vector2(-700, -200 + y_off + popups.get_child_count() * 10)
+	l.pivot_offset = Vector2(700, 55)
 	l.scale = Vector2(0.4, 0.4)
 	popups.add_child(l)
 	var tw := l.create_tween()
@@ -223,7 +224,7 @@ func popup(text: String, c: Color, big := false, life := 1.3, y_off := 0.0) -> v
 	tw.tween_callback(l.queue_free)
 
 
-static func review_card(rv: Dictionary, wide := 440.0) -> PanelContainer:
+static func review_card(rv: Dictionary, wide := 520.0) -> PanelContainer:
 	var p := PanelContainer.new()
 	var sb := UiKit.style(Color("#fffcf2"), 16)
 	sb.border_color = UiKit.ACCENT
@@ -234,17 +235,17 @@ static func review_card(rv: Dictionary, wide := 440.0) -> PanelContainer:
 	p.add_child(v)
 	var h := HBoxContainer.new()
 	v.add_child(h)
-	var n := UiKit.label(rv.name, 20, Color("#1d3557"))
+	var n := UiKit.label(rv.name, 26, Color("#1d3557"))
 	n.add_theme_constant_override("outline_size", 0)
 	n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	h.add_child(n)
-	h.add_child(UiKit.Stars.new(rv.stars, 20))
-	var line := UiKit.label("“" + rv.line + "”", 19, Color("#333333"))
+	h.add_child(UiKit.Stars.new(rv.stars, 26))
+	var line := UiKit.label("“" + rv.line + "”", 24, Color("#333333"))
 	line.add_theme_constant_override("outline_size", 0)
 	line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	line.custom_minimum_size = Vector2(wide - 30, 0)
 	v.add_child(line)
-	var tip := UiKit.label("+$%d  ·  %s" % [rv.tip, Game.food_name(rv.food)], 16, Color("#2a9d8f"))
+	var tip := UiKit.label("+$%d  ·  %s" % [rv.tip, Game.food_name(rv.food)], 20, Color("#2a9d8f"))
 	tip.add_theme_constant_override("outline_size", 0)
 	v.add_child(tip)
 	return p

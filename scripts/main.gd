@@ -95,26 +95,37 @@ func show_menu() -> void:
 	title.add_theme_constant_override("outline_size", 24)
 	title.add_theme_color_override("font_outline_color", Color("#9d0208"))
 	v.add_child(title)
-	v.add_child(UiKit.label("Keep it hot. Keep it in the bowl." if Game.lang() == "en" else "Sıcak kalsın. Kasede kalsın.", 24))
+	v.add_child(UiKit.label(Game.t("tagline"), 24))
 	v.add_child(UiKit.button(Game.t("play"), func(): start_run(randi(), false, false)))
 	v.add_child(UiKit.button(Game.t("daily"), func(): start_run(_daily_seed(), false, true)))
-	v.add_child(UiKit.button(Game.t("coop"), func(): start_run(randi(), true, false)))
-	v.add_child(UiKit.button(Game.t("split"), func(): start_run(randi(), false, false, true)))
-	v.add_child(UiKit.button(Game.t("versus"), func(): start_run(randi(), false, false, true, "competitive")))
+	v.add_child(UiKit.button(Game.t("couch"), show_couch))
 	v.add_child(UiKit.button(Game.t("online"), show_online))
 	v.add_child(UiKit.button(Game.t("character"), show_character))
-	v.add_child(UiKit.button(Game.t("controls"), show_controls))
 	v.add_child(UiKit.button(Game.t("settings"), show_settings))
 	v.add_child(UiKit.button(Game.t("quit"), func(): get_tree().quit()))
-	var best := UiKit.label(Game.t("best") % int(Game.save.best_day), 20, Color(1, 1, 1, 0.8))
-	v.add_child(best)
+	var best := UiKit.label(Game.t("best") % int(Game.save.best_day), 22, Color(1, 1, 1, 0.85))
+	best.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	best.position = Vector2(-300, 24)
+	root.add_child(best)
 	var today: String = Time.get_date_string_from_system()
 	if Game.save.daily_best.has(today):
 		v.add_child(UiKit.label("Daily %s: day %d" % [today, int(Game.save.daily_best[today])], 18, Color(1, 1, 1, 0.7)))
-	var foot := UiKit.label(Game.t("credits"), 14, Color(1, 1, 1, 0.6))
-	foot.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	foot.position = Vector2(20, -30)
-	root.add_child(foot)
+	_focus_first(v)
+
+
+## Same-screen modes for 2 players.
+func show_couch() -> void:
+	_build_menu_scene()
+	var root := _screen()
+	var v := _center_box(root, 640)
+	v.add_child(UiKit.label(Game.t("couch"), 48, UiKit.GOLD))
+	v.add_child(UiKit.button(Game.t("coop"), func(): start_run(randi(), true, false)))
+	v.add_child(UiKit.button(Game.t("split"), func(): start_run(randi(), false, false, true)))
+	v.add_child(UiKit.button(Game.t("versus"), func(): start_run(randi(), false, false, true, "competitive")))
+	var tip := UiKit.label(Game.t("couch_tip"), 20, Color(1, 1, 1, 0.8))
+	tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(tip)
+	v.add_child(UiKit.button(Game.t("back"), show_menu))
 	_focus_first(v)
 
 
@@ -290,6 +301,10 @@ func show_settings() -> void:
 		Game.settings.fullscreen = on
 		Game.apply_settings())
 	v.add_child(fs)
+	v.add_child(UiKit.button(Game.t("controls"), show_controls))
+	var cr := UiKit.label(Game.t("credits"), 16, Color(1, 1, 1, 0.6))
+	cr.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(cr)
 	v.add_child(UiKit.button(Game.t("back"), func():
 		Game.write_save()
 		if world:

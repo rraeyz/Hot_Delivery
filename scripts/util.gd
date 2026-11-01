@@ -79,7 +79,8 @@ static func label3d(parent: Node, text: String, pos: Vector3, size := 64, c := C
 	var l := Label3D.new()
 	l.text = text
 	l.font_size = size
-	l.outline_size = 12
+	l.outline_size = 14
+	l.font = UiKit.font(900)
 	l.modulate = c
 	l.position = pos
 	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
