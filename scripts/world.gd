@@ -969,7 +969,37 @@ func _on_dog_bite(_d: Node3D) -> void:
 	hud.popup("WOOF!", Color("#ffd166"))
 
 
+var convoy_timer := 12.0
+
+
+func _spawn_convoy() -> void:
+	var n: int = city.n
+	var line := rng.randi_range(1, n - 1) * CityGen.PITCH
+	var along_x := rng.randf() < 0.5
+	var forward := rng.randf() < 0.5
+	var total := n * CityGen.PITCH
+	var start := Vector3(0.0 if forward else total, 0, line + 3.0) if along_x else Vector3(line - 3.0, 0, 0.0 if forward else total)
+	var d := (Vector3.RIGHT if along_x else Vector3.BACK) * (1.0 if forward else -1.0)
+	hud.popup(Game.t("convoy_alert"), Color("#ff70a6"), true)
+	if netsync:
+		netsync.send_fx("convoy", [start, d, total])
+	make_convoy(start, d, total)
+
+
+## Also called on clients: the convoy's motion is deterministic, so each peer moves its own copy.
+func make_convoy(start: Vector3, d: Vector3, total: float) -> void:
+	var c := Npcs.Convoy.new()
+	add_child(c)
+	c.setup(start, d, total)
+	c.honk.connect(func(): audio.play("horn", 0.25))
+
+
 func _chaos_tick(dt: float, sp: float) -> void:
+	if "convoy" in run.chaos and scooter == scooters[0]:
+		convoy_timer -= dt
+		if convoy_timer <= 0.0:
+			convoy_timer = rng.randf_range(35.0, 55.0)
+			_spawn_convoy()
 	if "wind" in run.chaos:
 		gust_timer -= dt
 		if gust_timer <= 0.0:

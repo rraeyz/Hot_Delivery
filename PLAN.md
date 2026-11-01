@@ -124,7 +124,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Köpek ve güvercinler en yakın scooter'ı hedeflesin (çok oyunculu)
 - [ ] Bölünmüş ekranda 2. oyuncunun denge göstergesi + tekrar (replay)
 - [ ] Online'da tekrar (en büyük kaza herkese gösterilsin)
-- [ ] Yeni olay: düğün konvoyu (raporda vardı) — korna çalan araba dizisi yolu kapatır
+- [x] Yeni olay: düğün konvoyu (raporda vardı) — korna çalan araba dizisi yolu kapatır
 - [ ] Yeni olay: bozuk asansör / merdiven teslimatı (yaya kısmı) — araştır, küçük tut
 - [ ] Rekabetçi denge: 2-4 bot ile simülasyon, kart zorluğu ve dükkân fiyatları
 - [ ] Yorumlar için daha fazla dil (ES, DE, PT-BR, RU) — dünya pazarı

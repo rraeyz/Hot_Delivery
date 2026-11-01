@@ -25,13 +25,13 @@ const MULT_KEYS := ["heat_loss_mult", "jolt_mult", "top_speed_mult", "accel_mult
 
 ## Competitive mode: one new card per round, they stack up. Chaos cards reuse the chaos events.
 const COMP_CARDS := {
-	"rain": {}, "wind": {}, "dogs": {}, "pigeons": {}, "traffic": {}, "bumps": {}, "fog": {}, "heatwave": {},
+	"rain": {}, "wind": {}, "dogs": {}, "pigeons": {}, "traffic": {}, "bumps": {}, "fog": {}, "heatwave": {}, "convoy": {},
 	"impatient": {"timer_mult": 0.7}, "fragile": {"jolt_mult": 1.5, "wobble_mult": 1.15},
 	"no_doorbell": {"hand_mult": 0.5}, "cold_kitchen": {"heat_loss_mult": 1.6}, "greedy": {"capacity": 1, "wobble_mult": 1.25},
 }
 const ROUNDS := 7
 
-const CHAOS := ["rain", "wind", "heatwave", "bumps", "traffic", "dogs", "pigeons", "fog"]
+const CHAOS := ["rain", "wind", "heatwave", "bumps", "traffic", "dogs", "pigeons", "fog", "convoy"]
 const QUIRKS := ["", "", "", "yeet", "vip", "impatient", "picky", "rooftop"]
 
 var seed_value := 0

@@ -171,3 +171,48 @@ class Dog extends CharacterBody3D:
 		if chasing and to.length() < 1.6 and bark_cd <= 0.0:
 			bark_cd = 1.5
 			bit.emit(self)
+
+
+## Wedding convoy: a honking line of white cars crawls straight across town, blocking the road.
+class Convoy extends Node3D:
+	var cars: Array = []
+	var dir := Vector3.FORWARD
+	var speed := 6.0
+	var length := 300.0
+	var travelled := 0.0
+	var honk_t := 0.0
+	signal honk
+
+	func setup(start: Vector3, d: Vector3, total: float) -> void:
+		dir = d.normalized()
+		length = total
+		for i in 5:
+			var car := AnimatableBody3D.new()
+			car.sync_to_physics = true
+			car.collision_layer = 1
+			var cs := CollisionShape3D.new()
+			var sh := BoxShape3D.new()
+			sh.size = Vector3(2.0, 1.5, 4.0)
+			cs.shape = sh
+			cs.position = Vector3(0, 0.95, 0)
+			car.add_child(cs)
+			Npcs.car_body(car, Color("#f8f9fa"))
+			# ribbons and a heart on the lead car
+			U.box(car, Vector3(0.12, 0.02, 4.0), Color("#ff70a6"), Vector3(0.5, 1.76, 0.2))
+			U.box(car, Vector3(0.12, 0.02, 4.0), Color("#ff70a6"), Vector3(-0.5, 1.76, 0.2))
+			if i == 0:
+				U.sphere(car, 0.3, Color("#e63946"), Vector3(0, 2.0, -0.6))
+			add_child(car)
+			car.global_transform = Transform3D(Basis.looking_at(dir, Vector3.UP), start - dir * (i * 5.5))
+			cars.append(car)
+
+	func _physics_process(dt: float) -> void:
+		travelled += speed * dt
+		for c in cars:
+			c.global_position += dir * speed * dt
+		honk_t -= dt
+		if honk_t <= 0.0:
+			honk_t = randf_range(1.5, 3.0)
+			honk.emit()
+		if travelled > length + 30.0:
+			queue_free()

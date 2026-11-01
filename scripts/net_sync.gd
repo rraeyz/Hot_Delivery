@@ -241,6 +241,8 @@ func fx(kind: String, args: Array) -> void:
 			world._customer_reaction(world.city.lots[args[0]], args[1])
 		"splat":
 			world._splat(args[0], Color(args[1]))
+		"convoy":
+			world.make_convoy(args[0], args[1], args[2])
 		"trauma":
 			if args[0] == Net.my_index():
 				world.camera.add_trauma(args[1])
