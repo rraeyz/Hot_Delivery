@@ -73,3 +73,11 @@ Online yolcu rolü, park etmiş arabalar/yaya geçitleri, daha iyi araç modelle
 - Online tekrar: günün en büyük kazası (tüm scooter'larla) herkesin ekranında oynuyor; tekrar yazıları 7 dilde.
 - Online testteki ara sıra çıkan yanlış "FAIL" düzeltildi (oyuncu önce çıkınca).
 - Build: `builds/TipOver-windows-v0.7.zip`.
+
+### Oturum 5 (devam, saatlik uyanış)
+- Yeni yemekler: dev JÖLE (7. gün; çok sallanır, ezilip uzar ama kırılmaz) ve 4'lü KAHVE tepsisi (8. gün; en ufak frende döker).
+- Yeni olay: ŞEHİR MARATONU (16 koşucu bir caddeden akar, çarpınca takla atar; online herkes aynı paketi görür).
+- Yeni yükseltmeler: Şemsiyeli Şapka (yağmur/sağanak etkisiz), Köpek Ödülü (köpek ısırmaz, güvercin gelmez).
+- Testler: 412 birim kontrolü; bot `--event=marathon` ve `--elevator` ile oynuyor; online testler geçiyor.
+- 4. hafta video fikirleri VIDEOS.md'de.
+- Build: `builds/TipOver-windows-v0.8.zip`.
