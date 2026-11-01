@@ -13,13 +13,17 @@ var stuck_t := 0.0
 var reverse_t := 0.0
 
 
-func _init(w: World) -> void:
+var me: Scooter
+
+
+func _init(w: World, s: Scooter = null) -> void:
 	world = w
+	me = s if s else w.scooter
 	rng.seed = 11
 
 
 func _pick_goal() -> Vector3:
-	var s := world.scooter
+	var s := me
 	var pos := s.global_position
 	var best := Vector3.INF
 	var bd := 1e9
@@ -95,7 +99,7 @@ static func plan(a: Vector3, b: Vector3, n: int) -> Array:
 
 
 func drive(dt: float) -> Dictionary:
-	var s := world.scooter
+	var s := me
 	if s.is_crashed:
 		return {"throttle": 0.0, "steer": 0.0}
 	replan -= dt
@@ -155,5 +159,8 @@ func drive(dt: float) -> Dictionary:
 		if not o.is_empty() and o.state == "carry":
 			var tp := world._target_point(o)
 			if Vector2(tp.x, tp.z).distance_to(Vector2(pos.x, pos.z)) < 14.0 and absf(spd) < 5.0 and rng.randf() < 0.02:
+				var prev := world.scooter
+				world.scooter = me
 				world.throw_top()
+				world.scooter = prev
 	return {"throttle": thr, "steer": steer, "balance": bal.limit_length(1.0)}

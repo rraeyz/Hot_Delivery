@@ -37,6 +37,9 @@ jobs:
       - name: Food pass between scooters
         run: timeout 120 godot --headless --path . --fixed-fps 60 res://tests/pass_test.tscn
 
+      - name: Competitive bots (1 short round)
+        run: timeout 300 godot --headless --path . --fixed-fps 60 res://tests/comp_sim.tscn -- --rounds=1 --len=60
+
       - name: Bot plays a shift
         run: |
           set -o pipefail

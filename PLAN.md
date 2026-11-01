@@ -137,7 +137,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [ ] Online'da tekrar (en büyük kaza herkese gösterilsin)
 - [x] Yeni olay: düğün konvoyu (raporda vardı) — korna çalan araba dizisi yolu kapatır
 - [ ] Yeni olay: bozuk asansör / merdiven teslimatı (yaya kısmı) — araştır, küçük tut
-- [ ] Rekabetçi denge: 2-4 bot ile simülasyon, kart zorluğu ve dükkân fiyatları
+- [x] Rekabetçi denge: 2 bot simülasyonu (tests/comp_sim.tscn) — skorlar yakın, kartlar teslimatı azaltıyor
 - [ ] Yorumlar için daha fazla dil (ES, DE, PT-BR, RU) — dünya pazarı
 - [x] Erişilebilirlik: renk körü dostu işaretler, tuş atama ekranı
 - [ ] Performans: çizim çağrısı sayımı, uzak binalarda basit materyal, düşük ayarda gölgeler kapalı
