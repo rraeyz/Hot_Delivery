@@ -23,44 +23,49 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Godot 4.6.2 (bulutta, ekransız test için)
 - [x] PLAN.md, PROGRESS.md, README.md, CREDITS.md
 - [x] Godot projesi iskeleti + otomatik test koşucusu (`tests/run_tests.gd`)
-- [ ] GitHub Actions: her push'ta testleri çalıştır + Windows .exe üret (artifact)
+- [x] GitHub Actions: her push'ta testleri çalıştır + Windows .exe üret (artifact)
 
 ## Aşama 1 — Prototip (his)
-- [ ] Saf mantık: yemek modeli (sıcaklık, sallanma, çorba çalkalanması, dökülme) + testler
-- [ ] Saf mantık: bahşiş + yıldız hesabı + testler
-- [ ] Scooter kontrolcüsü (RigidBody, ışın süspansiyonu, kayma, fren, korna)
-- [ ] Takip kamerası (yumuşak, sallantı ayarı)
-- [ ] Kısa test sokağı: rampa, tümsek, devrilebilen eşyalar
-- [ ] Yemek kulesi: pizza + çorba arkada sallanıyor, eşiği geçince düşüyor (fizik nesnesine dönüşüyor)
-- [ ] Yerden geri alma (E)
-- [ ] Kaza: kurye uçar, yemekler saçılır, 2 sn sonra kalkar
-- [ ] Ekran görüntüsüyle görsel kontrol (Xvfb) + his ayarı
-- [ ] Windows .exe (prototip) + KULLANICI testi: "sürmek eğlenceli mi?"
+- [x] Saf mantık: yemek modeli (sıcaklık, sallanma, çorba çalkalanması, dökülme) + testler
+- [x] Saf mantık: bahşiş + yıldız hesabı + testler
+- [x] Scooter kontrolcüsü (RigidBody, ışın süspansiyonu, kayma, fren, korna)
+- [x] Takip kamerası (yumuşak, sallantı ayarı)
+- [x] Kısa test sokağı: rampa, tümsek, devrilebilen eşyalar
+- [x] Yemek kulesi: pizza + çorba arkada sallanıyor, eşiği geçince düşüyor (fizik nesnesine dönüşüyor)
+- [x] Yerden geri alma (E)
+- [x] Kaza: kurye uçar, yemekler saçılır, 2 sn sonra kalkar
+- [x] Ekran görüntüsüyle görsel kontrol (Xvfb) + his ayarı
+- [x] Windows .exe (prototip: builds/TipOver-windows-v0.1.zip)
+- [ ] KULLANICI testi: "sürmek eğlenceli mi?"
 
 ## Aşama 2 — Tek kişilik tam oyun
-- [ ] Rastgele şehir üretici (ızgara, binalar, restoranlar, müşteri evleri, balkonlar)
-- [ ] Sipariş sistemi (al → teslim et), yön oku, mesafe
-- [ ] Teslim: dur-ve-ver + balkon atışı (çifte bahşiş)
-- [ ] Müşteri yorum kartları (TR + EN, etiketlere göre komik cümleler)
-- [ ] Vardiya: süre, kira hedefi, gün sonu özeti, en komik 3 yorum, ekran görüntüsü kaydet (F12)
-- [ ] Garaj: rastgele 3 yükseltme kartı, yan etkiler, yeniden çek
-- [ ] Günlük şehir kaosu (yağmur, rüzgâr, köpek, güvercin, sıcak dalgası, tümsek günü, trafik)
-- [ ] Müşteri huyları (Fırlat!, VIP, Sabırsız, En üst kat)
-- [ ] Trafik arabaları
-- [ ] Ana menü, ayarlar (ses, kamera sallantısı, dil), duraklat menüsü
-- [ ] Kayıt sistemi + kalıcı açılımlar (yemekler, mahalleler, kasklar)
-- [ ] Daily Run (tarih tohumlu)
-- [ ] Yeni yemekler: hamburger kulesi, içecek, dondurma (eriyor), suşi, düğün pastası (boss)
-- [ ] Ses: motor, korna, sıçrama, kasa, müzik (sentez)
+- [x] Rastgele şehir üretici (ızgara, binalar, restoranlar, müşteri evleri, balkonlar)
+- [x] Sipariş sistemi (al → teslim et), yön oku, mesafe
+- [x] Teslim: dur-ve-ver + balkon atışı (çifte bahşiş)
+- [x] Müşteri yorum kartları (TR + EN, etiketlere göre komik cümleler)
+- [x] Vardiya: süre, kira hedefi, gün sonu özeti, en komik 3 yorum, ekran görüntüsü kaydet (F12)
+- [x] Garaj: rastgele 3 yükseltme kartı, yan etkiler, yeniden çek
+- [x] Günlük şehir kaosu (yağmur, rüzgâr, köpek, güvercin, sıcak dalgası, tümsek günü, trafik)
+- [x] Müşteri huyları (Fırlat!, VIP, Sabırsız, En üst kat)
+- [x] Trafik arabaları
+- [x] Ana menü, ayarlar (ses, kamera sallantısı, dil), duraklat menüsü
+- [x] Kayıt sistemi + kalıcı açılımlar (yemekler, mahalleler, kasklar)
+- [x] Daily Run (tarih tohumlu)
+- [x] Yeni yemekler: hamburger kulesi, içecek, dondurma (eriyor), suşi, düğün pastası (boss)
+- [x] Ses: motor, korna, sıçrama, kasa, müzik (sentez)
 - [ ] Windows .exe + KULLANICI testi
 
 ## Aşama 3 — Çok oyunculu (yerel)
-- [ ] Sürücü + yolcu (aynı scooter, iki kontrolcü/klavye ikiye bölünmüş)
+- [x] Sürücü + yolcu (aynı scooter, iki kontrolcü/klavye ikiye bölünmüş)
 - [ ] İki scooter (bölünmüş ekran)
 - [ ] Gamepad desteği ve kontrol ekranı
 - [ ] KULLANICI: Remote Play Together ile arkadaşla test (Steam sayfası açıldıktan sonra)
 
 ## Aşama 4 — İçerik ve cila
+- [ ] Sıcak yemekte buhar efekti (buhar azaldıkça soğuyor)
+- [ ] Fareyle denge (tek kişilik)
+- [ ] Kapıda müşteri figürü + tepki (sevinç/öfke)
+- [ ] Bot ile menü arka planı (attract mode)
 - [ ] Felaket tekrarı (en büyük kaza ağır çekim)
 - [ ] Efektler: buhar, çorba lekesi, parçacıklar, ekran sarsıntısı
 - [ ] Yokuşlu mahalle, sahil mahallesi
