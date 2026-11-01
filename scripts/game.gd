@@ -3,12 +3,12 @@ extends Node
 
 const SAVE_PATH := "user://save.json"
 
-var settings := {"quality": 2, "color": 0, "lang": "", "shake": 1.0, "volume": 0.8, "music": 0.6, "fullscreen": false}
+var settings := {"look": {"skin": 0, "jacket": 0, "helmet": 0, "helmet_color": 1, "accessory": 0}, "quality": 2, "color": 0, "lang": "", "shake": 1.0, "volume": 0.8, "music": 0.6, "fullscreen": false}
 var save := {"best_day": 0, "runs": 0, "unlock_level": 0, "rep": 0, "daily_best": {}}
 
 const UI := {
 	"en": {
-		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "big_order": "BIG ORDER: WEDDING CAKE!", "controls": "CONTROLS", "color": "SCOOTER COLOR", "quality": "GRAPHICS", "q0": "LOW", "q1": "MEDIUM", "q2": "HIGH", "district": "District", "bazaar": "Bazaar", "beach": "Beach", "downtown": "Downtown", "locked": "locked", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
+		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "big_order": "BIG ORDER: WEDDING CAKE!", "controls": "CONTROLS", "color": "SCOOTER COLOR", "quality": "GRAPHICS", "character": "CHARACTER", "skin": "Skin", "jacket": "Jacket", "helmet": "Helmet", "helmet_color": "Helmet color", "accessory": "Accessory", "random": "RANDOM", "q0": "LOW", "q1": "MEDIUM", "q2": "HIGH", "district": "District", "bazaar": "Bazaar", "beach": "Beach", "downtown": "Downtown", "locked": "locked", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
 		"settings": "SETTINGS", "quit": "QUIT", "day": "DAY", "rent": "RENT", "money": "CASH",
 		"time": "TIME", "pickup": "Pick up at", "deliver": "Deliver to", "orders": "ORDERS",
 		"no_orders": "Waiting for orders...", "fired": "YOU'RE FIRED!", "paid": "RENT PAID",
@@ -27,7 +27,7 @@ const UI := {
 		"rent_due": "Rent due tonight: $%d", "credits": "Made with Godot Engine (MIT). All art and audio generated in-house.",
 	},
 	"tr": {
-		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "big_order": "BÜYÜK SİPARİŞ: DÜĞÜN PASTASI!", "controls": "KONTROLLER", "color": "SCOOTER RENGİ", "quality": "GRAFİK", "q0": "DÜŞÜK", "q1": "ORTA", "q2": "YÜKSEK", "district": "Mahalle", "bazaar": "Çarşı", "beach": "Sahil", "downtown": "Şehir Merkezi", "locked": "kilitli", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
+		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "big_order": "BÜYÜK SİPARİŞ: DÜĞÜN PASTASI!", "controls": "KONTROLLER", "color": "SCOOTER RENGİ", "quality": "GRAFİK", "character": "KARAKTER", "skin": "Ten", "jacket": "Ceket", "helmet": "Kask", "helmet_color": "Kask rengi", "accessory": "Aksesuar", "random": "RASTGELE", "q0": "DÜŞÜK", "q1": "ORTA", "q2": "YÜKSEK", "district": "Mahalle", "bazaar": "Çarşı", "beach": "Sahil", "downtown": "Şehir Merkezi", "locked": "kilitli", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
 		"settings": "AYARLAR", "quit": "ÇIKIŞ", "day": "GÜN", "rent": "KİRA", "money": "PARA",
 		"time": "SÜRE", "pickup": "Al:", "deliver": "Teslim:", "orders": "SİPARİŞLER",
 		"no_orders": "Sipariş bekleniyor...", "fired": "KOVULDUN!", "paid": "KİRA ÖDENDİ",

@@ -97,8 +97,8 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Gün saati (sabah / öğle / gün batımı / gece — gece lambalar yanar) her vardiyada değişir
 
 ## Aşama 6 — Karakter özelleştirme
-- [ ] Yeni kurye modeli (kafa, gövde, kollar, bacaklar, eller; basit animasyon: el sallama, düşme)
-- [ ] Özelleştirme ekranı: ten rengi, ceket rengi, kask tipi (klasik/kedi kulağı/korsan/şef şapkası…), kask rengi, aksesuar (gözlük/bıyık/atkı), scooter rengi
+- [x] Yeni kurye modeli (kafa, gövde, kollar, bacaklar, eller; basit animasyon: el sallama, düşme)
+- [x] Özelleştirme ekranı: ten rengi, ceket rengi, kask tipi (klasik/kedi kulağı/korsan/şef şapkası…), kask rengi, aksesuar (gözlük/bıyık/atkı), scooter rengi
 - [ ] Ayarlar kayıt dosyasında; online oyunda diğer oyunculara gönderilir
 
 ## Aşama 7 — Online çok oyunculu (1-4 kişi)

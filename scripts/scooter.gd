@@ -26,6 +26,7 @@ var color := Color("#ff6b35")
 var rack: Rack
 var visual: Node3D
 var headlight: SpotLight3D
+var look := {}
 var rider: Node3D
 var wheels: Array = []
 var rays: Array = []
@@ -58,6 +59,8 @@ func _unhandled_input(e: InputEvent) -> void:
 func _ready() -> void:
 	if player == 0 and color == Color("#ff6b35"):
 		color = Color(Game.SCOOTER_COLORS[int(Game.settings.color) % Game.SCOOTER_COLORS.size()])
+	if look.is_empty():
+		look = Game.settings.look if player == 0 else Courier.default_look(player)
 	mass = 140.0
 	gravity_scale = 1.0
 	can_sleep = false
@@ -127,22 +130,16 @@ func _build_visual() -> void:
 		wheels.append(w)
 	rider = Node3D.new()
 	visual.add_child(rider)
-	_build_courier(rider, color)
+	Courier.build(rider, look)
 	rider.position = Vector3(0, 0.85, 0.05)
 
 
-static func _build_courier(parent: Node3D, c: Color) -> void:
-	U.cyl(parent, 0.2, 0.24, 0.55, c, Vector3(0, 0.3, 0))       # torso
-	U.sphere(parent, 0.17, Color("#f1c27d"), Vector3(0, 0.72, -0.02))  # head
-	var helmet := U.sphere(parent, 0.2, c.darkened(0.2), Vector3(0, 0.78, 0))
-	helmet.scale = Vector3(1, 0.75, 1.05)
-	U.box(parent, Vector3(0.3, 0.06, 0.05), Color("#222222"), Vector3(0, 0.72, -0.17))  # visor
-	for x in [-0.24, 0.24]:
-		var arm := U.cyl(parent, 0.06, 0.06, 0.5, c, Vector3(x, 0.38, -0.25))
-		arm.rotation.x = 1.1
-	for x in [-0.12, 0.12]:
-		var leg := U.cyl(parent, 0.07, 0.07, 0.5, Color("#264653"), Vector3(x, 0.0, -0.18))
-		leg.rotation.x = 1.3
+## Rebuild the rider after the look changed (character screen).
+func set_look(l: Dictionary) -> void:
+	look = l
+	for c in rider.get_children():
+		c.queue_free()
+	Courier.build(rider, look)
 
 
 func _axis(neg: String, pos: String) -> float:
@@ -320,7 +317,7 @@ func crash(vel: Vector3) -> void:
 	ragdoll.add_child(cs)
 	var vis := Node3D.new()
 	ragdoll.add_child(vis)
-	_build_courier(vis, color)
+	Courier.build(vis, look)
 	get_parent().add_child(ragdoll)
 	ragdoll.global_transform = rider.global_transform
 	ragdoll.linear_velocity = vel * 0.9 + Vector3.UP * 5.0

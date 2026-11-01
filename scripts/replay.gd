@@ -52,7 +52,7 @@ func play(data: Array, parent_cam: Camera3D) -> void:
 	tmp.queue_free()
 	vis.transform = Transform3D.IDENTITY
 	ghost_rag = Node3D.new()
-	Scooter._build_courier(ghost_rag, Color("#ff6b35"))
+	Courier.build(ghost_rag, Game.settings.look)
 	add_child(ghost_rag)
 	cam = Camera3D.new()
 	cam.fov = 60.0

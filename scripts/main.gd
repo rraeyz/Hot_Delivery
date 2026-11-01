@@ -10,6 +10,8 @@ var split := false
 var daily := false
 var ui: CanvasLayer
 var menu_scene: Node3D
+var menu_scooter: Scooter
+var menu_cam: Camera3D
 var paused_panel: Control
 var toast: Label
 var args := {}
@@ -75,6 +77,8 @@ func show_menu() -> void:
 	get_tree().paused = false
 	_free_world()
 	_build_menu_scene()
+	menu_cam.position = Vector3(-2.4, 1.9, 3.4)
+	menu_cam.look_at(Vector3(-0.9, 1.3, 0))
 	var root := _screen(false)
 	var v := VBoxContainer.new()
 	v.position = Vector2(60, 24)
@@ -90,6 +94,7 @@ func show_menu() -> void:
 	v.add_child(UiKit.button(Game.t("daily"), func(): start_run(_daily_seed(), false, true)))
 	v.add_child(UiKit.button(Game.t("coop"), func(): start_run(randi(), true, false)))
 	v.add_child(UiKit.button(Game.t("split"), func(): start_run(randi(), false, false, true)))
+	v.add_child(UiKit.button(Game.t("character"), show_character))
 	v.add_child(UiKit.button(Game.t("controls"), show_controls))
 	v.add_child(UiKit.button(Game.t("settings"), show_settings))
 	v.add_child(UiKit.button(Game.t("quit"), func(): get_tree().quit()))
@@ -132,6 +137,7 @@ func _build_menu_scene() -> void:
 	turntable.name = "Turntable"
 	menu_scene.add_child(turntable)
 	var s := Scooter.new()
+	menu_scooter = s
 	s.freeze = true
 	s.controls_enabled = false
 	s.set_physics_process(false)
@@ -143,6 +149,7 @@ func _build_menu_scene() -> void:
 	s.rack.items[4].tilt = Vector2(-0.18, 0.08)
 	s.rack._update_visuals()
 	var cam := Camera3D.new()
+	menu_cam = cam
 	cam.position = Vector3(-2.4, 1.9, 3.4)
 	menu_scene.add_child(cam)
 	cam.look_at(Vector3(-0.9, 1.3, 0))
@@ -155,6 +162,55 @@ func _free_menu_scene() -> void:
 	if menu_scene:
 		menu_scene.queue_free()
 		menu_scene = null
+
+
+func show_character() -> void:
+	_build_menu_scene()
+	menu_cam.position = Vector3(-1.5, 1.75, 1.9)
+	menu_cam.look_at(Vector3(-0.35, 1.45, 0))
+	var root := _screen(false)
+	var v := VBoxContainer.new()
+	v.position = Vector2(60, 40)
+	v.custom_minimum_size = Vector2(460, 0)
+	v.add_theme_constant_override("separation", 8)
+	root.add_child(v)
+	v.add_child(UiKit.label(Game.t("character"), 56, UiKit.GOLD))
+	var look: Dictionary = Game.settings.look
+	for slot in Courier.SLOTS:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		var name_l := UiKit.label(Game.t(slot), 22)
+		name_l.custom_minimum_size = Vector2(170, 0)
+		row.add_child(name_l)
+		var vals: Array = Courier.SLOTS[slot]
+		var cur = vals[int(look.get(slot, 0)) % vals.size()]
+		var val_l := UiKit.label(Courier.label(str(cur), Game.lang()) if not str(cur).begins_with("#") else "■■■", 22, Color(cur) if str(cur).begins_with("#") else Color.WHITE)
+		val_l.custom_minimum_size = Vector2(130, 0)
+		var minus := UiKit.button("<", func(): _change_look(slot, -1))
+		var plus := UiKit.button(">", func(): _change_look(slot, 1))
+		row.add_child(minus)
+		row.add_child(val_l)
+		row.add_child(plus)
+		v.add_child(row)
+	v.add_child(UiKit.button(Game.t("random"), func():
+		var l := {}
+		for slot in Courier.SLOTS:
+			l[slot] = randi() % Courier.SLOTS[slot].size()
+		_set_look(l)))
+	v.add_child(UiKit.button(Game.t("back"), show_menu))
+	_focus_first(v)
+
+
+func _change_look(slot: String, dir: int) -> void:
+	_set_look(Courier.cycle(Game.settings.look, slot, dir))
+
+
+func _set_look(l: Dictionary) -> void:
+	Game.settings.look = l
+	Game.write_save()
+	if menu_scooter:
+		menu_scooter.set_look(l)
+	show_character()
 
 
 func show_controls() -> void:
@@ -443,6 +499,10 @@ func _autotest() -> void:
 		run.chaos = Array(chaos.split(","))
 	if args.has("menu"):
 		show_menu()
+		if args.has("character"):
+			Game.settings.look = {"skin": 2, "jacket": 3, "helmet": int(args.character), "helmet_color": 4, "accessory": 2}
+			menu_scooter.set_look(Game.settings.look)
+			show_character()
 		await get_tree().create_timer(1.5).timeout
 		get_viewport().get_texture().get_image().save_png(out + "/menu.png")
 		get_tree().quit()

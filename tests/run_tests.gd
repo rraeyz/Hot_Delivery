@@ -16,7 +16,11 @@ func check(cond: bool, msg: String) -> void:
 func _init() -> void:
 	for f in DirAccess.get_files_at("res://tests"):
 		if f.begins_with("test_") and f.ends_with(".gd"):
-			var t: Object = load("res://tests/" + f).new()
+			var scr: GDScript = load("res://tests/" + f)
+			if scr == null or not scr.can_instantiate():
+				check(false, "test file failed to compile: " + f)
+				continue
+			var t: Object = scr.new()
 			for m in t.get_method_list():
 				var mname: String = m.name
 				if mname.begins_with("test_"):

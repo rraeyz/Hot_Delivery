@@ -212,3 +212,22 @@ func test_themes_and_big_days(t) -> void:
 	t.check(not r.big_order_day(), "day 1 is normal")
 	r.day = 3
 	t.check(r.big_order_day(), "day 3 brings the wedding cake")
+
+
+func test_courier_look(t) -> void:
+	var l := Courier.default_look()
+	for slot in Courier.SLOTS:
+		var n: int = Courier.SLOTS[slot].size()
+		var x := l
+		for i in n:
+			x = Courier.cycle(x, slot, 1)
+		t.check(x[slot] == l[slot], "cycling %s wraps around" % slot)
+		t.check(Courier.cycle(l, slot, -1)[slot] == n - 1 or l[slot] != 0, "cycling %s backwards wraps" % slot)
+	var root := Node3D.new()
+	for h in Courier.HELMETS.size():
+		var look := l.duplicate()
+		look.helmet = h
+		look.accessory = h % Courier.ACCESSORIES.size()
+		Courier.build(root, look)
+	t.check(root.get_child_count() > 20, "courier builds every helmet/accessory")
+	root.free()
