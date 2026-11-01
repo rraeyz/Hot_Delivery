@@ -17,6 +17,8 @@ const UPGRADES := {
 	"grease": {"cost": 25, "mods": {"grip_mult": 0.55, "tip_mult": 0.25}},
 	"bungee": {"cost": 40, "mods": {"wobble_mult": 0.75, "balance_power": 2.0}},
 	"oven": {"cost": 40, "mods": {"heat_bonus_thr": -15.0}},
+	"umbrella": {"cost": 30, "mods": {"dry": 1}},
+	"treats": {"cost": 20, "mods": {"treats": 1}},
 }
 
 # Multiplicative mods multiply, everything else adds.
@@ -104,7 +106,7 @@ func mods(player := -1) -> Dictionary:
 		"accel_mult": 1.0, "slosh_mult": 1.0, "wobble_mult": 1.0, "spill_thr_mult": 1.0,
 		"grip_mult": 1.0, "gyro": 0.0, "tape": 0, "pickup_radius": 2.5, "throw_mult": 2.0,
 		"throw_accuracy": 1.0, "tip_mult": 1.0, "bonus_star": 0, "horn_power": 0.0,
-		"balance_power": 7.0, "heat_bonus_thr": 80.0, "day_pay_mult": 1.0 + 0.08 * (day - 1)}
+		"balance_power": 7.0, "heat_bonus_thr": 80.0, "dry": 0, "treats": 0, "day_pay_mult": 1.0 + 0.08 * (day - 1)}
 	m["timer_mult"] = 1.0
 	m["hand_mult"] = 1.0
 	var mine: Array = owned_by[player] if competitive() and player >= 0 and player < owned_by.size() else owned
@@ -122,7 +124,7 @@ func mods(player := -1) -> Dictionary:
 				m[k] *= um[k]
 			else:
 				m[k] += um[k]
-	if "rain" in chaos:
+	if "rain" in chaos and m.dry <= 0:
 		m.grip_mult *= 0.6
 		m.heat_loss_mult *= 1.6
 	if "heatwave" in chaos:

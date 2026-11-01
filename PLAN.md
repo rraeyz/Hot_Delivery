@@ -144,4 +144,5 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [ ] Steam başarımları listesi (GodotSteam gelince bağlanacak)
 - [x] Yeni yemekler: dev JÖLE (çok sallanır ama kırılmaz, 7. gün açılır) ve 4'lü KAHVE tepsisi (en ufak frende döker, 8. gün açılır)
 - [x] Yeni olay: ŞEHİR MARATONU — 16 koşucu bir caddeden akar, çarpınca takla atarlar (online aynı paket)
+- [x] Yeni yükseltmeler: Şemsiyeli Şapka (yağmur/sağanak etkisiz), Köpek Ödülü (köpek ısırmaz, güvercin gelmez)
 - [ ] Yeni yemekler / olaylar / yükseltmeler, oyuncu geri bildirimine göre denge, hata düzeltme

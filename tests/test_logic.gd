@@ -72,6 +72,18 @@ func test_new_foods(t) -> void:
 	t.check(not ("coffee" in RunState.new(1, 5).food_pool()), "coffee stays locked before its unlock")
 
 
+func test_weather_upgrades(t) -> void:
+	var r := RunState.new(1, 0)
+	r.chaos = ["rain"]
+	var wet := r.mods()
+	r.owned.append("umbrella")
+	var dry := r.mods()
+	t.check(wet.grip_mult < 1.0 and dry.grip_mult == 1.0, "umbrella cancels rain grip loss")
+	t.check(dry.heat_loss_mult < wet.heat_loss_mult, "umbrella keeps food warm in rain")
+	r.owned.append("treats")
+	t.check(r.mods().treats == 1, "dog treats mod set")
+
+
 func test_brake_tilts_forward(t) -> void:
 	var p := FoodItem.new("pizza")
 	_sim(p, Vector2(0, -8.0), 0.5)

@@ -1184,6 +1184,9 @@ func _on_walker_bumped(wk: Node3D) -> void:
 func _on_dog_bite(_d: Node3D) -> void:
 	audio.play("bark")
 	var victim := nearest_scooter(_d.global_position)
+	if int(victim.mods.get("treats", 0)) > 0:   # bought dog treats: a happy lick instead of a bite
+		hud.popup("*NOM NOM*", Color("#90be6d"))
+		return
 	victim.rack.jolt(4.5)
 	for it in victim.rack.items:
 		it.tilt_vel += Vector2(rng.randf_range(-1, 1), rng.randf_range(-1, 1)) * 2.0
@@ -1337,7 +1340,7 @@ func _chaos_tick(dt: float, sp: float) -> void:
 			if scooter.rack.items.size() > 0:
 				hud.popup("WHOOSH!", Color("#a8dadc"))
 				audio.play("wind")
-	if "pigeons" in run.chaos and not pigeon_busy:
+	if "pigeons" in run.chaos and not pigeon_busy and int(scooter.mods.get("treats", 0)) <= 0:
 		if sp < 2.0 and scooter.rack.items.size() > 0:
 			still_time += dt
 			if still_time > 2.5:

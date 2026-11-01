@@ -63,6 +63,8 @@ const UPGRADE_TEXT := {
 		"grease": ["Greasy Tires", "Drift everywhere. +25% tips for the show."],
 		"bungee": ["Bungee Cords", "Stack wobbles less, but you can balance less."],
 		"oven": ["Pizza Stone", "'Hot' bonus starts earlier (65 instead of 80)."],
+		"umbrella": ["Umbrella Hat", "Rain and showers can't touch you: full grip, food stays warm."],
+		"treats": ["Dog Treats", "Dogs and pigeons are your friends now."],
 	},
 	"tr": {
 		"thermo": ["Termos Çanta", "Yemek %40 daha yavaş soğur."],
@@ -79,6 +81,8 @@ const UPGRADE_TEXT := {
 		"grease": ["Yağlı Lastik", "Her yerde drift. Şov için +%25 bahşiş."],
 		"bungee": ["Lastik Ahtapot", "Kule az sallanır ama sen de az dengelersin."],
 		"oven": ["Taş Fırın Kutusu", "'Sıcak' bonusu daha erken başlar (80 yerine 65)."],
+		"umbrella": ["Şemsiyeli Şapka", "Yağmur ve sağanak işlemez: tam yol tutuş, yemek soğumaz."],
+		"treats": ["Köpek Ödülü", "Köpekler ve güvercinler artık arkadaşın."],
 	},
 }
 

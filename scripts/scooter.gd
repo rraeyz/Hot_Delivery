@@ -291,7 +291,7 @@ func _physics_process(dt: float) -> void:
 		# grip: kill sideways velocity
 		var right := b.x
 		var lat := v.dot(right)
-		var wet: float = 0.65 if mods.get("shower", false) else 1.0
+		var wet: float = 0.65 if mods.get("shower", false) and mods.get("dry", 0) <= 0 else 1.0
 		var grip: float = 9.0 * mods.get("grip_mult", 1.0) * wet
 		var max_grip: float = 22.0 * mods.get("grip_mult", 1.0) * wet
 		apply_central_force(-right * clampf(lat * grip, -max_grip, max_grip) * mass)
@@ -325,7 +325,7 @@ func _physics_process(dt: float) -> void:
 		rack.jolt(s)
 		jolted.emit(s)
 		jolt_cooldown = 0.15
-	rack.heat_mult = 1.5 if mods.get("shower", false) else 1.0
+	rack.heat_mult = 1.5 if mods.get("shower", false) and mods.get("dry", 0) <= 0 else 1.0
 	rack.step(dt, local_accel)
 	# --- crash detection
 	var hv_prev := Vector3(_prev_vel.x, 0, _prev_vel.z)
