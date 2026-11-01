@@ -100,6 +100,7 @@ func show_menu() -> void:
 	v.add_child(UiKit.button(Game.t("daily"), func(): start_run(_daily_seed(), false, true)))
 	v.add_child(UiKit.button(Game.t("coop"), func(): start_run(randi(), true, false)))
 	v.add_child(UiKit.button(Game.t("split"), func(): start_run(randi(), false, false, true)))
+	v.add_child(UiKit.button(Game.t("versus"), func(): start_run(randi(), false, false, true, "competitive")))
 	v.add_child(UiKit.button(Game.t("online"), show_online))
 	v.add_child(UiKit.button(Game.t("character"), show_character))
 	v.add_child(UiKit.button(Game.t("controls"), show_controls))
@@ -300,11 +301,13 @@ func show_settings() -> void:
 
 # ---------------------------------------------------------------- run flow
 
-func start_run(seed_value: int, coop_mode: bool, is_daily: bool, split_mode := false) -> void:
+func start_run(seed_value: int, coop_mode: bool, is_daily: bool, split_mode := false, mode := "normal") -> void:
 	coop = coop_mode
 	split = split_mode
 	daily = is_daily
 	run = RunState.new(seed_value, int(Game.save.unlock_level))
+	if mode == "competitive":
+		run.setup_competitive(Net.players.size() if Net.online else 2)
 	var ds: Array = CityGen.THEMES.keys() if is_daily else Game.districts_unlocked()
 	run.theme = ds[run.rng.randi() % ds.size()]
 	Game.save.runs += 1
@@ -359,6 +362,13 @@ func _unlock_check() -> String:
 
 
 func show_summary(result: Dictionary) -> void:
+	if run.competitive():
+		run.end_shift()
+		var light := {"top": result.top, "earned": result.earned}
+		if Net.online:
+			remote_comp.rpc(run.to_dict(), light)
+		show_comp(light)
+		return
 	var paid := run.end_shift()
 	if Net.online:
 		remote_summary.rpc({"top": result.top, "earned": result.earned}, run.to_dict(), paid)
@@ -370,6 +380,8 @@ func show_summary(result: Dictionary) -> void:
 	v.add_child(UiKit.label("%s: $%d    %s: $%d" % [Game.t("earned"), result.earned, Game.t("rent"), run.rent()], 26))
 	var verdict := UiKit.label(Game.t("paid") if paid else Game.t("fired"), 40, UiKit.GOOD if paid else UiKit.BAD)
 	v.add_child(verdict)
+	if run.warned:
+		v.add_child(UiKit.label(Game.t("warned"), 22, UiKit.GOLD))
 	if result.top.size() > 0:
 		v.add_child(UiKit.label(Game.t("best_reviews"), 22, Color(1, 1, 1, 0.8)))
 		var h := HBoxContainer.new()
@@ -429,6 +441,99 @@ func remote_summary(result: Dictionary, d: Dictionary, paid: bool) -> void:
 		show_menu()))
 
 
+@rpc("authority", "reliable")
+func remote_comp(d: Dictionary, light: Dictionary) -> void:
+	run = RunState.from_dict(d)
+	show_comp(light)
+
+
+var _comp_light := {}
+
+
+## Competitive end of round: leaderboard, the new difficulty card, and each player's own shop.
+func show_comp(light: Dictionary) -> void:
+	_comp_light = light
+	if world:
+		world.hud.visible = false
+	var root := _screen()
+	var v := _center_box(root, 1100)
+	var order: Array = range(run.players)
+	order.sort_custom(func(a, b): return run.earned_by[a] > run.earned_by[b])
+	if run.finished:
+		v.add_child(UiKit.label(Game.player_name(run.winner()) + " " + Game.t("winner"), 52, UiKit.GOLD))
+	else:
+		v.add_child(UiKit.label("%s %d/%d" % [Game.t("round"), run.day, RunState.ROUNDS], 44, UiKit.GOLD))
+	v.add_child(UiKit.label(Game.t("leaderboard"), 22, Color(1, 1, 1, 0.8)))
+	for rank in order.size():
+		var i: int = order[rank]
+		v.add_child(UiKit.label("%d. %s   $%d" % [rank + 1, Game.player_name(i), run.earned_by[i]], 28 if rank == 0 else 24))
+	if light.get("top", []).size() > 0:
+		var h := HBoxContainer.new()
+		h.add_theme_constant_override("separation", 12)
+		for rv in light.top:
+			h.add_child(Hud.review_card(rv, 260))
+		v.add_child(h)
+	if run.finished:
+		v.add_child(UiKit.button(Game.t("menu"), func():
+			Net.leave()
+			show_menu()))
+		_focus_first(v)
+		return
+	if run.cards.size() > 0:
+		var ct := Game.card_text(run.cards.back())
+		v.add_child(UiKit.label("%s: %s — %s" % [Game.t("new_card"), ct[0], ct[1]], 24, UiKit.BAD.lightened(0.3)))
+	# local split shows both shops; online shows only mine
+	var mine: Array = [Net.my_index()] if Net.online else range(run.players)
+	var shops := HBoxContainer.new()
+	shops.add_theme_constant_override("separation", 24)
+	v.add_child(shops)
+	for p in mine:
+		var col := VBoxContainer.new()
+		col.add_child(UiKit.label("%s  $%d" % [Game.t("your_shop") if Net.online else Game.player_name(p), run.wallets[p]], 22, UiKit.GOLD))
+		for u in run.shops[p]:
+			var txt := Game.upgrade_text(u)
+			var cost: int = RunState.UPGRADES[u].cost + 15 * run.owned_by[p].count(u)
+			var b := UiKit.button("%s $%d" % [txt[0], cost], func(): _comp_buy(p, u))
+			b.tooltip_text = txt[1]
+			b.disabled = run.wallets[p] < cost
+			col.add_child(b)
+			var d := UiKit.label(txt[1], 16, Color(1, 1, 1, 0.75))
+			d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			d.custom_minimum_size = Vector2(420, 0)
+			col.add_child(d)
+		shops.add_child(col)
+	if Net.is_host():
+		v.add_child(UiKit.button(Game.t("next_round"), func():
+			run.next_day()
+			start_day()))
+	else:
+		v.add_child(UiKit.label(Game.t("waiting_host"), 22, Color(1, 1, 1, 0.8)))
+	_focus_first(v)
+
+
+func _comp_buy(p: int, u: String) -> void:
+	if Net.online and not Net.is_host():
+		request_buy.rpc_id(1, u)
+		return
+	if run.buy_for(p, u):
+		if Net.online:
+			remote_comp.rpc(run.to_dict(), _comp_light)
+		show_comp(_comp_light)
+
+
+@rpc("any_peer", "reliable")
+func request_buy(u: String) -> void:
+	if not multiplayer.is_server() or not RunState.UPGRADES.has(u):
+		return
+	var p := Net.order().find(multiplayer.get_remote_sender_id())
+	if p >= 0 and run.buy_for(p, u):
+		remote_comp.rpc(run.to_dict(), _comp_light)
+		show_comp(_comp_light)
+
+
+var online_mode := "normal"
+
+
 func show_online() -> void:
 	_build_menu_scene()
 	var root := _screen()
@@ -470,7 +575,10 @@ func show_online() -> void:
 			var l := UiKit.label(("★ " if id == 1 else "• ") + str(info.get("name", "?")), 24, Color(Game.SCOOTER_COLORS[int(info.get("color", 0)) % 8]).lightened(0.3))
 			v.add_child(l)
 		if Net.is_host():
-			var b := UiKit.button(Game.t("start"), func(): start_run(randi(), false, false))
+			v.add_child(UiKit.button("%s: %s" % [Game.t("mode"), Game.t("m_" + online_mode)], func():
+				online_mode = "competitive" if online_mode == "normal" else "normal"
+				show_online()))
+			var b := UiKit.button(Game.t("start"), func(): start_run(randi(), false, false, false, online_mode))
 			v.add_child(b)
 		else:
 			v.add_child(UiKit.label(Game.t("waiting_host"), 22, Color(1, 1, 1, 0.8)))
@@ -601,6 +709,8 @@ func _autotest() -> void:
 	run = RunState.new(int(args.get("seed", "3")), int(args.get("unlocks", "5")))
 	run.theme = args.get("theme", "bazaar")
 	run.tod = args.get("tod", run.tod)
+	if args.get("mode", "") == "competitive":
+		run.setup_competitive(2)
 	if chaos != "":
 		run.chaos = Array(chaos.split(","))
 	if args.has("menu"):
@@ -652,7 +762,7 @@ func _autotest_net() -> void:
 			await get_tree().create_timer(0.25).timeout
 			waited += 0.25
 		print("NET host sees players: ", Net.players.size())
-		start_run(int(args.get("seed", "4")), false, false)
+		start_run(int(args.get("seed", "4")), false, false, false, args.get("mode", "normal"))
 	else:
 		Net.join(args.netjoin)
 		var waited := 0.0

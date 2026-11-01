@@ -36,6 +36,8 @@ static func compute(item: FoodItem, ctx: Dictionary) -> Dictionary:
 			tip *= 1.5
 	elif quirk == "yeet":
 		tip *= 0.25
+	if not thrown:
+		tip *= mods.get("hand_mult", 1.0)
 	tip *= 1.0 + 0.2 * mini(combo, 5)
 	tip *= mods.get("tip_mult", 1.0) * mods.get("day_pay_mult", 1.0)
 

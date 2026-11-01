@@ -23,6 +23,14 @@ const UPGRADES := {
 const MULT_KEYS := ["heat_loss_mult", "jolt_mult", "top_speed_mult", "accel_mult", "slosh_mult",
 	"wobble_mult", "spill_thr_mult", "grip_mult"]
 
+## Competitive mode: one new card per round, they stack up. Chaos cards reuse the chaos events.
+const COMP_CARDS := {
+	"rain": {}, "wind": {}, "dogs": {}, "pigeons": {}, "traffic": {}, "bumps": {}, "fog": {}, "heatwave": {},
+	"impatient": {"timer_mult": 0.7}, "fragile": {"jolt_mult": 1.5, "wobble_mult": 1.15},
+	"no_doorbell": {"hand_mult": 0.5}, "cold_kitchen": {"heat_loss_mult": 1.6}, "greedy": {"capacity": 1, "wobble_mult": 1.25},
+}
+const ROUNDS := 7
+
 const CHAOS := ["rain", "wind", "heatwave", "bumps", "traffic", "dogs", "pigeons", "fog"]
 const QUIRKS := ["", "", "", "yeet", "vip", "impatient", "picky", "rooftop"]
 
@@ -35,6 +43,16 @@ var owned: Array = []
 var chaos: Array = []
 var shop: Array = []
 var fired := false
+var mode := "normal"        # "normal" (co-op, one missed rent allowed) or "competitive"
+var strikes := 0
+var warned := false          # missed rent this shift but still employed
+var finished := false        # competitive: all rounds played
+var players := 1
+var wallets: Array = []      # competitive: money per player
+var earned_by: Array = []
+var owned_by: Array = []
+var shops: Array = []
+var cards: Array = []
 var stats := {"deliveries": 0, "crashes": 0, "throws": 0, "spilled": 0, "best_tip": 0}
 var theme := "bazaar"
 var tod := "noon"   # time of day of the current shift
@@ -58,16 +76,46 @@ func rent() -> int:
 
 
 func shift_length() -> float:
-	return 210.0
+	return 150.0 if competitive() else 210.0
 
 
-func mods() -> Dictionary:
+func setup_competitive(n: int) -> void:
+	mode = "competitive"
+	players = n
+	wallets = []
+	earned_by = []
+	owned_by = []
+	shops = []
+	for i in n:
+		wallets.append(0)
+		earned_by.append(0)
+		owned_by.append([])
+		shops.append([])
+	cards = []
+	chaos = []
+
+
+func competitive() -> bool:
+	return mode == "competitive"
+
+
+func mods(player := -1) -> Dictionary:
 	var m := {"capacity": 3, "heat_loss_mult": 1.0, "jolt_mult": 1.0, "top_speed_mult": 1.0,
 		"accel_mult": 1.0, "slosh_mult": 1.0, "wobble_mult": 1.0, "spill_thr_mult": 1.0,
 		"grip_mult": 1.0, "gyro": 0.0, "tape": 0, "pickup_radius": 2.5, "throw_mult": 2.0,
 		"throw_accuracy": 1.0, "tip_mult": 1.0, "bonus_star": 0, "horn_power": 0.0,
 		"balance_power": 7.0, "heat_bonus_thr": 80.0, "day_pay_mult": 1.0 + 0.08 * (day - 1)}
-	for u in owned:
+	m["timer_mult"] = 1.0
+	m["hand_mult"] = 1.0
+	var mine: Array = owned_by[player] if competitive() and player >= 0 and player < owned_by.size() else owned
+	for c in cards:
+		var cm: Dictionary = COMP_CARDS.get(c, {})
+		for k in cm:
+			if k in MULT_KEYS or k.ends_with("_mult"):
+				m[k] *= cm[k]
+			else:
+				m[k] += cm[k]
+	for u in mine:
 		var um: Dictionary = UPGRADES[u].mods
 		for k in um:
 			if k in MULT_KEYS:
@@ -131,8 +179,12 @@ func roll_chaos() -> void:
 		chaos.append(c)
 
 
-func add_tip(amount: int) -> void:
-	money += amount
+func add_tip(amount: int, player := 0) -> void:
+	if competitive() and player < wallets.size():
+		wallets[player] += amount
+		earned_by[player] += amount
+	else:
+		money += amount
 	earned_today += amount
 	stats.deliveries += 1
 	stats.best_tip = maxi(stats.best_tip, amount)
@@ -140,12 +192,55 @@ func add_tip(amount: int) -> void:
 
 ## Pays rent at the end of the shift. Returns false if fired.
 func end_shift() -> bool:
+	if competitive():
+		if day >= ROUNDS:
+			finished = true
+			return true
+		var options := COMP_CARDS.keys().filter(func(c): return c not in cards)
+		if options.size() > 0:
+			cards.append(options[rng.randi() % options.size()])
+		for p in players:
+			roll_shop_for(p)
+		return true
 	var r := rent()
+	warned = false
 	if money < r:
-		fired = true
-		return false
+		strikes += 1
+		if strikes > 1:
+			fired = true
+			return false
+		warned = true     # first miss: the boss lets it slide, you lose your savings
+		money = 0
+		roll_shop()
+		return true
 	money -= r
 	roll_shop()
+	return true
+
+
+func winner() -> int:
+	var best := 0
+	for i in earned_by.size():
+		if earned_by[i] > earned_by[best]:
+			best = i
+	return best
+
+
+func roll_shop_for(p: int) -> void:
+	var saved_owned := owned
+	owned = owned_by[p]
+	roll_shop()
+	shops[p] = shop.duplicate()
+	owned = saved_owned
+
+
+func buy_for(p: int, u: String) -> bool:
+	var cost := UPGRADES[u].cost + 15 * owned_by[p].count(u) as int
+	if u not in shops[p] or wallets[p] < cost:
+		return false
+	wallets[p] -= cost
+	owned_by[p].append(u)
+	shops[p].erase(u)
 	return true
 
 
@@ -153,6 +248,8 @@ func next_day() -> void:
 	day += 1
 	earned_today = 0
 	roll_chaos()
+	if competitive():
+		chaos = cards.filter(func(c): return c in CHAOS)
 
 
 func roll_shop() -> void:
@@ -194,7 +291,8 @@ func reroll() -> bool:
 
 
 const SYNC_KEYS := ["seed_value", "day", "money", "earned_today", "owned", "chaos", "shop", "fired",
-	"stats", "unlock_level", "theme", "tod"]
+	"stats", "unlock_level", "theme", "tod", "mode", "strikes", "warned", "finished", "players", "wallets",
+	"earned_by", "owned_by", "shops", "cards"]
 
 
 ## Everything a client needs to build the same day as the host.

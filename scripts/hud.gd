@@ -90,8 +90,15 @@ func _process(dt: float) -> void:
 		return
 	var r := world.run
 	var rent_col := "#06d6a0" if r.money >= r.rent() else "#ffd166"
-	status.text = "%s %d   %s $%d   %s $%d" % [Game.t("day"), r.day, Game.t("money"), r.money, Game.t("rent"), r.rent()]
-	status.add_theme_color_override("font_color", Color(rent_col))
+	if r.competitive():
+		var parts := []
+		for i in r.wallets.size():
+			parts.append("%s $%d" % [Game.player_name(i), r.earned_by[i]])
+		status.text = "%s %d/%d   %s" % [Game.t("round"), r.day, RunState.ROUNDS, "   ".join(parts)]
+		status.add_theme_color_override("font_color", Color.WHITE)
+	else:
+		status.text = "%s %d   %s $%d   %s $%d" % [Game.t("day"), r.day, Game.t("money"), r.money, Game.t("rent"), r.rent()]
+		status.add_theme_color_override("font_color", Color(rent_col))
 	var tl := maxf(0.0, world.time_left)
 	timer_label.text = "%d:%02d" % [int(tl / 60.0), int(tl) % 60]
 	timer_label.add_theme_color_override("font_color", UiKit.BAD if tl < 20.0 else Color.WHITE)

@@ -8,7 +8,7 @@ var save := {"best_day": 0, "runs": 0, "unlock_level": 0, "rep": 0, "daily_best"
 
 const UI := {
 	"en": {
-		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "big_order": "BIG ORDER: WEDDING CAKE!", "controls": "CONTROLS", "color": "SCOOTER COLOR", "quality": "GRAPHICS", "character": "CHARACTER", "skin": "Skin", "jacket": "Jacket", "helmet": "Helmet", "helmet_color": "Helmet color", "accessory": "Accessory", "random": "RANDOM", "online": "ONLINE (1-4 PLAYERS)", "your_name": "Your name", "host": "HOST", "join": "JOIN", "players": "PLAYERS", "start": "START", "waiting_host": "Waiting for the host...", "leave": "LEAVE", "disconnected": "Disconnected", "online_tip": "Host: share your IP (same Wi-Fi, or port 24680 forwarded / a LAN tool). Steam invites come with the Steam release.", "q0": "LOW", "q1": "MEDIUM", "q2": "HIGH", "district": "District", "bazaar": "Bazaar", "beach": "Beach", "downtown": "Downtown", "locked": "locked", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
+		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "big_order": "BIG ORDER: WEDDING CAKE!", "controls": "CONTROLS", "color": "SCOOTER COLOR", "quality": "GRAPHICS", "character": "CHARACTER", "skin": "Skin", "jacket": "Jacket", "helmet": "Helmet", "helmet_color": "Helmet color", "accessory": "Accessory", "random": "RANDOM", "round": "ROUND", "versus": "VERSUS: 2 SCOOTERS", "mode": "MODE", "m_normal": "NORMAL (CO-OP)", "m_competitive": "COMPETITIVE", "new_card": "NEW DIFFICULTY CARD", "winner": "WINS THE CITY!", "warned": "Rent missed! The boss lets it slide ONCE. Savings gone.", "next_round": "NEXT ROUND", "leaderboard": "LEADERBOARD", "your_shop": "YOUR SHOP", "online": "ONLINE (1-4 PLAYERS)", "your_name": "Your name", "host": "HOST", "join": "JOIN", "players": "PLAYERS", "start": "START", "waiting_host": "Waiting for the host...", "leave": "LEAVE", "disconnected": "Disconnected", "online_tip": "Host: share your IP (same Wi-Fi, or port 24680 forwarded / a LAN tool). Steam invites come with the Steam release.", "q0": "LOW", "q1": "MEDIUM", "q2": "HIGH", "district": "District", "bazaar": "Bazaar", "beach": "Beach", "downtown": "Downtown", "locked": "locked", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
 		"settings": "SETTINGS", "quit": "QUIT", "day": "DAY", "rent": "RENT", "money": "CASH",
 		"time": "TIME", "pickup": "Pick up at", "deliver": "Deliver to", "orders": "ORDERS",
 		"no_orders": "Waiting for orders...", "fired": "YOU'RE FIRED!", "paid": "RENT PAID",
@@ -27,7 +27,7 @@ const UI := {
 		"rent_due": "Rent due tonight: $%d", "credits": "Made with Godot Engine (MIT). All art and audio generated in-house.",
 	},
 	"tr": {
-		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "big_order": "BÜYÜK SİPARİŞ: DÜĞÜN PASTASI!", "controls": "KONTROLLER", "color": "SCOOTER RENGİ", "quality": "GRAFİK", "character": "KARAKTER", "skin": "Ten", "jacket": "Ceket", "helmet": "Kask", "helmet_color": "Kask rengi", "accessory": "Aksesuar", "random": "RASTGELE", "online": "ONLINE (1-4 OYUNCU)", "your_name": "Adın", "host": "KUR", "join": "KATIL", "players": "OYUNCULAR", "start": "BAŞLAT", "waiting_host": "Ev sahibi bekleniyor...", "leave": "AYRIL", "disconnected": "Bağlantı koptu", "online_tip": "Kuran kişi IP adresini paylaşır (aynı Wi-Fi ya da 24680 portu açık / LAN programı). Steam davetleri Steam sürümüyle gelecek.", "q0": "DÜŞÜK", "q1": "ORTA", "q2": "YÜKSEK", "district": "Mahalle", "bazaar": "Çarşı", "beach": "Sahil", "downtown": "Şehir Merkezi", "locked": "kilitli", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
+		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "big_order": "BÜYÜK SİPARİŞ: DÜĞÜN PASTASI!", "controls": "KONTROLLER", "color": "SCOOTER RENGİ", "quality": "GRAFİK", "character": "KARAKTER", "skin": "Ten", "jacket": "Ceket", "helmet": "Kask", "helmet_color": "Kask rengi", "accessory": "Aksesuar", "random": "RASTGELE", "round": "BÖLÜM", "versus": "KAPIŞMA: 2 SCOOTER", "mode": "MOD", "m_normal": "NORMAL (CO-OP)", "m_competitive": "REKABETÇİ", "new_card": "YENİ ZORLUK KARTI", "winner": "ŞEHRİN KRALI OLDU!", "warned": "Kira ödenmedi! Patron BİR kere göz yumuyor. Birikimin gitti.", "next_round": "SONRAKİ BÖLÜM", "leaderboard": "SKOR TABLOSU", "your_shop": "SENİN DÜKKANIN", "online": "ONLINE (1-4 OYUNCU)", "your_name": "Adın", "host": "KUR", "join": "KATIL", "players": "OYUNCULAR", "start": "BAŞLAT", "waiting_host": "Ev sahibi bekleniyor...", "leave": "AYRIL", "disconnected": "Bağlantı koptu", "online_tip": "Kuran kişi IP adresini paylaşır (aynı Wi-Fi ya da 24680 portu açık / LAN programı). Steam davetleri Steam sürümüyle gelecek.", "q0": "DÜŞÜK", "q1": "ORTA", "q2": "YÜKSEK", "district": "Mahalle", "bazaar": "Çarşı", "beach": "Sahil", "downtown": "Şehir Merkezi", "locked": "kilitli", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
 		"settings": "AYARLAR", "quit": "ÇIKIŞ", "day": "GÜN", "rent": "KİRA", "money": "PARA",
 		"time": "SÜRE", "pickup": "Al:", "deliver": "Teslim:", "orders": "SİPARİŞLER",
 		"no_orders": "Sipariş bekleniyor...", "fired": "KOVULDUN!", "paid": "KİRA ÖDENDİ",
@@ -82,6 +82,22 @@ const UPGRADE_TEXT := {
 	},
 }
 
+const CARD_TEXT := {
+	"en": {"impatient": ["Impatient City", "Order timers are 30% shorter."], "fragile": ["Fragile Food", "Bumps hurt 50% more."],
+		"no_doorbell": ["Broken Doorbells", "Hand deliveries pay half. Throw!"], "cold_kitchen": ["Cold Kitchen", "Food cools 60% faster."],
+		"greedy": ["Greedy Racks", "+1 capacity, but towers wobble 25% more."]},
+	"tr": {"impatient": ["Sabırsız Şehir", "Sipariş süreleri %30 kısa."], "fragile": ["Hassas Yemek", "Tümsekler %50 daha çok zarar verir."],
+		"no_doorbell": ["Bozuk Ziller", "Elden teslim yarı öder. Fırlat!"], "cold_kitchen": ["Soğuk Mutfak", "Yemek %60 hızlı soğur."],
+		"greedy": ["Açgözlü Raflar", "+1 kapasite ama kule %25 daha çok sallanır."]},
+}
+
+
+func card_text(c: String) -> Array:
+	if c in RunState.CHAOS:
+		return chaos_text(c)
+	return CARD_TEXT.get(settings.lang, CARD_TEXT.en)[c]
+
+
 const CHAOS_TEXT := {
 	"en": {"rain": ["Rain", "Slippery roads, food cools fast."], "wind": ["Windy", "Gusts shake the stack."],
 		"heatwave": ["Heatwave", "Ice cream melts 2x. Hot food stays hot."], "bumps": ["Speed Bump Day", "The city installed bumps. Everywhere."],
@@ -118,6 +134,15 @@ func districts_unlocked() -> Array:
 	if int(save.best_day) >= 7:
 		d.append("downtown")
 	return d
+
+
+## Display name of player index i (online: lobby name, local: P1/P2).
+func player_name(i: int) -> String:
+	if Net.online:
+		var ids := Net.order()
+		if i < ids.size():
+			return str(Net.players[ids[i]].get("name", "P%d" % (i + 1)))
+	return "P%d" % (i + 1)
 
 
 func t(key: String) -> String:

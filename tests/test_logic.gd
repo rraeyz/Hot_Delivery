@@ -152,7 +152,9 @@ func test_run_rent_and_shop(t) -> void:
 	var r := RunState.new(42)
 	t.check(r.chaos.is_empty(), "day 1 has no chaos")
 	r.add_tip(30)
-	t.check(not r.end_shift() and r.fired, "can't pay rent -> fired")
+	t.check(r.end_shift() and r.warned and not r.fired and r.money == 0, "first missed rent: warning, savings gone")
+	r.add_tip(10)
+	t.check(not r.end_shift() and r.fired, "second missed rent -> fired")
 	var r2 := RunState.new(42)
 	r2.add_tip(120)
 	t.check(r2.end_shift() and r2.money == 70, "rent paid")
@@ -243,3 +245,29 @@ func test_run_sync_roundtrip(t) -> void:
 	t.check(c.day == 4 and c.money == 123 and c.owned == r.owned, "run state survives the network")
 	t.check(c.chaos == r.chaos and c.tod == r.tod and c.theme == r.theme, "chaos/tod/theme synced")
 	t.check(c.mods().capacity == r.mods().capacity, "same mods on both sides")
+
+
+func test_competitive(t) -> void:
+	var r := RunState.new(5)
+	r.setup_competitive(3)
+	r.add_tip(40, 1)
+	r.add_tip(25, 2)
+	t.check(r.wallets == [0, 40, 25] and r.money == 0, "tips go to the player's own wallet")
+	t.check(r.winner() == 1, "richest player leads")
+	t.check(r.end_shift() and r.cards.size() == 1, "each round adds a difficulty card")
+	t.check(r.shops[1].size() == 3, "every player gets their own shop")
+	var u: String = r.shops[1][0]
+	r.wallets[1] = 500
+	t.check(r.buy_for(1, u) and u in r.owned_by[1] and not u in r.owned_by[0], "upgrades are personal")
+	r.next_day()
+	for i in RunState.ROUNDS:
+		r.end_shift()
+		r.next_day()
+	t.check(r.finished, "competitive ends after the last round")
+	t.check(r.cards.size() >= 5, "cards stacked up (%d)" % r.cards.size())
+	var c := RunState.from_dict(r.to_dict())
+	t.check(c.competitive() and c.wallets == r.wallets and c.cards == r.cards, "competitive state syncs")
+	var m := RunState.new(1)
+	m.setup_competitive(2)
+	m.cards = ["impatient", "greedy"]
+	t.check(m.mods(0).timer_mult < 1.0 and m.mods(0).capacity == 4, "card effects apply")

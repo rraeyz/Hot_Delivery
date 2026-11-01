@@ -31,6 +31,8 @@ func add_item(it: FoodItem) -> bool:
 	it.tilt_vel = Vector2(_rng.randf_range(-0.5, 0.5), _rng.randf_range(-0.5, 0.5))
 	if it.tape == 0:
 		it.tape = int(mods.get("tape", 0))
+	if body:
+		it.carrier = body.index
 	items.append(it)
 	_rebuild()
 	return true

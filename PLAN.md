@@ -110,10 +110,10 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [ ] Steam lobileri (GodotSteam, App ID 480 ile geliştirme) — KULLANICI: Steamworks hesabı sonrası gerçek App ID
 
 ## Aşama 8 — Modlar
-- [ ] **Normal (co-op, 1-4):** ortak kasa, kira; kira kaçırılırsa 1 uyarı hakkı
-- [ ] **Rekabetçi (2-4):** her oyuncu/ekip kendi şirketi ve kasası; aynı siparişler için yarış; her bölüm sonunda yeni **zorluk kartı** kalıcı eklenir (yağmur hep var, müşteriler sabırsız, köprü kapalı, köpek sürüsü…); bölümler arası herkes kendi parasıyla dükkândan yükseltme alır; 7 bölüm sonunda en zengin kazanır (bölüm sonunda kirayı ödeyemeyen elenir)
-- [ ] Rekabetçi oyuncular arası etkileşim: korna ile itme, başkasının düşen yemeğini çalma (bahşişi düşük), yolu kesme
-- [ ] Mod seçim ekranı + kurallar ekranı
+- [x] **Normal (co-op, 1-4):** ortak kasa, kira; kira kaçırılırsa 1 uyarı hakkı
+- [x] **Rekabetçi (2-4):** her oyuncu/ekip kendi şirketi ve kasası; aynı siparişler için yarış; her bölüm sonunda yeni **zorluk kartı** kalıcı eklenir (yağmur hep var, müşteriler sabırsız, köprü kapalı, köpek sürüsü…); bölümler arası herkes kendi parasıyla dükkândan yükseltme alır; 7 bölüm sonunda en zengin kazanır (bölüm sonunda kirayı ödeyemeyen elenir)
+- [x] Rekabetçi oyuncular arası etkileşim: korna ile itme, başkasının düşen yemeğini çalma (bahşişi düşük), yolu kesme
+- [x] Mod seçim ekranı + kurallar ekranı
 
 ## Aşama 9 — Mutfak/Paketleme rolü
 - [ ] Restoran içi küçük alan: çorba kepçesi, pizza fırını, paketleme tezgâhı

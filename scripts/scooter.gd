@@ -48,6 +48,7 @@ var stall_t := 0.0
 var _gas_ramp := 0.0
 var _brake_ramp := 0.0
 var external_input := {}
+var index := 0                # position in World.scooters
 var remote := false           # host-side scooter driven by a network player
 var net_pending := {}         # button presses received from that player
 var net_seen := {}

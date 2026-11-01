@@ -33,6 +33,7 @@ var tilt_vel := Vector2.ZERO
 var slosh := Vector2.ZERO
 var slosh_vel := Vector2.ZERO
 var order_id := -1
+var carrier := 0            # index of the scooter that last carried it (who gets the tip)
 var tape := 0              # duct tape charges: saves one fall each
 var dropped := false       # touched the ground at least once
 var spilled := false

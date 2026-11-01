@@ -67,7 +67,8 @@ func _ready() -> void:
 	client = Net.online and not Net.is_host()
 	for i in count:
 		var s := Scooter.new()
-		s.mods = mods
+		s.index = i
+		s.mods = run.mods(i) if run.competitive() else mods
 		s.coop = coop
 		s.split = split
 		s.player = i
@@ -447,6 +448,7 @@ func _spawn_offer(food := "") -> void:
 		total += 15.0
 	if quirk == "impatient":
 		total *= 0.6
+	total *= float(mods.get("timer_mult", 1.0))
 	orders.append({"id": next_order_id, "food": food, "rest": rest, "cust": cust, "quirk": quirk,
 		"state": "offer", "t_total": total, "t_left": total, "crashed": false})
 	next_order_id += 1
@@ -695,8 +697,9 @@ func _deliver(o: Dictionary, it: FoodItem, thrown: bool, at := Vector3.INF) -> v
 	else:
 		combo = 0
 	last_delivery_time = clock
+	var who := clampi(it.carrier, 0, scooters.size() - 1)
 	var ctx := {"time_left": o.t_left, "time_total": o.t_total, "thrown": thrown, "crashed": o.crashed,
-		"combo": combo, "quirk": o.quirk, "mods": mods}
+		"combo": combo, "quirk": o.quirk, "mods": scooters[who].mods}
 	var res := Tips.compute(it, ctx)
 	var rv := Reviews.make(it.kind, res.tags, Game.lang(), rng)
 	rv.stars = res.stars
@@ -706,7 +709,8 @@ func _deliver(o: Dictionary, it: FoodItem, thrown: bool, at := Vector3.INF) -> v
 	rv.integrity = it.integrity
 	rv.day = run.day
 	reviews.append(rv)
-	run.add_tip(res.tip)
+	run.add_tip(res.tip, who)
+	rv["by"] = who
 	if thrown:
 		run.stats.throws += 1
 	if it.spilled:
