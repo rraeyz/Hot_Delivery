@@ -13,7 +13,21 @@ const PALETTE := ["#f4a261", "#e76f51", "#2a9d8f", "#e9c46a", "#8ecae6", "#ffb4a
 	"#90be6d", "#f9c74f", "#cdb4db", "#a8dadc", "#ffd6a5"]
 
 
-static func generate(seed_value: int, n: int = 5, bump_count: int = 8) -> Dictionary:
+const THEMES := {
+	"bazaar": {"palette": PALETTE, "park": 0.14, "tall": 0.12, "ramps": 5, "props": 70,
+		"ground": "#2f3238", "outer": "#7cb518", "walk": "#b8b0a6", "sky": "#4ea8de", "cars": 0},
+	"beach": {"palette": ["#ffe5b4", "#a8dadc", "#ffafcc", "#bde0fe", "#fdffb6", "#caffbf", "#ffc6ff", "#9bf6ff"],
+		"park": 0.3, "tall": 0.03, "ramps": 9, "props": 90,
+		"ground": "#3a3d42", "outer": "#f4e1a1", "walk": "#f1dca7", "sky": "#48cae4", "cars": -2},
+	"downtown": {"palette": ["#6c757d", "#adb5bd", "#457b9d", "#1d3557", "#a8dadc", "#e5e5e5", "#ced4da", "#5c677d"],
+		"park": 0.05, "tall": 0.45, "ramps": 3, "props": 50,
+		"ground": "#25272b", "outer": "#55595f", "walk": "#9a9a9a", "sky": "#90e0ef", "cars": 6},
+}
+
+
+static func generate(seed_value: int, n: int = 5, bump_count: int = 8, theme := "bazaar") -> Dictionary:
+	var th: Dictionary = THEMES[theme]
+	var pal: Array = th.palette
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var size := n * PITCH
@@ -22,7 +36,7 @@ static func generate(seed_value: int, n: int = 5, bump_count: int = 8) -> Dictio
 	for bx in n:
 		for bz in n:
 			var c := Vector3((bx + 0.5) * PITCH, 0, (bz + 0.5) * PITCH)
-			var park := rng.randf() < 0.14
+			var park := rng.randf() < float(th.park)
 			blocks.append({"center": c, "park": park})
 			if park:
 				continue
@@ -30,7 +44,7 @@ static func generate(seed_value: int, n: int = 5, bump_count: int = 8) -> Dictio
 				var w := rng.randf_range(10.5, 13.5)
 				var d := rng.randf_range(10.5, 13.5)
 				var h := rng.randf_range(5.0, 16.0)
-				if rng.randf() < 0.12:
+				if rng.randf() < float(th.tall):
 					h = rng.randf_range(22.0, 34.0)
 				var bc := c + Vector3(q.x * 8.5, 0, q.y * 8.5)
 				# face one of the two outer sides
@@ -43,7 +57,7 @@ static func generate(seed_value: int, n: int = 5, bump_count: int = 8) -> Dictio
 					"center": bc, "size": Vector3(w, h, d), "side": side, "door": door, "curb": curb,
 					"balcony": door + side * 0.9 + Vector3.UP * bal_h, "bal_h": bal_h,
 					"roof": bc + Vector3.UP * (h + 0.6),
-					"color": PALETTE[rng.randi() % PALETTE.size()], "rest": "",
+					"color": pal[rng.randi() % pal.size()], "rest": "",
 				})
 	# restaurants: spread them out by picking lots far from each other
 	var rest_ids := []
@@ -79,7 +93,7 @@ static func generate(seed_value: int, n: int = 5, bump_count: int = 8) -> Dictio
 	var ramps := []
 	var bumps := []
 	var idx := 0
-	for i in mini(5, segments.size()):
+	for i in mini(int(th.ramps), segments.size()):
 		var s: Dictionary = segments[idx]
 		idx += 1
 		ramps.append({"pos": s.pos + _along(s.yaw) * rng.randf_range(-8, 8), "yaw": s.yaw + (PI if rng.randf() < 0.5 else 0.0)})
@@ -88,7 +102,7 @@ static func generate(seed_value: int, n: int = 5, bump_count: int = 8) -> Dictio
 		idx += 1
 		bumps.append({"pos": s.pos + _along(s.yaw) * rng.randf_range(-12, 12), "yaw": s.yaw})
 	var props := []
-	for i in 70:
+	for i in int(th.props):
 		var b: Dictionary = blocks[rng.randi() % blocks.size()]
 		var side := rng.randi() % 4
 		var t := rng.randf_range(-15, 15)
@@ -103,7 +117,7 @@ static func generate(seed_value: int, n: int = 5, bump_count: int = 8) -> Dictio
 	var mid := int(n / 2.0)
 	return {"n": n, "size": size, "blocks": blocks, "lots": lots, "rest_ids": rest_ids,
 		"ramps": ramps, "bumps": bumps, "props": props, "trees": trees,
-		"spawn": Vector3(mid * PITCH, 0.3, mid * PITCH + 6.0)}
+		"spawn": Vector3(mid * PITCH, 0.3, mid * PITCH + 6.0), "theme": th}
 
 
 static func _shuffled(a: Array, rng: RandomNumberGenerator) -> Array:

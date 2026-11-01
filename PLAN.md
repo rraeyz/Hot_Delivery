@@ -58,7 +58,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 ## Aşama 3 — Çok oyunculu (yerel)
 - [x] Sürücü + yolcu (aynı scooter, iki kontrolcü/klavye ikiye bölünmüş)
 - [x] İki scooter (bölünmüş ekran)
-- [ ] Gamepad desteği ve kontrol ekranı
+- [x] Gamepad desteği ve kontrol ekranı
 - [ ] KULLANICI: Remote Play Together ile arkadaşla test (Steam sayfası açıldıktan sonra)
 
 ## Aşama 4 — İçerik ve cila
@@ -68,8 +68,10 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [ ] Bot ile menü arka planı (attract mode)
 - [x] Felaket tekrarı (en büyük kaza ağır çekim)
 - [ ] Efektler: buhar, çorba lekesi, parçacıklar, ekran sarsıntısı
-- [ ] Yokuşlu mahalle, sahil mahallesi
-- [ ] Kozmetikler (kask renkleri)
+- [x] Mahalleler: Çarşı, Sahil (4. gün rekoru açar), Şehir Merkezi (7. gün) — yokuş yerine rampa/yükseklik farkı
+- [x] Kozmetikler: 8 scooter rengi, her 2 günlük rekorda biri açılır
+- [x] Her 3. gün düğün pastası "boss" siparişi
+- [x] Sıkışınca otomatik kurtarma (R de aynı)
 - [ ] Denge geçişi (para hızı, kira eğrisi)
 - [ ] Steam mağaza metinleri + kapak/ekran görüntüleri (oyundan)
 - [ ] GodotSteam (başarımlar) — isteğe bağlı

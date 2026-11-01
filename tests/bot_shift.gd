@@ -18,6 +18,7 @@ func _run() -> void:
 		args[kv[0]] = kv[1] if kv.size() > 1 else "1"
 	var days := int(args.get("days", "1"))
 	var run := RunState.new(int(args.get("seed", "5")), int(args.get("unlocks", "5")))
+	run.theme = args.get("theme", "bazaar")
 	for d in days:
 		if args.has("chaos"):
 			run.chaos = Array(args.chaos.split(","))

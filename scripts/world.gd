@@ -74,7 +74,7 @@ func setup(r: RunState, coop_mode: bool, split_mode := false) -> void:
 	mods = run.mods()
 	rng.seed = run.seed_value * 1000 + run.day
 	var bumps := 8 + (30 if "bumps" in run.chaos else 0)
-	city = CityGen.generate(run.seed_value, 5, bumps)
+	city = CityGen.generate(run.seed_value, 5, bumps, run.theme)
 	time_left = run.shift_length()
 
 
@@ -117,6 +117,9 @@ func _ready() -> void:
 	add_child(hud)
 	hud.setup(self)
 	_spawn_npcs()
+	if run.big_order_day():
+		_spawn_offer("cake")
+		hud.popup(Game.t("big_order"), UiKit.GOLD, true, 4.0, 120.0)
 	for i in 2:
 		_spawn_offer()
 	running = true
@@ -130,7 +133,7 @@ func _build_environment() -> void:
 	env = Environment.new()
 	var sky := Sky.new()
 	var sm := ProceduralSkyMaterial.new()
-	sm.sky_top_color = Color("#4ea8de")
+	sm.sky_top_color = Color(city.theme.sky)
 	sm.sky_horizon_color = Color("#bde0fe")
 	sm.ground_horizon_color = Color("#bde0fe")
 	sm.ground_bottom_color = Color("#6c757d")
@@ -195,10 +198,10 @@ func _build_city() -> void:
 	var size: float = city.size
 	var half_road := CityGen.ROAD * 0.5
 	# ground
-	var g := U.static_box(self, Vector3(size + 60, 1, size + 60), Color("#2f3238"), Vector3(size * 0.5, -0.5, size * 0.5))
+	var g := U.static_box(self, Vector3(size + 60, 1, size + 60), Color(city.theme.ground), Vector3(size * 0.5, -0.5, size * 0.5))
 	g.collision_layer = 1
 	# grass outside city
-	U.box(self, Vector3(size + 400, 0.9, size + 400), Color("#7cb518"), Vector3(size * 0.5, -0.52, size * 0.5))
+	U.box(self, Vector3(size + 400, 0.9, size + 400), Color(city.theme.outer), Vector3(size * 0.5, -0.52, size * 0.5))
 	# boundary walls
 	for w in [[Vector3(size * 0.5, 1, -half_road - 0.5), Vector3(size + 14, 2, 1)],
 			[Vector3(size * 0.5, 1, size + half_road + 0.5), Vector3(size + 14, 2, 1)],
@@ -216,7 +219,7 @@ func _build_city() -> void:
 	# blocks
 	for b in city.blocks:
 		var c: Vector3 = b.center
-		var col := Color("#74c69d") if b.park else Color("#b8b0a6")
+		var col := (Color("#74c69d") if run.theme != "beach" else Color("#f4e1a1")) if b.park else Color(city.theme.walk)
 		U.static_box(self, Vector3(CityGen.BLOCK, 0.15, CityGen.BLOCK), col, c + Vector3(0, 0.075, 0))
 		if b.park:
 			# a big jump ramp in the park
@@ -391,7 +394,7 @@ func _make_arrow() -> Node3D:
 
 
 func _spawn_npcs() -> void:
-	var ncars := 6 if not "traffic" in run.chaos else 14
+	var ncars: int = (6 if not "traffic" in run.chaos else 14) + int(city.theme.cars)
 	var n: int = city.n
 	for i in ncars:
 		var car := Npcs.Car.new()
@@ -414,8 +417,9 @@ func _spawn_npcs() -> void:
 
 # ---------------------------------------------------------------- orders
 
-func _spawn_offer() -> void:
-	var food := run.pick_food()
+func _spawn_offer(food := "") -> void:
+	if food == "":
+		food = run.pick_food()
 	var rest := CityGen.rest_for(city, food)
 	var cust := rest
 	var tries := 0

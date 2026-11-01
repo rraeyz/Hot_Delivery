@@ -10,6 +10,7 @@ var replan := 0.0
 var rng := RandomNumberGenerator.new()
 var throws := true
 var stuck_t := 0.0
+var reverse_t := 0.0
 
 
 func _init(w: World) -> void:
@@ -133,12 +134,15 @@ func drive(dt: float) -> Dictionary:
 		stuck_t += dt
 	else:
 		stuck_t = 0.0
-	if stuck_t > 2.5:
+	if stuck_t > 2.0:
+		stuck_t = 0.0
+		reverse_t = 1.6
+		replan = 0.0
+	if reverse_t > 0.0:
+		# back up, steering so the nose swings toward the target
+		reverse_t -= dt
 		thr = -1.0
-		steer = 1.0
-		if stuck_t > 4.0:
-			stuck_t = 0.0
-			replan = 0.0
+		steer = -signf(ang) if absf(ang) > 0.1 else 1.0
 	for lf in world.loose:
 		if is_instance_valid(lf) and lf.global_position.distance_to(pos) < 3.2:
 			world.request_pickup = true

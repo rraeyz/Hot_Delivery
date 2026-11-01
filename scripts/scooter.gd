@@ -42,6 +42,7 @@ var _prev_vel := Vector3.ZERO
 var _prev_comp := [0.0, 0.0, 0.0, 0.0]
 var _smooth_accel := Vector2.ZERO
 var crash_count := 0
+var stall_t := 0.0
 var _gas_ramp := 0.0
 var _brake_ramp := 0.0
 var external_input := {}
@@ -54,6 +55,8 @@ func _unhandled_input(e: InputEvent) -> void:
 
 
 func _ready() -> void:
+	if player == 0 and color == Color("#ff6b35"):
+		color = Color(Game.SCOOTER_COLORS[int(Game.settings.color) % Game.SCOOTER_COLORS.size()])
 	mass = 140.0
 	gravity_scale = 1.0
 	can_sleep = false
@@ -277,7 +280,14 @@ func _physics_process(dt: float) -> void:
 	if controls_enabled and Input.is_action_just_pressed("p1_horn" if player == 0 else "p2d_horn"):
 		honked.emit(self)
 	if controls_enabled and Input.is_action_just_pressed("p1_reset" if player == 0 else "p2d_reset") and not is_crashed:
-		recover()
+		recover(true)
+	# wedged in something (ramp side, wall corner)? pop free after 3 s of pushing without moving
+	if absf(throttle) > 0.5 and v.length() < 0.3:
+		stall_t += dt
+		if stall_t > 3.0:
+			recover(true)
+	else:
+		stall_t = 0.0
 	_prev_vel = v
 
 
@@ -310,15 +320,18 @@ func crash(vel: Vector3) -> void:
 	crashed.emit(self)
 
 
-func recover() -> void:
+func recover(unstick := false) -> void:
 	is_crashed = false
 	flip_timer = 0.0
+	stall_t = 0.0
 	if is_instance_valid(ragdoll):
 		ragdoll.queue_free()
 	ragdoll = null
 	rider.visible = true
 	var yaw := global_rotation.y
 	var p := global_position
+	if unstick:
+		p += global_basis.z * 1.5 + Vector3.UP * 1.0
 	global_transform = Transform3D(Basis(Vector3.UP, yaw), Vector3(p.x, maxf(p.y, 0.0) + 0.6, p.z))
 	linear_velocity = Vector3.ZERO
 	angular_velocity = Vector3.ZERO

@@ -36,6 +36,7 @@ var chaos: Array = []
 var shop: Array = []
 var fired := false
 var stats := {"deliveries": 0, "crashes": 0, "throws": 0, "spilled": 0, "best_tip": 0}
+var theme := "bazaar"
 var unlock_level := 0   # how many extra foods are unlocked (meta progression)
 
 
@@ -92,6 +93,11 @@ func food_pool() -> Array:
 		if u <= unlock_level:
 			pool.append(k)
 	return pool
+
+
+## Every third day a wedding cake order arrives: the "boss" delivery.
+func big_order_day() -> bool:
+	return day % 3 == 0
 
 
 func pick_food() -> String:

@@ -198,3 +198,17 @@ func test_city_gen(t) -> void:
 		t.check(lot.door.distance_to(lot.curb) < 12.0, "curb near door")
 	var c := CityGen.generate(6)
 	t.check(c.lots[0].size != a.lots[0].size, "different seed differs")
+
+
+func test_themes_and_big_days(t) -> void:
+	for th in CityGen.THEMES:
+		var c := CityGen.generate(9, 5, 8, th)
+		t.check(c.rest_ids.size() == 5, "theme %s has 5 restaurants" % th)
+	var dt := CityGen.generate(9, 5, 8, "downtown")
+	var bz := CityGen.generate(9, 5, 8, "bazaar")
+	var tall := func(c): return c.lots.filter(func(l): return l.size.y > 20.0).size()
+	t.check(tall.call(dt) > tall.call(bz), "downtown is taller than the bazaar")
+	var r := RunState.new(1)
+	t.check(not r.big_order_day(), "day 1 is normal")
+	r.day = 3
+	t.check(r.big_order_day(), "day 3 brings the wedding cake")

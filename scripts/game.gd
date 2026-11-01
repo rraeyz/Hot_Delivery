@@ -3,12 +3,12 @@ extends Node
 
 const SAVE_PATH := "user://save.json"
 
-var settings := {"lang": "", "shake": 1.0, "volume": 0.8, "music": 0.6, "fullscreen": false}
+var settings := {"color": 0, "lang": "", "shake": 1.0, "volume": 0.8, "music": 0.6, "fullscreen": false}
 var save := {"best_day": 0, "runs": 0, "unlock_level": 0, "rep": 0, "daily_best": {}}
 
 const UI := {
 	"en": {
-		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
+		"play": "START SHIFT", "daily": "DAILY RUN", "coop": "CO-OP: DRIVER + PASSENGER", "split": "2 SCOOTERS (SPLIT SCREEN)", "big_order": "BIG ORDER: WEDDING CAKE!", "controls": "CONTROLS", "color": "SCOOTER COLOR", "district": "District", "bazaar": "Bazaar", "beach": "Beach", "downtown": "Downtown", "locked": "locked", "hint_split": "P1: WASD, SPACE throw, F pick up · P2: ARROWS, ENTER throw, RShift pick up",
 		"settings": "SETTINGS", "quit": "QUIT", "day": "DAY", "rent": "RENT", "money": "CASH",
 		"time": "TIME", "pickup": "Pick up at", "deliver": "Deliver to", "orders": "ORDERS",
 		"no_orders": "Waiting for orders...", "fired": "YOU'RE FIRED!", "paid": "RENT PAID",
@@ -27,7 +27,7 @@ const UI := {
 		"rent_due": "Rent due tonight: $%d", "credits": "Made with Godot Engine (MIT). All art and audio generated in-house.",
 	},
 	"tr": {
-		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
+		"play": "VARDİYAYA BAŞLA", "daily": "GÜNLÜK KOŞU", "coop": "CO-OP: SÜRÜCÜ + YOLCU", "split": "2 SCOOTER (BÖLÜNMÜŞ EKRAN)", "big_order": "BÜYÜK SİPARİŞ: DÜĞÜN PASTASI!", "controls": "KONTROLLER", "color": "SCOOTER RENGİ", "district": "Mahalle", "bazaar": "Çarşı", "beach": "Sahil", "downtown": "Şehir Merkezi", "locked": "kilitli", "hint_split": "1.O: WASD, BOŞLUK fırlat, F al · 2.O: OKLAR, ENTER fırlat, Sağ Shift al",
 		"settings": "AYARLAR", "quit": "ÇIKIŞ", "day": "GÜN", "rent": "KİRA", "money": "PARA",
 		"time": "SÜRE", "pickup": "Al:", "deliver": "Teslim:", "orders": "SİPARİŞLER",
 		"no_orders": "Sipariş bekleniyor...", "fired": "KOVULDUN!", "paid": "KİRA ÖDENDİ",
@@ -101,6 +101,23 @@ func _ready() -> void:
 		settings.lang = "tr" if OS.get_locale_language() == "tr" else "en"
 	_setup_input()
 	apply_settings()
+
+
+const SCOOTER_COLORS := ["#ff6b35", "#4361ee", "#2a9d8f", "#e63946", "#ffbe0b", "#8338ec", "#ff70a6", "#222222"]
+
+
+## Colors unlock as you survive more days.
+func colors_unlocked() -> int:
+	return mini(SCOOTER_COLORS.size(), 2 + int(save.best_day / 2.0))
+
+
+func districts_unlocked() -> Array:
+	var d := ["bazaar"]
+	if int(save.best_day) >= 4:
+		d.append("beach")
+	if int(save.best_day) >= 7:
+		d.append("downtown")
+	return d
 
 
 func t(key: String) -> String:

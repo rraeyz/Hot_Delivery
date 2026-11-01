@@ -91,6 +91,7 @@ func show_menu() -> void:
 	v.add_child(UiKit.button(Game.t("daily"), func(): start_run(_daily_seed(), false, true)))
 	v.add_child(UiKit.button(Game.t("coop"), func(): start_run(randi(), true, false)))
 	v.add_child(UiKit.button(Game.t("split"), func(): start_run(randi(), false, false, true)))
+	v.add_child(UiKit.button(Game.t("controls"), show_controls))
 	v.add_child(UiKit.button(Game.t("settings"), show_settings))
 	v.add_child(UiKit.button(Game.t("quit"), func(): get_tree().quit()))
 	var best := UiKit.label(Game.t("best") % int(Game.save.best_day), 20, Color(1, 1, 1, 0.8))
@@ -157,6 +158,36 @@ func _free_menu_scene() -> void:
 		menu_scene = null
 
 
+func show_controls() -> void:
+	var root := _screen()
+	var v := _center_box(root, 900)
+	v.add_child(UiKit.label(Game.t("controls"), 48, UiKit.GOLD))
+	var en := Game.lang() == "en"
+	var rows := [
+		["Drive" if en else "Sür", "W/S + A/D", "RT/LT + L-stick"],
+		["Balance tower" if en else "Kuleyi dengele", "Arrows / mouse" if en else "Oklar / fare", "R-stick"],
+		["Throw top food" if en else "Üstteki yemeği fırlat", "SPACE", "A"],
+		["Pick up" if en else "Yerden al", "F", "X"],
+		["Horn / Get up" if en else "Korna / Kalk", "H / R", "B / Y"],
+		["Screenshot" if en else "Ekran görüntüsü", "F12", "Select"],
+		["Co-op passenger" if en else "Co-op yolcu", "Arrows, ENTER, R-Shift" if en else "Oklar, ENTER, Sağ Shift", "Pad 2"],
+		["Split screen P2" if en else "Bölünmüş ekran 2.O", "Arrows, ENTER, R-Shift, R-Ctrl" if en else "Oklar, ENTER, Sağ Shift, Ctrl", "Pad 2"],
+	]
+	var g := GridContainer.new()
+	g.columns = 3
+	g.add_theme_constant_override("h_separation", 40)
+	for r in rows:
+		g.add_child(UiKit.label(r[0], 22, UiKit.GOLD))
+		g.add_child(UiKit.label(r[1], 22))
+		g.add_child(UiKit.label(r[2], 22, Color(1, 1, 1, 0.75)))
+	v.add_child(g)
+	var tip := UiKit.label("Orange beam = restaurant, green beam = customer. Stop next to them, or throw the top item at the yellow balcony ring for 2x tips." if en else "Turuncu ışık = restoran, yeşil ışık = müşteri. Yanında dur ya da en üstteki yemeği balkondaki sarı halkaya fırlat: 2 kat bahşiş.", 20, Color(1, 1, 1, 0.85))
+	tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(tip)
+	v.add_child(UiKit.button(Game.t("back"), show_menu))
+	_focus_first(v)
+
+
 func show_settings() -> void:
 	var root := _screen()
 	var v := _center_box(root)
@@ -178,6 +209,13 @@ func show_settings() -> void:
 			Game.settings[key] = val
 			Game.apply_settings())
 		v.add_child(s)
+	var nc := Game.colors_unlocked()
+	var cb := UiKit.button("%s %d/%d" % [Game.t("color"), int(Game.settings.color) + 1, nc], func():
+		Game.settings.color = (int(Game.settings.color) + 1) % Game.colors_unlocked()
+		Game.write_save()
+		show_settings())
+	cb.add_theme_color_override("font_color", Color(Game.SCOOTER_COLORS[int(Game.settings.color)]).lightened(0.3))
+	v.add_child(cb)
 	var fs := CheckButton.new()
 	fs.text = Game.t("fullscreen")
 	fs.button_pressed = Game.settings.fullscreen
@@ -201,6 +239,8 @@ func start_run(seed_value: int, coop_mode: bool, is_daily: bool, split_mode := f
 	split = split_mode
 	daily = is_daily
 	run = RunState.new(seed_value, int(Game.save.unlock_level))
+	var ds: Array = CityGen.THEMES.keys() if is_daily else Game.districts_unlocked()
+	run.theme = ds[run.rng.randi() % ds.size()]
 	Game.save.runs += 1
 	start_day()
 
