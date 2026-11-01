@@ -140,6 +140,6 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Rekabetçi denge: 2 bot simülasyonu (tests/comp_sim.tscn) — skorlar yakın, kartlar teslimatı azaltıyor
 - [ ] Yorumlar için daha fazla dil (ES, DE, PT-BR, RU) — dünya pazarı
 - [x] Erişilebilirlik: renk körü dostu işaretler, tuş atama ekranı
-- [ ] Performans: çizim çağrısı sayımı, uzak binalarda basit materyal, düşük ayarda gölgeler kapalı
+- [x] Performans: sabit şehir parçaları malzemeye göre birleştiriliyor (3000 → ~800 çizim nesnesi), tests/perf_count.tscn
 - [ ] Steam başarımları listesi (GodotSteam gelince bağlanacak)
 - [ ] Yeni yemekler / olaylar / yükseltmeler, oyuncu geri bildirimine göre denge, hata düzeltme

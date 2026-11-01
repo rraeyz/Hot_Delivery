@@ -174,8 +174,15 @@ static func road_mat(wet: bool) -> ShaderMaterial:
 	return m
 
 
+static var _tiles := {}
+
+
 static func tile_mat(c: Color, grass := false, tile := 1.2) -> ShaderMaterial:
+	var key := "%s_%s_%s" % [c.to_html(), grass, tile]
+	if _tiles.has(key):
+		return _tiles[key]
 	var m := ShaderMaterial.new()
+	_tiles[key] = m
 	m.shader = shader(TILE_SHADER)
 	m.set_shader_parameter("tint", c)
 	m.set_shader_parameter("grass", 1.0 if grass else 0.0)

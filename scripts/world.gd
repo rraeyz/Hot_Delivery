@@ -65,6 +65,7 @@ func _ready() -> void:
 	add_child(audio)
 	_build_environment()
 	_build_city()
+	_merge_static()
 	var ids: Array = Net.drivers() if Net.online else []
 	var count := ids.size() if Net.online else (2 if split else 1)
 	local_index = Net.my_index() if Net.online else 0
@@ -305,6 +306,71 @@ func _street_furniture(c: Vector3) -> void:
 		U.box(bench, Vector3(1.8, 0.5, 0.08), Color("#8b5e34"), Vector3(0, 0.75, 0.22))
 		for x in [-0.8, 0.8]:
 			U.box(bench, Vector3(0.06, 0.45, 0.45), Color("#2b2d42"), Vector3(x, 0.22, 0))
+
+
+## Merge static city meshes per material: ~3000 draw calls -> a few hundred.
+func _merge_static() -> void:
+	var groups := {}   # material id -> [material, verts, normals, uvs, indices]
+	for mi in find_children("*", "MeshInstance3D", true, false):
+		if mi.get_child_count() > 0 or mi.mesh == null or mi.material_override == null or mi.mesh.get_surface_count() != 1:
+			continue
+		var p: Node = mi.get_parent()
+		var dynamic := false
+		while p and p != self:
+			if p is RigidBody3D or p is CharacterBody3D or p is AnimatableBody3D:
+				dynamic = true
+				break
+			p = p.get_parent()
+		if dynamic:
+			continue
+		var arr: Array = mi.mesh.surface_get_arrays(0)
+		var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+		var nrm: PackedVector3Array = arr[Mesh.ARRAY_NORMAL]
+		var uv = arr[Mesh.ARRAY_TEX_UV]
+		var idx = arr[Mesh.ARRAY_INDEX]
+		var key: int = mi.material_override.get_instance_id()
+		if not groups.has(key):
+			groups[key] = [mi.material_override, PackedVector3Array(), PackedVector3Array(), PackedVector2Array(), PackedInt32Array()]
+		var g: Array = groups[key]
+		var base: int = g[1].size()
+		var xf: Transform3D = mi.global_transform
+		var nb: Basis = xf.basis.inverse().transposed()
+		var gv: PackedVector3Array = g[1]
+		var gn: PackedVector3Array = g[2]
+		var gu: PackedVector2Array = g[3]
+		var gi: PackedInt32Array = g[4]
+		for i in v.size():
+			gv.append(xf * v[i])
+			gn.append((nb * nrm[i]).normalized())
+		if uv is PackedVector2Array and uv.size() == v.size():
+			gu.append_array(uv)
+		else:
+			gu.resize(gv.size())
+		if idx is PackedInt32Array and idx.size() > 0:
+			for i in idx:
+				gi.append(base + i)
+		else:
+			for i in v.size():
+				gi.append(base + i)
+		g[1] = gv
+		g[2] = gn
+		g[3] = gu
+		g[4] = gi
+		mi.queue_free()
+	for key in groups:
+		var g: Array = groups[key]
+		var a := []
+		a.resize(Mesh.ARRAY_MAX)
+		a[Mesh.ARRAY_VERTEX] = g[1]
+		a[Mesh.ARRAY_NORMAL] = g[2]
+		a[Mesh.ARRAY_TEX_UV] = g[3]
+		a[Mesh.ARRAY_INDEX] = g[4]
+		var am := ArrayMesh.new()
+		am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, a)
+		var merged := MeshInstance3D.new()
+		merged.mesh = am
+		merged.material_override = g[0]
+		add_child(merged)
 
 
 ## Distant skyline, sea (beach) and park grass: depth beyond the playable grid.
