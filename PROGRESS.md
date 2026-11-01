@@ -1,6 +1,6 @@
 # PROGRESS
 
-Saatlik tetikleyici: `trig_01YGVX4aggfGhdgvnmukKuyB` (her saat :08'de bu oturumu uyandırır; PLAN bitince kapatılacak).
+Saatlik tetikleyici: `trig_01YGVX4aggfGhdgvnmukKuyB` — 1 Kasım 12:42 UTC itibarıyla KAPALI (geriye sadece kullanıcıya bağlı işler kaldı). Kullanıcı geri bildirim verince yeniden açılabilir.
 
 ## Test komutları
 - Birim testleri: `godot --headless --path . -s tests/run_tests.gd`
