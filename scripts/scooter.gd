@@ -48,11 +48,14 @@ var stall_t := 0.0
 var _gas_ramp := 0.0
 var _brake_ramp := 0.0
 var external_input := {}
+var remote := false           # host-side scooter driven by a network player
+var net_pending := {}         # button presses received from that player
+var net_seen := {}
 var _mouse_bal := Vector2.ZERO
 
 
 func _unhandled_input(e: InputEvent) -> void:
-	if e is InputEventMouseMotion and controls_enabled:
+	if e is InputEventMouseMotion and controls_enabled and not remote:
 		_mouse_bal += Vector2(e.relative.x, -e.relative.y) * 0.015    # used by tests / autopilot: {"throttle":1, "steer":0, ...}
 
 
@@ -146,7 +149,19 @@ func _axis(neg: String, pos: String) -> float:
 	return Input.get_action_strength(pos) - Input.get_action_strength(neg)
 
 
+## Consume one queued network button press.
+func take(b: String) -> bool:
+	if int(net_pending.get(b, 0)) > 0:
+		net_pending[b] -= 1
+		return true
+	return false
+
+
 func read_input() -> void:
+	if remote and external_input.is_empty():
+		throttle = 0.0
+		steer = 0.0
+		return
 	if external_input.size() > 0:
 		throttle = external_input.get("throttle", 0.0)
 		steer = external_input.get("steer", 0.0)
@@ -283,9 +298,9 @@ func _physics_process(dt: float) -> void:
 			crash(hv_prev)
 	else:
 		flip_timer = 0.0
-	if controls_enabled and Input.is_action_just_pressed("p1_horn" if player == 0 else "p2d_horn"):
+	if controls_enabled and (take("horn") if remote else Input.is_action_just_pressed("p1_horn" if player == 0 else "p2d_horn")):
 		honked.emit(self)
-	if controls_enabled and Input.is_action_just_pressed("p1_reset" if player == 0 else "p2d_reset") and not is_crashed:
+	if controls_enabled and (take("reset") if remote else Input.is_action_just_pressed("p1_reset" if player == 0 else "p2d_reset")) and not is_crashed:
 		recover(true)
 	# wedged in something (ramp side, wall corner)? pop free after 3 s of pushing without moving
 	if absf(throttle) > 0.5 and v.length() < 0.3:

@@ -36,9 +36,14 @@ func _looped(s: AudioStreamWAV) -> AudioStreamWAV:
 	return c
 
 
+var forward: Callable   # online host: also play this on clients
+
+
 func play(n: String, pitch_jitter := 0.08) -> void:
 	if not streams.has(n):
 		return
+	if forward.is_valid():
+		forward.call(n)
 	for p in pool:
 		if not p.playing:
 			p.stream = streams[n]

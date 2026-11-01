@@ -22,6 +22,12 @@ func _ready() -> void:
 	for a in OS.get_cmdline_user_args():
 		var kv := a.trim_prefix("--").split("=")
 		args[kv[0]] = kv[1] if kv.size() > 1 else "1"
+	Net.players_changed.connect(func():
+		if not world and Net.online:
+			show_online())
+	Net.connection_failed.connect(func(reason):
+		show_menu()
+		_toast(Game.t("disconnected") + " (" + reason + ")"))
 	ui = CanvasLayer.new()
 	ui.layer = 10
 	add_child(ui)
@@ -94,6 +100,7 @@ func show_menu() -> void:
 	v.add_child(UiKit.button(Game.t("daily"), func(): start_run(_daily_seed(), false, true)))
 	v.add_child(UiKit.button(Game.t("coop"), func(): start_run(randi(), true, false)))
 	v.add_child(UiKit.button(Game.t("split"), func(): start_run(randi(), false, false, true)))
+	v.add_child(UiKit.button(Game.t("online"), show_online))
 	v.add_child(UiKit.button(Game.t("character"), show_character))
 	v.add_child(UiKit.button(Game.t("controls"), show_controls))
 	v.add_child(UiKit.button(Game.t("settings"), show_settings))
@@ -305,11 +312,26 @@ func start_run(seed_value: int, coop_mode: bool, is_daily: bool, split_mode := f
 
 
 func start_day() -> void:
+	if Net.online and Net.is_host():
+		remote_start_day.rpc(run.to_dict())
+	_build_day()
+
+
+@rpc("authority", "reliable")
+func remote_start_day(d: Dictionary) -> void:
+	run = RunState.from_dict(d)
+	coop = false
+	split = false
+	_build_day()
+
+
+func _build_day() -> void:
 	_free_world()
 	_free_menu_scene()
 	_clear_ui()
 	get_tree().paused = false
 	world = World.new()
+	world.name = "World"
 	world.setup(run, coop, split)
 	world.shift_ended.connect(show_summary)
 	add_child(world)
@@ -318,6 +340,7 @@ func start_day() -> void:
 
 func _free_world() -> void:
 	if world:
+		remove_child(world)   # free the name "World" right away: RPC paths must match on every peer
 		world.queue_free()
 		world = null
 
@@ -337,6 +360,8 @@ func _unlock_check() -> String:
 
 func show_summary(result: Dictionary) -> void:
 	var paid := run.end_shift()
+	if Net.online:
+		remote_summary.rpc({"top": result.top, "earned": result.earned}, run.to_dict(), paid)
 	if world:
 		world.hud.visible = false
 	var root := _screen()
@@ -380,6 +405,79 @@ func _record_run_end() -> void:
 		var today: String = Time.get_date_string_from_system()
 		Game.save.daily_best[today] = maxi(int(Game.save.daily_best.get(today, 0)), run.day)
 	Game.write_save()
+
+
+## Client view of the end of a shift: same cards, but the host runs the garage.
+@rpc("authority", "reliable")
+func remote_summary(result: Dictionary, d: Dictionary, paid: bool) -> void:
+	run = RunState.from_dict(d)
+	if world:
+		world.hud.visible = false
+	var root := _screen()
+	var v := _center_box(root, 900)
+	v.add_child(UiKit.label(Game.t("shift_over") + " — " + Game.t("day") + " %d" % run.day, 44, UiKit.GOLD))
+	v.add_child(UiKit.label("%s: $%d" % [Game.t("earned"), result.earned], 26))
+	v.add_child(UiKit.label(Game.t("paid") if paid else Game.t("fired"), 40, UiKit.GOOD if paid else UiKit.BAD))
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 12)
+	for rv in result.top:
+		h.add_child(Hud.review_card(rv, 280))
+	v.add_child(h)
+	v.add_child(UiKit.label(Game.t("waiting_host"), 24, Color(1, 1, 1, 0.8)))
+	v.add_child(UiKit.button(Game.t("leave"), func():
+		Net.leave()
+		show_menu()))
+
+
+func show_online() -> void:
+	_build_menu_scene()
+	var root := _screen()
+	var v := _center_box(root, 640)
+	v.add_child(UiKit.label(Game.t("online"), 48, UiKit.GOLD))
+	var name_e := LineEdit.new()
+	name_e.text = str(Game.settings.get("name", "Courier"))
+	name_e.placeholder_text = Game.t("your_name")
+	name_e.max_length = 16
+	name_e.text_changed.connect(func(t):
+		Game.settings.name = t
+		Game.write_save())
+	v.add_child(name_e)
+	if not Net.online:
+		var ip_e := LineEdit.new()
+		ip_e.text = str(Game.settings.get("last_ip", "127.0.0.1"))
+		ip_e.placeholder_text = "IP"
+		v.add_child(ip_e)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 12)
+		row.add_child(UiKit.button(Game.t("host"), func():
+			if Net.host() == OK:
+				show_online()
+			else:
+				_toast("Port %d busy" % Net.PORT)))
+		row.add_child(UiKit.button(Game.t("join"), func():
+			Game.settings.last_ip = ip_e.text.strip_edges()
+			Game.write_save()
+			if Net.join(ip_e.text.strip_edges()) == OK:
+				show_online()))
+		v.add_child(row)
+		var tip := UiKit.label(Game.t("online_tip"), 18, Color(1, 1, 1, 0.75))
+		tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		v.add_child(tip)
+	else:
+		v.add_child(UiKit.label(Game.t("players") + " (%d/%d)" % [Net.players.size(), Net.MAX_PLAYERS], 24))
+		for id in Net.order():
+			var info: Dictionary = Net.players[id]
+			var l := UiKit.label(("★ " if id == 1 else "• ") + str(info.get("name", "?")), 24, Color(Game.SCOOTER_COLORS[int(info.get("color", 0)) % 8]).lightened(0.3))
+			v.add_child(l)
+		if Net.is_host():
+			var b := UiKit.button(Game.t("start"), func(): start_run(randi(), false, false))
+			v.add_child(b)
+		else:
+			v.add_child(UiKit.label(Game.t("waiting_host"), 22, Color(1, 1, 1, 0.8)))
+	v.add_child(UiKit.button(Game.t("back"), func():
+		Net.leave()
+		show_menu()))
+	_focus_first(v)
 
 
 func show_garage() -> void:
@@ -464,6 +562,11 @@ func _unhandled_input(e: InputEvent) -> void:
 	if e.is_action_pressed("screenshot"):
 		var path := Game.screenshot()
 		_toast(Game.t("saved") + " " + path)
+	elif e.is_action_pressed("pause") and world and (world.running or world.client) and Net.online:
+		if paused_panel:
+			resume()
+		else:
+			show_pause()
 	elif e.is_action_pressed("pause") and world and world.running:
 		if get_tree().paused:
 			resume()
@@ -491,6 +594,9 @@ func _toast(msg: String) -> void:
 func _autotest() -> void:
 	var out: String = args.get("out", "user://autotest")
 	DirAccess.make_dir_recursive_absolute(out)
+	if args.has("nethost") or args.has("netjoin"):
+		await _autotest_net()
+		return
 	var chaos: String = args.get("chaos", "")
 	run = RunState.new(int(args.get("seed", "3")), int(args.get("unlocks", "5")))
 	run.theme = args.get("theme", "bazaar")
@@ -532,3 +638,53 @@ func _autotest() -> void:
 			shots += 1
 			print("t=%.1f speed=%.1f items=%d loose=%d crashed=%s money=%d" % [t, w.scooter.speed, w.scooter.rack.items.size(), w.loose.size(), w.scooter.is_crashed, run.money])
 	get_tree().quit()
+
+
+## Two processes on one machine:
+##   godot --headless --fixed-fps 60 --path . -- --autotest --nethost --secs=40
+##   godot --headless --fixed-fps 60 --path . -- --autotest --netjoin=127.0.0.1 --secs=40
+func _autotest_net() -> void:
+	var secs := float(args.get("secs", "30"))
+	if args.has("nethost"):
+		Net.host()
+		var waited := 0.0
+		while Net.players.size() < int(args.get("wait", "2")) and waited < 20.0:
+			await get_tree().create_timer(0.25).timeout
+			waited += 0.25
+		print("NET host sees players: ", Net.players.size())
+		start_run(int(args.get("seed", "4")), false, false)
+	else:
+		Net.join(args.netjoin)
+		var waited := 0.0
+		while world == null and waited < 25.0:
+			await get_tree().create_timer(0.25).timeout
+			waited += 0.25
+		if world == null:
+			print("NET FAIL client never got a world")
+			get_tree().quit(1)
+			return
+	var w := world
+	if args.has("len"):
+		w.time_left = float(args.len)
+	await get_tree().process_frame
+	var bot := Autopilot.new(w)
+	var t := 0.0
+	var start_pos: Array = w.scooters.map(func(s): return s.global_position)
+	while t < secs and is_instance_valid(w):
+		w.scooter.external_input = bot.drive(1.0 / 60.0)
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+	if not is_instance_valid(w):
+		print("NET FAIL world vanished (disconnected?)")
+		get_tree().quit(1)
+		return
+	var moved: Array = []
+	for i in w.scooters.size():
+		moved.append(snappedf(w.scooters[i].global_position.distance_to(start_pos[i]), 0.1))
+	print("NET %s scooters=%d local=%d moved=%s money=%d orders=%d deliveries=%d" % ["host" if Net.is_host() else "client",
+		w.scooters.size(), w.local_index, moved, run.money, w.orders.size(), w.reviews.size()])
+	var ok: bool = w.scooters.size() >= 2 and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
+	print("NET RESULT ", "PASS" if ok else "FAIL")
+	if Net.is_host():
+		await get_tree().create_timer(3.0).timeout   # let the client finish first
+	get_tree().quit(0 if ok else 1)

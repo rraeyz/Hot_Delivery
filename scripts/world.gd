@@ -10,6 +10,9 @@ var run: RunState
 var city: Dictionary
 var coop := false
 var split := false        # two scooters, split screen
+var client := false       # online client: draws host snapshots, simulates nothing
+var local_index := 0
+var netsync: NetSync
 var scooters: Array = []
 var cameras: Array = []
 var arrows: Array = []
@@ -58,7 +61,11 @@ func _ready() -> void:
 	add_child(audio)
 	_build_environment()
 	_build_city()
-	for i in (2 if split else 1):
+	var ids: Array = Net.order() if Net.online else []
+	var count := ids.size() if Net.online else (2 if split else 1)
+	local_index = Net.my_index() if Net.online else 0
+	client = Net.online and not Net.is_host()
+	for i in count:
 		var s := Scooter.new()
 		s.mods = mods
 		s.coop = coop
@@ -66,7 +73,17 @@ func _ready() -> void:
 		s.player = i
 		if i == 1:
 			s.color = Color("#4361ee")
+		if Net.online:
+			var info: Dictionary = Net.players[ids[i]]
+			s.player = 0
+			s.look = info.get("look", Courier.default_look(i))
+			s.color = Color(Game.SCOOTER_COLORS[int(info.get("color", i)) % Game.SCOOTER_COLORS.size()])
+			s.remote = i != local_index and not client
+			s.name = "Scooter%d" % i
 		add_child(s)
+		if client:
+			s.freeze = true
+			s.set_physics_process(false)
 		s.global_position = city.spawn + Vector3(3.0 * i, 0, 0)
 		s.headlight.visible = night > 0.1
 		s.rack.item_fell.connect(_on_item_fell)
@@ -78,8 +95,14 @@ func _ready() -> void:
 		var a := _make_arrow()
 		add_child(a)
 		arrows.append(a)
-	scooter = scooters[0]
-	arrow = arrows[0]
+	scooter = scooters[local_index]
+	arrow = arrows[local_index]
+	if Net.online:
+		netsync = NetSync.new()
+		netsync.world = self
+		add_child(netsync)
+		if not client:
+			audio.forward = func(n: String): netsync.send_fx("sfx", [n])
 	if split:
 		_build_split_screen()
 	else:
@@ -93,6 +116,11 @@ func _ready() -> void:
 	add_child(hud)
 	hud.setup(self)
 	_spawn_npcs()
+	if client:
+		for n in cars + dogs:
+			n.set_physics_process(false)
+		audio.music(true)
+		return
 	if run.big_order_day():
 		_spawn_offer("cake")
 		hud.popup(Game.t("big_order"), UiKit.GOLD, true, 4.0, 120.0)
@@ -498,6 +526,10 @@ func _refresh_beacons() -> void:
 # ---------------------------------------------------------------- loop
 
 func _physics_process(dt: float) -> void:
+	if client:
+		_update_arrow()
+		audio.engine(scooter.speed, 0.0)
+		return
 	if not running:
 		return
 	_record()
@@ -529,8 +561,8 @@ func _physics_process(dt: float) -> void:
 		if scooter.controls_enabled and not scooter.is_crashed and _pressed("throw"):
 			throw_top()
 		_update_arrow()
-	scooter = scooters[0]
-	arrow = arrows[0]
+	scooter = scooters[local_index]
+	arrow = arrows[local_index]
 	request_pickup = false
 	if rain:
 		rain.global_position = camera.global_position + Vector3(0, 8, 0) - camera.global_basis.z * 8.0
@@ -570,6 +602,10 @@ func _check_hand_delivery(pos: Vector3, sp: float) -> void:
 
 ## Which keys belong to the current scooter: solo = everything, coop = passenger keys, split = own pad/keys.
 func _pressed(what: String) -> bool:
+	if scooter.remote:
+		return scooter.take(what)
+	if Net.online:
+		return Input.is_action_just_pressed("solo_" + what) or Input.is_action_just_pressed("p2_" + what)
 	if split:
 		return Input.is_action_just_pressed(("solo_" if scooter.player == 0 else "p2_") + what)
 	if coop:
@@ -611,7 +647,7 @@ func _exit_tree() -> void:
 
 func _check_loose_pickup(pos: Vector3, sp: float) -> void:
 	var r: float = mods.get("pickup_radius", 2.5)
-	var pressed: bool = (request_pickup and scooter == scooters[0]) or _pressed("pickup")
+	var pressed: bool = (request_pickup and scooter == scooters[local_index]) or _pressed("pickup")
 	for lf in loose.duplicate():
 		if not is_instance_valid(lf) or lf.age < 0.8:
 			continue
@@ -759,6 +795,8 @@ func _on_spilled(it: FoodItem, amount: float) -> void:
 
 
 func _cam_for(s: Scooter) -> ChaseCamera:
+	if Net.online:
+		return camera
 	return cameras[mini(s.player, cameras.size() - 1)]
 
 
@@ -774,7 +812,10 @@ func _on_crash(_s: Scooter) -> void:
 			o.crashed = true
 	hud.popup(Game.t("crash"), Color("#ef476f"), true)
 	audio.play("crash")
-	_cam_for(_s).add_trauma(0.9)
+	if not Net.online or scooters.find(_s) == local_index:
+		_cam_for(_s).add_trauma(0.9)
+	if netsync:
+		netsync.send_fx("trauma", [scooters.find(_s), 0.9])
 
 
 var debug_log := {"jolts": [], "falls": 0, "crash_speeds": []}
@@ -888,6 +929,8 @@ func _update_arrow() -> void:
 
 ## A little customer pops out of the door and cheers or stomps.
 func _customer_reaction(lot: Dictionary, stars: int) -> void:
+	if netsync:
+		netsync.send_fx("customer", [city.lots.find(lot), stars])
 	var c := Node3D.new()
 	add_child(c)
 	var side: Vector3 = lot.side
@@ -938,6 +981,8 @@ func _burst(pos: Vector3, c: Color, amount: int, speed: float, size: float, life
 
 
 func _confetti(pos: Vector3) -> void:
+	if netsync:
+		netsync.send_fx("confetti", [pos])
 	for c in [Color("#ef476f"), Color("#ffd166"), Color("#06d6a0"), Color("#118ab2")]:
 		_burst(pos, c, 12, 8.0, 0.12, 1.4)
 
@@ -947,6 +992,8 @@ func _drip(pos: Vector3, c: Color) -> void:
 
 
 func _splat(pos: Vector3, c: Color) -> void:
+	if netsync:
+		netsync.send_fx("splat", [pos, c.to_html()])
 	_burst(pos, c, 24, 5.0, 0.1, 0.9)
 	var decal := MeshInstance3D.new()
 	var cm := CylinderMesh.new()

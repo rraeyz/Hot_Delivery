@@ -37,6 +37,9 @@ jobs:
           timeout 600 godot --headless --path . --fixed-fps 60 res://tests/bot_shift.tscn -- --len=120 2>&1 | tee bot.log
           ! grep -q "SCRIPT ERROR" bot.log
 
+      - name: Online smoke test (host + client on localhost)
+        run: timeout 200 tests/net_test.sh 25
+
       - name: Export templates
         run: |
           wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz

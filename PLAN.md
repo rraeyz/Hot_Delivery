@@ -102,10 +102,10 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [ ] Ayarlar kayıt dosyasında; online oyunda diğer oyunculara gönderilir
 
 ## Aşama 7 — Online çok oyunculu (1-4 kişi)
-- [ ] Ağ mimarisi: ev sahibi yetkili (host simüle eder, istemciler girdi yollar), Godot ENet ile
-- [ ] Senkronizasyon: scooter'lar, yemek kulesi, düşen yemekler, siparişler, para, olaylar; ara karelerde yumuşatma
-- [ ] Lobi ekranı: Oluştur / IP ile katıl / LAN; oyuncu listesi, hazır, karakter görünümü
-- [ ] Otomatik test: iki ekransız Godot süreci localhost üzerinden bağlanıp vardiya oynar
+- [x] Ağ mimarisi: ev sahibi yetkili (host simüle eder, istemciler girdi yollar), Godot ENet ile
+- [x] Senkronizasyon: scooter'lar, yemek kulesi, düşen yemekler, siparişler, para, olaylar; ara karelerde yumuşatma
+- [x] Lobi ekranı: Oluştur / IP ile katıl / LAN; oyuncu listesi, hazır, karakter görünümü
+- [x] Otomatik test: iki ekransız Godot süreci localhost üzerinden bağlanıp vardiya oynar
 - [ ] Her oyuncu kendi scooter'ında; isteyen "yolcu" olarak birinin arkasına biner (sürücü + yolcu online)
 - [ ] Steam lobileri (GodotSteam, App ID 480 ile geliştirme) — KULLANICI: Steamworks hesabı sonrası gerçek App ID
 

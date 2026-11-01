@@ -231,3 +231,15 @@ func test_courier_look(t) -> void:
 		Courier.build(root, look)
 	t.check(root.get_child_count() > 20, "courier builds every helmet/accessory")
 	root.free()
+
+
+func test_run_sync_roundtrip(t) -> void:
+	var r := RunState.new(77, 2)
+	r.day = 4
+	r.money = 123
+	r.owned = ["thermo", "rack"]
+	r.roll_chaos()
+	var c := RunState.from_dict(r.to_dict())
+	t.check(c.day == 4 and c.money == 123 and c.owned == r.owned, "run state survives the network")
+	t.check(c.chaos == r.chaos and c.tod == r.tod and c.theme == r.theme, "chaos/tod/theme synced")
+	t.check(c.mods().capacity == r.mods().capacity, "same mods on both sides")

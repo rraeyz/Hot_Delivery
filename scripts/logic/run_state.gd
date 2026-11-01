@@ -191,3 +191,23 @@ func reroll() -> bool:
 	money -= reroll_cost()
 	roll_shop()
 	return true
+
+
+const SYNC_KEYS := ["seed_value", "day", "money", "earned_today", "owned", "chaos", "shop", "fired",
+	"stats", "unlock_level", "theme", "tod"]
+
+
+## Everything a client needs to build the same day as the host.
+func to_dict() -> Dictionary:
+	var d := {}
+	for k in SYNC_KEYS:
+		d[k] = get(k)
+	return d
+
+
+static func from_dict(d: Dictionary) -> RunState:
+	var r := RunState.new(int(d.get("seed_value", 0)), int(d.get("unlock_level", 0)))
+	for k in SYNC_KEYS:
+		if d.has(k):
+			r.set(k, d[k])
+	return r

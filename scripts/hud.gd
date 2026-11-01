@@ -168,6 +168,8 @@ func _bar(v: float, c: Color) -> ProgressBar:
 
 
 func popup(text: String, c: Color, big := false, life := 1.3, y_off := 0.0) -> void:
+	if world and world.netsync:
+		world.netsync.send_fx("popup", [text, c.to_html(), big])
 	var l := UiKit.label(text, 64 if big else 40, c)
 	l.add_theme_constant_override("outline_size", 14)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -212,6 +214,8 @@ static func review_card(rv: Dictionary, wide := 440.0) -> PanelContainer:
 
 
 func review(rv: Dictionary) -> void:
+	if world and world.netsync:
+		world.netsync.send_fx("review", [rv])
 	var p := review_card(rv)
 	review_box.add_child(p)
 	p.modulate.a = 0.0
