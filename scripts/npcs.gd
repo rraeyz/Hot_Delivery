@@ -281,3 +281,19 @@ class Walker extends Node3D:
 		tw.tween_property(body, "position", away * 3.0 + Vector3.UP * 1.8, 0.4).set_ease(Tween.EASE_OUT)
 		tw.parallel().tween_property(body, "rotation", Vector3(PI * 3.0, 0, PI), 0.8)
 		tw.tween_property(body, "position", away * 4.0, 0.4).set_ease(Tween.EASE_IN)
+
+
+## Marathon runner: a walker that jogs down one straight road and leaves at the far end.
+class Runner extends Walker:
+	var start := Vector3.ZERO
+	var dir := Vector3.RIGHT
+	var total := 0.0
+
+	func _perimeter(u: float) -> Vector3:
+		return start + dir * clampf(u, 0.0, total) + Vector3(0, 0.15, 0)
+
+	func _physics_process(dt: float) -> void:
+		visible = t >= 0.0
+		super(dt)
+		if t > total:
+			queue_free()

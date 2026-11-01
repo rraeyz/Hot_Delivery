@@ -812,6 +812,12 @@ func _autotest() -> void:
 		w.time_left = float(args.len)
 	if args.has("occ"):
 		get_viewport().use_occlusion_culling = args.occ == "1"
+	if args.get("event", "") == "marathon_here":   # runners coming straight at the camera
+		var f := -w.scooter.global_basis.z
+		f = Vector3(signf(f.x), 0, 0) if absf(f.x) > absf(f.z) else Vector3(0, 0, signf(f.z))
+		w.make_marathon(w.scooter.global_position + f * 30.0, -f, 80.0, 7)
+	elif args.has("event"):
+		w._random_event(args.event)
 	if args.has("walker_check"):   # place a pedestrian and a bin right in front of the camera
 		var wk: Node3D = w.walkers[0]
 		wk.set_physics_process(false)
@@ -866,6 +872,8 @@ func _autotest_net() -> void:
 	if args.has("len"):
 		w.time_left = float(args.len)
 	await get_tree().process_frame
+	if args.has("event") and Net.is_host():
+		w._random_event(args.event)
 	var bot := Autopilot.new(w)
 	var t := 0.0
 	var start_pos: Array = w.scooters.map(func(s): return s.global_position)

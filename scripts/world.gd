@@ -1169,11 +1169,15 @@ func _on_honk(_s: Scooter) -> void:
 			(c as RigidBody3D).apply_central_impulse((c.global_position - scooter.global_position).normalized() * 30.0 * (c as RigidBody3D).mass * 0.2 + Vector3.UP * 3.0)
 
 
+var _bump_popup_at := -10.0
+
 func _on_walker_bumped(wk: Node3D) -> void:
 	var s := nearest_scooter(wk.global_position)
 	s.rack.jolt(3.0)
 	audio.play("thud")
-	hud.popup(["HEY!", "OOF!", "MY LEG!", "RUDE!"][rng.randi() % 4], Color("#ffd166"))
+	if clock - _bump_popup_at > 0.6:   # a whole pack knocked over at once: one shout, not a pile
+		_bump_popup_at = clock
+		hud.popup(["HEY!", "OOF!", "MY LEG!", "RUDE!"][rng.randi() % 4], Color("#ffd166"))
 	debug_log["walkers_hit"] = int(debug_log.get("walkers_hit", 0)) + 1
 
 
@@ -1195,9 +1199,9 @@ const STAIRS := 4   # broken elevator: seconds (one per floor) standing at the d
 
 
 ## Mid-shift surprises so no two minutes feel the same.
-func _random_event() -> void:
-	var options := ["happy", "rush", "shower", "roadworks", "convoy", "elevator"]
-	var e: String = options[rng.randi() % options.size()]
+func _random_event(forced := "") -> void:
+	var options := ["happy", "rush", "shower", "roadworks", "convoy", "elevator", "marathon"]
+	var e: String = forced if forced != "" else options[rng.randi() % options.size()]
 	match e:
 		"happy":
 			happy_until = clock + 20.0
@@ -1223,6 +1227,18 @@ func _random_event() -> void:
 			make_roadworks(pos, horiz)
 		"convoy":
 			_spawn_convoy()
+		"marathon":
+			var n: int = city.n
+			var line := rng.randi_range(1, n - 1) * CityGen.PITCH
+			var along_x := rng.randf() < 0.5
+			var total := n * CityGen.PITCH
+			var start := Vector3(0.0, 0, line) if along_x else Vector3(line, 0, 0.0)
+			var d := Vector3.RIGHT if along_x else Vector3.BACK
+			var sd := rng.randi()
+			hud.popup(Game.t("ev_marathon"), Color("#06d6a0"), true, 3.0)
+			if netsync:
+				netsync.send_fx("marathon", [start, d, total, sd])
+			make_marathon(start, d, total, sd)
 		"elevator":
 			elevator_until = clock + 30.0
 			hud.popup(Game.t("ev_elevator"), Color("#c77dff"), true, 3.5)
@@ -1276,6 +1292,25 @@ func _spawn_convoy() -> void:
 	if netsync:
 		netsync.send_fx("convoy", [start, d, total])
 	make_convoy(start, d, total)
+
+
+## A pack of runners down one road; deterministic from the seed so clients build the same pack.
+func make_marathon(start: Vector3, d: Vector3, total: float, sd: int) -> void:
+	var r := RandomNumberGenerator.new()
+	r.seed = sd
+	var side := d.cross(Vector3.UP)
+	for i in 16:
+		var wk := Npcs.Runner.new()
+		wk.start = start + side * r.randf_range(-4.5, 4.5)
+		wk.dir = d
+		wk.total = total
+		add_child(wk)
+		var look := {"skin": r.randi() % 6, "jacket": [4, 6][i % 2], "helmet": 7, "helmet_color": 0, "accessory": r.randi() % 6}
+		wk.setup(wk.start, look, -i * 1.6 - r.randf() * 1.5, 1.0)
+		wk.speed = r.randf_range(3.4, 4.2)
+		wk.world_ref = self
+		U.bake(wk.body)
+		wk.bumped.connect(_on_walker_bumped)
 
 
 ## Also called on clients: the convoy's motion is deterministic, so each peer moves its own copy.

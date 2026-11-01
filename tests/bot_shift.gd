@@ -31,6 +31,8 @@ func _run() -> void:
 		add_child(w)
 		await get_tree().process_frame
 		var bot := Autopilot.new(w)
+		if args.has("event"):
+			w._random_event(args.event)
 		var result := {}
 		w.shift_ended.connect(func(r): result.merge(r))
 		var frames := 0
