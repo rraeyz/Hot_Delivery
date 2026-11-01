@@ -120,7 +120,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Aşçı rolü (online): siparişler hazırlanmadan alınamaz (gri ışık 'HAZIRLANIYOR'); aşçı yoksa otomatik hazır
 
 ## Aşama 10 — Sürekli geliştirme (liste bitince buradan devam)
-- [ ] İlk vardiya eğitimi (ok + kısa ipuçları: "restorana git", "yavaşla", "balkona fırlat")
+- [x] İlk vardiya eğitimi (ok + kısa ipuçları: "restorana git", "yavaşla", "balkona fırlat")
 - [ ] Köpek ve güvercinler en yakın scooter'ı hedeflesin (çok oyunculu)
 - [ ] Bölünmüş ekranda 2. oyuncunun denge göstergesi + tekrar (replay)
 - [ ] Online'da tekrar (en büyük kaza herkese gösterilsin)

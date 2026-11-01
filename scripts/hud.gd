@@ -187,6 +187,23 @@ func _bar(v: float, c: Color) -> ProgressBar:
 	return b
 
 
+var _banner: Label
+
+
+## Persistent instruction line under the timer ("" hides it).
+func banner(text: String) -> void:
+	if not _banner:
+		_banner = UiKit.label("", 26, UiKit.GOLD)
+		_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
+		_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_banner.position = Vector2(-450, 70)
+		_banner.size = Vector2(900, 40)
+		_banner.add_theme_constant_override("outline_size", 10)
+		popups.add_child(_banner)
+	_banner.text = text
+	_banner.visible = text != ""
+
+
 func popup(text: String, c: Color, big := false, life := 1.3, y_off := 0.0) -> void:
 	if world and world.netsync:
 		world.netsync.send_fx("popup", [text, c.to_html(), big])

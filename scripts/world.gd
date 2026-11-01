@@ -13,7 +13,9 @@ var split := false        # two scooters, split screen
 var client := false       # online client: draws host snapshots, simulates nothing
 var local_index := 0
 var netsync: NetSync
-var has_cook := false     # an online player cooks: orders must be prepared before pickup
+var has_cook := false
+var tutorial := false     # first run: guided hints
+var _tut_step := 0     # an online player cooks: orders must be prepared before pickup
 var scooters: Array = []
 var cameras: Array = []
 var arrows: Array = []
@@ -133,6 +135,7 @@ func _ready() -> void:
 	for i in 2:
 		_spawn_offer()
 	running = true
+	tutorial = run.day == 1 and int(Game.save.runs) <= 1 and not Net.online and not run.competitive()
 	audio.music(true)
 
 
@@ -658,6 +661,33 @@ func _check_hand_delivery(pos: Vector3, sp: float) -> void:
 		if pos.distance_to(city.lots[o.cust].curb) < 5.0:
 			scooter.rack.remove_item(it)
 			_deliver(o, it, false)
+
+
+## First-run hints, one step at a time.
+func _tutorial_tick() -> void:
+	var rack := scooter.rack
+	match _tut_step:
+		0:
+			hud.banner(Game.t("tut_0"))
+			if rack.items.size() > 0:
+				_tut_step = 1
+		1:
+			hud.banner(Game.t("tut_1"))
+			if rack.danger() > 0.55:
+				_tut_step = 2
+			elif reviews.size() > 0:
+				_tut_step = 3
+		2:
+			hud.banner(Game.t("tut_2"))
+			if rack.danger() < 0.2 or reviews.size() > 0:
+				_tut_step = 3 if reviews.size() > 0 else 1
+		3:
+			hud.banner(Game.t("tut_3"))
+			if run.stats.throws > 0 or reviews.size() >= 3:
+				_tut_step = 4
+		_:
+			hud.banner("")
+			tutorial = false
 
 
 ## Cook finished an order (local host cook, or validated RPC from a client cook).
