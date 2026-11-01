@@ -8,6 +8,7 @@ const NAMES := {"en": "English", "tr": "Türkçe", "es": "Español", "de": "Deut
 
 const UI := {
 	"es": {
+		"ev_happy": "¡HORA FELIZ! Propinas x1,5 durante 20 s", "ev_rush": "¡PEDIDO URGENTE! El VIP paga el doble", "ev_shower": "¡CHAPARRÓN! Calles resbaladizas", "ev_roadworks": "¡OBRAS! Una calle cerrada.",
 		"team": "EQUIPO", "pass": "¡PASE!", "caught": "¡ATRAPADO!", "emote_0": "¡AYUDA!", "emote_1": "¡AQUÍ!", "emote_2": "¡JAJA!", "emote_3": "¡RÁPIDO!",
 		"accessory": "Accesorio", "back": "VOLVER", "bazaar": "Bazar", "beach": "Playa", "best": "Mejor día: %d",
 		"best_reviews": "MEJORES RESEÑAS DE HOY", "big_order": "¡PEDIDO GRANDE: TARTA DE BODA!", "buy": "COMPRAR",
@@ -50,6 +51,7 @@ const UI := {
 		"your_name": "Tu nombre", "your_shop": "TU TIENDA",
 	},
 	"de": {
+		"ev_happy": "HAPPY HOUR! 20 s lang Trinkgeld x1,5", "ev_rush": "EILAUFTRAG! VIP zahlt doppelt", "ev_shower": "PLATZREGEN! Rutschige Straßen", "ev_roadworks": "BAUSTELLE! Eine Straße ist gesperrt.",
 		"team": "TEAM", "pass": "PASS!", "caught": "GEFANGEN!", "emote_0": "HILFE!", "emote_1": "HIERHER!", "emote_2": "HAHA!", "emote_3": "BEEIL DICH!",
 		"accessory": "Accessoire", "back": "ZURÜCK", "bazaar": "Basar", "beach": "Strand", "best": "Bester Tag: %d",
 		"best_reviews": "BESTE BEWERTUNGEN HEUTE", "big_order": "GROSSAUFTRAG: HOCHZEITSTORTE!", "buy": "KAUFEN",
@@ -92,6 +94,7 @@ const UI := {
 		"your_name": "Dein Name", "your_shop": "DEIN LADEN",
 	},
 	"fr": {
+		"ev_happy": "HAPPY HOUR ! Pourboires x1,5 pendant 20 s", "ev_rush": "COMMANDE URGENTE ! Le VIP paie double", "ev_shower": "AVERSE ! Routes glissantes", "ev_roadworks": "TRAVAUX ! Une rue est fermée.",
 		"team": "ÉQUIPE", "pass": "PASSE !", "caught": "ATTRAPÉ !", "emote_0": "À L'AIDE !", "emote_1": "PAR ICI !", "emote_2": "HAHA !", "emote_3": "VITE !",
 		"accessory": "Accessoire", "back": "RETOUR", "bazaar": "Bazar", "beach": "Plage", "best": "Meilleur jour : %d",
 		"best_reviews": "MEILLEURS AVIS DU JOUR", "big_order": "GROSSE COMMANDE : PIÈCE MONTÉE !", "buy": "ACHETER",
@@ -134,6 +137,7 @@ const UI := {
 		"your_name": "Ton nom", "your_shop": "TA BOUTIQUE",
 	},
 	"pt": {
+		"ev_happy": "HAPPY HOUR! Gorjetas x1,5 por 20 s", "ev_rush": "PEDIDO URGENTE! VIP paga o dobro", "ev_shower": "TORÓ! Ruas escorregadias", "ev_roadworks": "OBRAS! Uma rua foi fechada.",
 		"team": "TIME", "pass": "PASSE!", "caught": "PEGOU!", "emote_0": "SOCORRO!", "emote_1": "AQUI!", "emote_2": "HAHA!", "emote_3": "RÁPIDO!",
 		"accessory": "Acessório", "back": "VOLTAR", "bazaar": "Bazar", "beach": "Praia", "best": "Melhor dia: %d",
 		"best_reviews": "MELHORES AVALIAÇÕES DE HOJE", "big_order": "PEDIDO GRANDE: BOLO DE CASAMENTO!", "buy": "COMPRAR",
@@ -176,6 +180,7 @@ const UI := {
 		"your_name": "Seu nome", "your_shop": "SUA LOJA",
 	},
 	"ru": {
+		"ev_happy": "СЧАСТЛИВЫЙ ЧАС! Чаевые x1,5 на 20 с", "ev_rush": "СРОЧНЫЙ ЗАКАЗ! VIP платит вдвое", "ev_shower": "ЛИВЕНЬ! Скользкие дороги", "ev_roadworks": "РЕМОНТ ДОРОГИ! Улица перекрыта.",
 		"team": "КОМАНДА", "pass": "ПАС!", "caught": "ПОЙМАЛ!", "emote_0": "ПОМОГИ!", "emote_1": "СЮДА!", "emote_2": "ХА-ХА!", "emote_3": "БЫСТРЕЕ!",
 		"accessory": "Аксессуар", "back": "НАЗАД", "bazaar": "Базар", "beach": "Пляж", "best": "Лучший день: %d",
 		"best_reviews": "ЛУЧШИЕ ОТЗЫВЫ ДНЯ", "big_order": "БОЛЬШОЙ ЗАКАЗ: СВАДЕБНЫЙ ТОРТ!", "buy": "КУПИТЬ",

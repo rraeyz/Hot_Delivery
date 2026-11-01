@@ -244,6 +244,10 @@ func fx(kind: String, args: Array) -> void:
 		"emote":
 			var e: int = args[1]
 			world.emote(args[0], e)
+		"shower":
+			world._shower_fx()
+		"roadworks":
+			world.make_roadworks(args[0], args[1])
 		"convoy":
 			world.make_convoy(args[0], args[1], args[2])
 		"trauma":

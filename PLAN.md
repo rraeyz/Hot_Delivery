@@ -127,6 +127,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Takım arkadaşına yemek pası (müşteri yakın değilse BOŞLUK)
 - [x] İşaretleşme: 1-4 tuşları / d-pad (YARDIM! BURAYA! HAHA! ACELE ET!), scooter üstünde isim etiketleri
 - [x] Steam kodu: lobi + arkadaş daveti + P2P + başarımlar (scripts/steam_bridge.gd, STEAM.md)
+- [x] Vardiya içi rastgele şehir olayları (40-70 sn'de bir): mutlu saat, acil VIP sipariş, ani sağanak, yol çalışması, düğün konvoyu
 - [ ] KULLANICI: GodotSteam eklentisini projeye eklemeye onay ver / ekle (STEAM.md adım 1) — sonra Steam testleri
 
 ## Aşama 10 — Sürekli geliştirme (liste bitince buradan devam)

@@ -516,7 +516,7 @@ func _spawn_npcs() -> void:
 
 # ---------------------------------------------------------------- orders
 
-func _spawn_offer(food := "") -> void:
+func _spawn_offer(food := "", special := "") -> void:
 	if food == "":
 		food = run.pick_food()
 	var rest := CityGen.rest_for(city, food)
@@ -532,6 +532,9 @@ func _spawn_offer(food := "") -> void:
 		total += 15.0
 	if quirk == "impatient":
 		total *= 0.6
+	if special == "rush":
+		quirk = "vip"
+		total = minf(total, 30.0)
 	total *= float(mods.get("timer_mult", 1.0))
 	orders.append({"id": next_order_id, "food": food, "rest": rest, "cust": cust, "quirk": quirk,
 		"state": "offer", "t_total": total, "t_left": total, "crashed": false, "ready": not has_cook, "q": 1.0})
@@ -641,6 +644,13 @@ func _physics_process(dt: float) -> void:
 	if time_left <= 0.0:
 		_end_shift()
 		return
+	var wet := clock < shower_until
+	for sc in scooters:
+		sc.mods["shower"] = wet
+	event_timer -= dt
+	if event_timer <= 0.0:
+		event_timer = rng.randf_range(40.0, 70.0)
+		_random_event()
 	offer_timer -= dt
 	var n_offers := orders.filter(func(o): return o.state == "offer").size()
 	if (offer_timer <= 0.0 and n_offers < 3) or n_offers == 0:
@@ -879,6 +889,8 @@ func _deliver(o: Dictionary, it: FoodItem, thrown: bool, at := Vector3.INF) -> v
 	var ctx := {"time_left": o.t_left, "time_total": o.t_total, "thrown": thrown, "crashed": o.crashed,
 		"combo": combo, "quirk": o.quirk, "mods": scooters[who].mods}
 	var res := Tips.compute(it, ctx)
+	if clock < happy_until:
+		res.tip = int(res.tip * 1.5)
 	var rv := Reviews.make(it.kind, res.tags, Game.lang(), rng)
 	rv.stars = res.stars
 	rv.tip = res.tip
@@ -1092,6 +1104,76 @@ func _on_dog_bite(_d: Node3D) -> void:
 
 
 var convoy_timer := 12.0
+var event_timer := 45.0
+var happy_until := -1.0
+var shower_until := -1.0
+
+
+## Mid-shift surprises so no two minutes feel the same.
+func _random_event() -> void:
+	var options := ["happy", "rush", "shower", "roadworks", "convoy"]
+	var e: String = options[rng.randi() % options.size()]
+	match e:
+		"happy":
+			happy_until = clock + 20.0
+			hud.popup(Game.t("ev_happy"), UiKit.GOLD, true, 3.0)
+		"rush":
+			_spawn_offer("", "rush")
+			hud.popup(Game.t("ev_rush"), UiKit.BAD, true, 3.0)
+		"shower":
+			shower_until = clock + 25.0
+			hud.popup(Game.t("ev_shower"), Color("#4cc9f0"), true, 3.0)
+			if netsync:
+				netsync.send_fx("shower", [])
+			_shower_fx()
+		"roadworks":
+			var n: int = city.n
+			var horiz := rng.randf() < 0.5
+			var line := rng.randi_range(1, n - 1) * CityGen.PITCH
+			var along := (rng.randi_range(0, n - 1) + 0.5) * CityGen.PITCH
+			var pos := Vector3(along, 0, line) if horiz else Vector3(line, 0, along)
+			hud.popup(Game.t("ev_roadworks"), Color("#ff9f1c"), true, 3.0)
+			if netsync:
+				netsync.send_fx("roadworks", [pos, horiz])
+			make_roadworks(pos, horiz)
+		"convoy":
+			_spawn_convoy()
+
+
+## Barrier + cones across a road segment for the rest of the shift.
+func make_roadworks(pos: Vector3, horiz: bool) -> void:
+	var yaw := 0.0 if horiz else PI / 2
+	var b := U.static_box(self, Vector3(0.4, 1.0, CityGen.ROAD - 1.0), Color("#ff9f1c"), pos + Vector3(0, 0.5, 0), yaw)
+	for k in 5:
+		U.box(b, Vector3(0.42, 0.25, 1.2), Color("#f8f9fa"), Vector3(0, 0.2, -4.0 + k * 2.0))
+	for k in 4:
+		var c := U.cyl(self, 0.05, 0.25, 0.75, Color("#ff7b00"), pos + Vector3(0, 0.37, 0) + Vector3(0, 0, -3.0 + k * 2.0).rotated(Vector3.UP, yaw) + Vector3(1.0, 0, 0).rotated(Vector3.UP, yaw), 8)
+		c.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+func _shower_fx() -> void:
+	if rain:
+		return
+	var p := CPUParticles3D.new()
+	p.amount = 500
+	p.lifetime = 0.8
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	p.emission_box_extents = Vector3(18, 1, 18)
+	p.direction = Vector3(0.1, -1, 0)
+	p.spread = 2.0
+	p.initial_velocity_min = 25.0
+	p.initial_velocity_max = 30.0
+	p.gravity = Vector3.ZERO
+	var dm := BoxMesh.new()
+	dm.size = Vector3(0.02, 0.5, 0.02)
+	dm.material = U.mat(Color(0.8, 0.85, 1.0, 0.5), true)
+	p.mesh = dm
+	add_child(p)
+	rain = p
+	get_tree().create_timer(25.0).timeout.connect(func():
+		if is_instance_valid(p):
+			p.queue_free()
+		rain = null)
 
 
 func _spawn_convoy() -> void:
