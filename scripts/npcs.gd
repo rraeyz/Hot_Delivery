@@ -3,6 +3,41 @@ extends RefCounted
 ## Traffic cars and dogs.
 
 
+## Rounded little car: body, tapered cabin, glass, bumpers, lights, wheels with hubs.
+static func car_body(p: Node3D, c: Color) -> void:
+	var body := MeshInstance3D.new()
+	var cm := CapsuleMesh.new()
+	cm.radius = 0.55
+	cm.height = 4.1
+	body.mesh = cm
+	body.rotation.x = PI / 2
+	body.scale = Vector3(1.8, 1.0, 0.75)
+	body.position = Vector3(0, 0.75, 0)
+	body.material_override = U.mat(c, false, 0.35)
+	p.add_child(body)
+	var glass := Color("#9ec9e3")
+	U.box(p, Vector3(1.62, 0.55, 2.0), glass, Vector3(0, 1.38, 0.2)).material_override = U.mat(glass, false, 0.08)
+	for z in [-0.75, 0.1, 0.95]:
+		U.box(p, Vector3(1.66, 0.55, 0.1), c.darkened(0.1), Vector3(0, 1.38, z + 0.2))  # pillars
+	U.box(p, Vector3(1.7, 0.1, 2.1), c, Vector3(0, 1.7, 0.2))  # roof
+	U.box(p, Vector3(1.9, 0.18, 0.2), Color("#dee2e6"), Vector3(0, 0.55, -2.05))
+	U.box(p, Vector3(1.9, 0.18, 0.2), Color("#dee2e6"), Vector3(0, 0.55, 2.05))
+	for x in [-0.6, 0.6]:
+		var hl := U.box(p, Vector3(0.35, 0.16, 0.05), Color("#fff3b0"), Vector3(x, 0.82, -2.06))
+		var m := StandardMaterial3D.new()
+		m.albedo_color = Color("#fff3b0")
+		m.emission_enabled = true
+		m.emission = Color("#fff3b0")
+		hl.material_override = m
+		U.box(p, Vector3(0.3, 0.14, 0.05), Color("#d00000"), Vector3(x, 0.82, 2.06))
+	for x in [-0.92, 0.92]:
+		for z in [-1.3, 1.3]:
+			var w := U.cyl(p, 0.36, 0.36, 0.28, Color("#151515"), Vector3(x, 0.36, z))
+			w.rotation.z = PI / 2
+			var hub := U.cyl(p, 0.18, 0.18, 0.3, Color("#adb5bd"), Vector3(x, 0.36, z))
+			hub.rotation.z = PI / 2
+
+
 class Car extends AnimatableBody3D:
 	var grid_n := 5
 	var from := Vector2i.ZERO
@@ -29,15 +64,7 @@ class Car extends AnimatableBody3D:
 		cs.shape = sh
 		cs.position = Vector3(0, 0.95, 0)
 		add_child(cs)
-		U.box(self, Vector3(2.0, 0.8, 4.0), c, Vector3(0, 0.7, 0))
-		U.box(self, Vector3(1.8, 0.7, 2.2), c.lightened(0.2), Vector3(0, 1.45, 0.2))
-		U.box(self, Vector3(1.82, 0.5, 2.0), Color("#a8dadc"), Vector3(0, 1.45, 0.2))
-		for x in [-0.95, 0.95]:
-			for z in [-1.3, 1.3]:
-				var w := U.cyl(self, 0.38, 0.38, 0.3, Color("#111111"), Vector3(x, 0.38, z))
-				w.rotation.z = PI / 2
-		U.box(self, Vector3(0.4, 0.2, 0.05), Color("#fff3b0"), Vector3(-0.6, 0.8, -2.0))
-		U.box(self, Vector3(0.4, 0.2, 0.05), Color("#fff3b0"), Vector3(0.6, 0.8, -2.0))
+		Npcs.car_body(self, c)
 		_pick_dir(true)
 
 	func _node_pos(p: Vector2i) -> Vector3:

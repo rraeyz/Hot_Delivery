@@ -92,8 +92,8 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Forward+ görüntüleyici (Vulkan yoksa otomatik OpenGL'e düşer), AgX/ACES ton, SSAO, SSIL, glow, volumetrik sis, kaliteli gölgeler
 - [x] Grafik kalitesi ayarı (Düşük = eski görünüm, Orta, Yüksek)
 - [x] Prosedürel dokular: asfalt (gürültü + normal), kaldırım taşı, bina cephesi (pencere çerçevesi, kat bantları, kapı/vitrin), çatı detayları
-- [ ] Sokak detayları: kaldırım kenarı, yaya geçidi, sokak lambası, ağaç, bank, tabela, park etmiş arabalar
-- [ ] Daha iyi araç ve scooter modelleri (yuvarlatılmış şekiller), far ışıkları
+- [x] Sokak detayları: kaldırım kenarı, yaya geçidi, sokak lambası, ağaç, bank, tabela, park etmiş arabalar
+- [x] Daha iyi araç ve scooter modelleri (yuvarlatılmış şekiller), far ışıkları
 - [x] Gün saati (sabah / öğle / gün batımı / gece — gece lambalar yanar) her vardiyada değişir
 
 ## Aşama 6 — Karakter özelleştirme

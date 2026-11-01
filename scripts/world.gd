@@ -180,14 +180,44 @@ func _build_city() -> void:
 			[Vector3(-half_road - 0.5, 1, size * 0.5), Vector3(1, 2, size + 14)],
 			[Vector3(size + half_road + 0.5, 1, size * 0.5), Vector3(1, 2, size + 14)]]:
 		U.static_box(self, w[1], Color("#e9c46a"), w[0])
-	# lane dashes
+	# lane dashes + crosswalks, batched into one MultiMesh each (thousands of stripes, one draw call)
 	var n: int = city.n
+	var dashes := []
+	var stripes := []
 	for i in n + 1:
 		for j in n:
 			for k in 4:
 				var t := (j + 0.5) * CityGen.PITCH + (k - 1.5) * 8.0
-				U.box(self, Vector3(0.25, 0.02, 3.0), Color("#f1faee"), Vector3(i * CityGen.PITCH, 0.01, t))
-				U.box(self, Vector3(3.0, 0.02, 0.25), Color("#f1faee"), Vector3(t, 0.01, i * CityGen.PITCH))
+				dashes.append(Transform3D(Basis.IDENTITY, Vector3(i * CityGen.PITCH, 0.01, t)))
+				dashes.append(Transform3D(Basis(Vector3.UP, PI / 2), Vector3(t, 0.01, i * CityGen.PITCH)))
+	for i in n + 1:
+		for j in n + 1:
+			var c := Vector3(i * CityGen.PITCH, 0.012, j * CityGen.PITCH)
+			for side in [Vector3(0, 0, 1), Vector3(0, 0, -1), Vector3(1, 0, 0), Vector3(-1, 0, 0)]:
+				var across := Vector3(side.z, 0, side.x)
+				for s in 6:
+					var p: Vector3 = c + side * 7.5 + across * ((s - 2.5) * 1.6)
+					stripes.append(Transform3D(Basis(Vector3.UP, atan2(side.x, side.z)), p))
+	_multimesh(dashes, Vector3(0.25, 0.02, 3.0), Color("#f1faee"))
+	_multimesh(stripes, Vector3(0.8, 0.02, 2.6), Color("#f8f9fa"))
+	# parked cars along the curbs
+	for k in 18:
+		var b: Dictionary = city.blocks[rng.randi() % city.blocks.size()]
+		var side := rng.randi() % 4
+		var off := CityGen.BLOCK * 0.5 + 1.4
+		var t := rng.randf_range(-12, 12)
+		var pos: Vector3 = b.center + [Vector3(off, 0, t), Vector3(-off, 0, t), Vector3(t, 0, off), Vector3(t, 0, -off)][side]
+		var pc := StaticBody3D.new()
+		pc.position = pos
+		pc.rotation.y = 0.0 if side < 2 else PI / 2
+		var pcs := CollisionShape3D.new()
+		var psh := BoxShape3D.new()
+		psh.size = Vector3(2.0, 1.5, 4.0)
+		pcs.shape = psh
+		pcs.position = Vector3(0, 0.95, 0)
+		pc.add_child(pcs)
+		Npcs.car_body(pc, Color.from_hsv(rng.randf(), 0.55, 0.85))
+		add_child(pc)
 	# blocks
 	for b in city.blocks:
 		var c: Vector3 = b.center
@@ -263,6 +293,22 @@ func _street_furniture(c: Vector3) -> void:
 		U.box(bench, Vector3(1.8, 0.5, 0.08), Color("#8b5e34"), Vector3(0, 0.75, 0.22))
 		for x in [-0.8, 0.8]:
 			U.box(bench, Vector3(0.06, 0.45, 0.45), Color("#2b2d42"), Vector3(x, 0.22, 0))
+
+
+func _multimesh(xforms: Array, size: Vector3, c: Color) -> void:
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	var bm := BoxMesh.new()
+	bm.size = size
+	bm.material = U.mat(c)
+	mm.mesh = bm
+	mm.instance_count = xforms.size()
+	for i in xforms.size():
+		mm.set_instance_transform(i, xforms[i])
+	var mi := MultiMeshInstance3D.new()
+	mi.multimesh = mm
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
 
 
 func _ramp(pos: Vector3, yaw: float, c: Color, scale_h: float) -> void:
