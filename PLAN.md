@@ -67,7 +67,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Kapıda müşteri figürü + tepki (sevinç/öfke)
 - [ ] (isteğe bağlı) Bot ile menü arka planı
 - [x] Felaket tekrarı (en büyük kaza ağır çekim)
-- [ ] Efektler: buhar, çorba lekesi, parçacıklar, ekran sarsıntısı
+- [x] Efektler: buhar, çorba lekesi, parçacıklar, ekran sarsıntısı
 - [x] Mahalleler: Çarşı, Sahil (4. gün rekoru açar), Şehir Merkezi (7. gün) — yokuş yerine rampa/yükseklik farkı
 - [x] Kozmetikler: 8 scooter rengi, her 2 günlük rekorda biri açılır
 - [x] Her 3. gün düğün pastası "boss" siparişi
@@ -99,7 +99,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 ## Aşama 6 — Karakter özelleştirme
 - [x] Yeni kurye modeli (kafa, gövde, kollar, bacaklar, eller; basit animasyon: el sallama, düşme)
 - [x] Özelleştirme ekranı: ten rengi, ceket rengi, kask tipi (klasik/kedi kulağı/korsan/şef şapkası…), kask rengi, aksesuar (gözlük/bıyık/atkı), scooter rengi
-- [ ] Ayarlar kayıt dosyasında; online oyunda diğer oyunculara gönderilir
+- [x] Ayarlar kayıt dosyasında; online oyunda diğer oyunculara gönderilir
 
 ## Aşama 7 — Online çok oyunculu (1-4 kişi)
 - [x] Ağ mimarisi: ev sahibi yetkili (host simüle eder, istemciler girdi yollar), Godot ENet ile
@@ -136,10 +136,10 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Bölünmüş ekranda 2. oyuncunun denge göstergesi + tekrar (replay)
 - [ ] Online'da tekrar (en büyük kaza herkese gösterilsin)
 - [x] Yeni olay: düğün konvoyu (raporda vardı) — korna çalan araba dizisi yolu kapatır
-- [ ] Yeni olay: bozuk asansör / merdiven teslimatı (yaya kısmı) — araştır, küçük tut
+- [x] Yeni olay: bozuk asansör — 30 sn boyunca kapıda teslim için 4 kat merdiven (dur ve bekle) ya da balkona fırlat (bot testi: `--elevator`)
 - [x] Rekabetçi denge: 2 bot simülasyonu (tests/comp_sim.tscn) — skorlar yakın, kartlar teslimatı azaltıyor
-- [ ] Yorumlar için daha fazla dil (ES, DE, PT-BR, RU) — dünya pazarı
+- [x] Yorumlar için daha fazla dil (ES, DE, PT-BR, RU) — dünya pazarı
 - [x] Erişilebilirlik: renk körü dostu işaretler, tuş atama ekranı
-- [x] Performans: sabit şehir parçaları malzemeye göre birleştiriliyor (3000 → ~800 çizim nesnesi), tests/perf_count.tscn
+- [x] Performans: occlusion culling (her binada kutu oklüder) + parçalı ve vertex-renkli mesh birleştirme (3000 → ~300 çizim nesnesi), tests/perf_count.tscn
 - [ ] Steam başarımları listesi (GodotSteam gelince bağlanacak)
 - [ ] Yeni yemekler / olaylar / yükseltmeler, oyuncu geri bildirimine göre denge, hata düzeltme

@@ -26,6 +26,8 @@ func _run() -> void:
 		w.setup(run, false)
 		if args.has("len"):
 			w.time_left = float(args.len)
+		if args.has("elevator"):   # broken-elevator event for the whole shift
+			w.elevator_until = 1e9
 		add_child(w)
 		await get_tree().process_frame
 		var bot := Autopilot.new(w)

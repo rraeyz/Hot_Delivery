@@ -814,6 +814,14 @@ func _check_hand_delivery(pos: Vector3, sp: float) -> void:
 		if o.is_empty() or o.state != "carry":
 			continue
 		if pos.distance_to(city.lots[o.cust].curb) < 5.0:
+			if clock < elevator_until:
+				# climb the stairs: stand still, or skip it all by throwing onto the balcony
+				var before := int(o.get("stairs", 0.0))
+				o["stairs"] = float(o.get("stairs", 0.0)) + get_physics_process_delta_time()
+				if int(o.stairs) > before and int(o.stairs) < STAIRS:
+					hud.popup(Game.t("stairs") % [int(o.stairs), STAIRS], Color("#c77dff"))
+				if o.stairs < STAIRS:
+					continue
 			scooter.rack.remove_item(it)
 			_deliver(o, it, false)
 
@@ -1181,11 +1189,13 @@ var convoy_timer := 12.0
 var event_timer := 45.0
 var happy_until := -1.0
 var shower_until := -1.0
+var elevator_until := -1.0
+const STAIRS := 4   # broken elevator: seconds (one per floor) standing at the door before the hand-off
 
 
 ## Mid-shift surprises so no two minutes feel the same.
 func _random_event() -> void:
-	var options := ["happy", "rush", "shower", "roadworks", "convoy"]
+	var options := ["happy", "rush", "shower", "roadworks", "convoy", "elevator"]
 	var e: String = options[rng.randi() % options.size()]
 	match e:
 		"happy":
@@ -1212,6 +1222,9 @@ func _random_event() -> void:
 			make_roadworks(pos, horiz)
 		"convoy":
 			_spawn_convoy()
+		"elevator":
+			elevator_until = clock + 30.0
+			hud.popup(Game.t("ev_elevator"), Color("#c77dff"), true, 3.5)
 
 
 ## Barrier + cones across a road segment for the rest of the shift.

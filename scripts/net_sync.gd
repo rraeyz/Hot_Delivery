@@ -43,7 +43,7 @@ func _send_input() -> void:
 		for b in ["throw", "pickup"]:
 			if Input.is_action_just_pressed("solo_" + b) or Input.is_action_just_pressed("p2_" + b):
 				_btn[b] += 1
-		inp_from_client.rpc_id(1, {"pass": true, "balance": bal.limit_length(1.0), "btn": _btn.duplicate()})
+		inp_from_client.rpc_id(1, {"balance": bal.limit_length(1.0), "btn": _btn.duplicate()})
 		return
 	var inp: Dictionary
 	if s.external_input.size() > 0:     # bot / autotest
