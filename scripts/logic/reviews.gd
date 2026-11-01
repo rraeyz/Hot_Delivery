@@ -212,13 +212,23 @@ static func primary_tag(tags: Array) -> String:
 
 
 ## Returns {name, line, tag}. rng makes it deterministic for tests and daily runs.
+static func lines(lang: String) -> Dictionary:
+	if LINES.has(lang):
+		return LINES[lang]
+	return I18n.REVIEWS.get(lang, LINES.en)
+
+
+static func food_names(lang: String) -> Dictionary:
+	if FOOD_NAMES.has(lang):
+		return FOOD_NAMES[lang]
+	return I18n.FOOD.get(lang, FOOD_NAMES.en)
+
+
 static func make(kind: String, tags: Array, lang: String, rng: RandomNumberGenerator) -> Dictionary:
-	if not LINES.has(lang):
-		lang = "en"
 	var tag := primary_tag(tags)
-	var pool: Array = LINES[lang][tag]
+	var pool: Array = lines(lang).get(tag, LINES.en[tag])
 	var line: String = pool[rng.randi() % pool.size()]
-	var food: String = FOOD_NAMES[lang].get(kind, kind)
+	var food: String = food_names(lang).get(kind, kind)
 	line = line.replace("{food}", food)
 	line = line.substr(0, 1).to_upper() + line.substr(1)
 	return {"name": NAMES[rng.randi() % NAMES.size()], "line": line, "tag": tag}

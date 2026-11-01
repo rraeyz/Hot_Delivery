@@ -266,8 +266,8 @@ func show_settings() -> void:
 	var root := _screen()
 	var v := _center_box(root)
 	v.add_child(UiKit.label(Game.t("settings"), 48, UiKit.GOLD))
-	var lang_btn := UiKit.button("%s: %s" % [Game.t("lang"), "English" if Game.lang() == "en" else "Türkçe"], func():
-		Game.settings.lang = "tr" if Game.lang() == "en" else "en"
+	var lang_btn := UiKit.button("%s: %s" % [Game.t("lang"), I18n.NAMES.get(Game.lang(), Game.lang())], func():
+		Game.settings.lang = I18n.LANGS[(I18n.LANGS.find(Game.lang()) + 1) % I18n.LANGS.size()]
 		Game.write_save()
 		show_settings())
 	v.add_child(lang_btn)
@@ -720,6 +720,8 @@ func _toast(msg: String) -> void:
 ## godot --path . -- --autotest --out=/tmp/shots
 ## Drives the scooter with a simple autopilot and saves screenshots.
 func _autotest() -> void:
+	if args.has("lang"):
+		Game.settings.lang = args.lang
 	var out: String = args.get("out", "user://autotest")
 	DirAccess.make_dir_recursive_absolute(out)
 	if args.has("nethost") or args.has("netjoin"):

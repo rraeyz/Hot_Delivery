@@ -95,7 +95,7 @@ const CARD_TEXT := {
 func card_text(c: String) -> Array:
 	if c in RunState.CHAOS:
 		return chaos_text(c)
-	return CARD_TEXT.get(settings.lang, CARD_TEXT.en)[c]
+	return CARD_TEXT.get(settings.lang, I18n.CARDS.get(settings.lang, CARD_TEXT.en)).get(c, CARD_TEXT.en[c])
 
 
 const CHAOS_TEXT := {
@@ -113,8 +113,9 @@ const CHAOS_TEXT := {
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_load()
-	if settings.lang == "":
-		settings.lang = "tr" if OS.get_locale_language() == "tr" else "en"
+	if settings.lang == "" or not settings.lang in I18n.LANGS:
+		var os_lang := OS.get_locale_language()
+		settings.lang = os_lang if os_lang in I18n.LANGS else "en"
 	_setup_input()
 	apply_settings()
 
@@ -146,7 +147,7 @@ func player_name(i: int) -> String:
 
 
 func t(key: String) -> String:
-	var d: Dictionary = UI.get(settings.lang, UI.en)
+	var d: Dictionary = UI.get(settings.lang, I18n.UI.get(settings.lang, UI.en))
 	return d.get(key, UI.en.get(key, key))
 
 
@@ -155,15 +156,15 @@ func lang() -> String:
 
 
 func upgrade_text(u: String) -> Array:
-	return UPGRADE_TEXT.get(settings.lang, UPGRADE_TEXT.en)[u]
+	return UPGRADE_TEXT.get(settings.lang, I18n.UPGRADES.get(settings.lang, UPGRADE_TEXT.en)).get(u, UPGRADE_TEXT.en[u])
 
 
 func chaos_text(c: String) -> Array:
-	return CHAOS_TEXT.get(settings.lang, CHAOS_TEXT.en)[c]
+	return CHAOS_TEXT.get(settings.lang, I18n.CHAOS.get(settings.lang, CHAOS_TEXT.en)).get(c, CHAOS_TEXT.en[c])
 
 
 func food_name(k: String) -> String:
-	return Reviews.FOOD_NAMES.get(settings.lang, Reviews.FOOD_NAMES.en)[k]
+	return Reviews.food_names(settings.lang).get(k, k)
 
 
 func apply_settings() -> void:

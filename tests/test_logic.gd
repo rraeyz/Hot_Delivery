@@ -277,3 +277,19 @@ func test_cook_quality(t) -> void:
 	t.check(Kitchen.quality(0.5, 0.5) == 1.0, "dead center = perfect")
 	t.check(Kitchen.quality(0.9, 0.2) == 0.0, "way off = ruined")
 	t.check(Kitchen.quality(0.55, 0.5) > Kitchen.quality(0.7, 0.5), "closer is better")
+
+
+func test_languages(t) -> void:
+	var tags: Array = Reviews.LINES.en.keys()
+	for lang in I18n.REVIEWS:
+		for tag in tags:
+			t.check(I18n.REVIEWS[lang].has(tag) and I18n.REVIEWS[lang][tag].size() >= 3, "%s review lines for %s" % [lang, tag])
+		t.check(I18n.FOOD[lang].keys() == Reviews.FOOD_NAMES.en.keys(), lang + " has every food name")
+		t.check(I18n.UPGRADES[lang].keys().size() == RunState.UPGRADES.size(), lang + " has every upgrade")
+		t.check(I18n.CHAOS[lang].keys().size() == RunState.CHAOS.size(), lang + " has every chaos event")
+		t.check(I18n.UI[lang].size() >= 100, lang + " UI mostly translated")
+		var rng := RandomNumberGenerator.new()
+		var r := Reviews.make("soup", ["spilled"], lang, rng)
+		t.check(not "{food}" in r.line, lang + " review filled")
+	for lang in I18n.LANGS:
+		t.check(I18n.NAMES.has(lang), "language has a display name: " + lang)
