@@ -202,6 +202,7 @@ class Convoy extends Node3D:
 			U.box(car, Vector3(0.12, 0.02, 4.0), Color("#ff70a6"), Vector3(-0.5, 1.76, 0.2))
 			if i == 0:
 				U.sphere(car, 0.3, Color("#e63946"), Vector3(0, 2.0, -0.6))
+			U.bake(car)
 			add_child(car)
 			car.global_transform = Transform3D(Basis.looking_at(dir, Vector3.UP), start - dir * (i * 5.5))
 			cars.append(car)

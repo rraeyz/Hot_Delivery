@@ -310,7 +310,7 @@ func _street_furniture(c: Vector3) -> void:
 
 ## Merge static city meshes per material: ~3000 draw calls -> a few hundred.
 func _merge_static() -> void:
-	var groups := {}   # material id -> [material, verts, normals, uvs, indices]
+	var list := []
 	for mi in find_children("*", "MeshInstance3D", true, false):
 		if mi.get_child_count() > 0 or mi.mesh == null or mi.material_override == null or mi.mesh.get_surface_count() != 1:
 			continue
@@ -321,56 +321,18 @@ func _merge_static() -> void:
 				dynamic = true
 				break
 			p = p.get_parent()
-		if dynamic:
-			continue
-		var arr: Array = mi.mesh.surface_get_arrays(0)
-		var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
-		var nrm: PackedVector3Array = arr[Mesh.ARRAY_NORMAL]
-		var uv = arr[Mesh.ARRAY_TEX_UV]
-		var idx = arr[Mesh.ARRAY_INDEX]
-		var key: int = mi.material_override.get_instance_id()
-		if not groups.has(key):
-			groups[key] = [mi.material_override, PackedVector3Array(), PackedVector3Array(), PackedVector2Array(), PackedInt32Array()]
-		var g: Array = groups[key]
-		var base: int = g[1].size()
-		var xf: Transform3D = mi.global_transform
-		var nb: Basis = xf.basis.inverse().transposed()
-		var gv: PackedVector3Array = g[1]
-		var gn: PackedVector3Array = g[2]
-		var gu: PackedVector2Array = g[3]
-		var gi: PackedInt32Array = g[4]
-		for i in v.size():
-			gv.append(xf * v[i])
-			gn.append((nb * nrm[i]).normalized())
-		if uv is PackedVector2Array and uv.size() == v.size():
-			gu.append_array(uv)
-		else:
-			gu.resize(gv.size())
-		if idx is PackedInt32Array and idx.size() > 0:
-			for i in idx:
-				gi.append(base + i)
-		else:
-			for i in v.size():
-				gi.append(base + i)
-		g[1] = gv
-		g[2] = gn
-		g[3] = gu
-		g[4] = gi
+		if not dynamic:
+			list.append(mi)
+	# split by 3x3 city chunk so merged pieces can still be frustum/occlusion culled
+	var cs: float = city.size / 3.0
+	var chunk_of := func(mi: Node3D) -> int:
+		var gp: Vector3 = mi.global_position
+		return clampi(int(gp.x / cs), -1, 3) * 10 + clampi(int(gp.z / cs), -1, 3)
+	for m in U.merge(list, self, chunk_of):
+		add_child(m)
+	for mi in list:
+		mi.get_parent().remove_child(mi)
 		mi.queue_free()
-	for key in groups:
-		var g: Array = groups[key]
-		var a := []
-		a.resize(Mesh.ARRAY_MAX)
-		a[Mesh.ARRAY_VERTEX] = g[1]
-		a[Mesh.ARRAY_NORMAL] = g[2]
-		a[Mesh.ARRAY_TEX_UV] = g[3]
-		a[Mesh.ARRAY_INDEX] = g[4]
-		var am := ArrayMesh.new()
-		am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, a)
-		var merged := MeshInstance3D.new()
-		merged.mesh = am
-		merged.material_override = g[0]
-		add_child(merged)
 
 
 ## Distant skyline, sea (beach) and park grass: depth beyond the playable grid.
@@ -478,6 +440,11 @@ func _build_lot(lot: Dictionary) -> void:
 	mi.material_override = _bmat(lot.color)
 	sb.add_child(mi)
 	add_child(sb)
+	var occ := OccluderInstance3D.new()   # buildings hide whatever is behind them
+	var bo := BoxOccluder3D.new()
+	bo.size = s * 0.96
+	occ.occluder = bo
+	sb.add_child(occ)
 	_roof_details(c + Vector3(0, 0.15, 0), s, Color(lot.color))
 	var side: Vector3 = lot.side
 	var yaw := atan2(side.x, side.z)
@@ -593,6 +560,7 @@ func _prop(kind: String, pos: Vector3) -> void:
 	cs.shape = sh
 	cs.position = Vector3(0, sh.size.y * 0.5, 0)
 	rb.add_child(cs)
+	U.bake(rb)
 	add_child(rb)
 
 
@@ -615,6 +583,7 @@ func _spawn_npcs() -> void:
 		car.setup(n, Vector2i(rng.randi_range(0, n), rng.randi_range(0, n)), col, rng.randi())
 		car.scooter = scooter
 		car.world_ref = self
+		U.bake(car)
 		car.honk.connect(func(_c): audio.play("horn", 0.3))
 		add_child(car)
 		cars.append(car)
@@ -626,6 +595,7 @@ func _spawn_npcs() -> void:
 		add_child(wk)
 		wk.setup(b.center, look, rng.randf() * 120.0, 1.0 if rng.randf() < 0.5 else -1.0)
 		wk.world_ref = self
+		U.bake(wk.body)
 		wk.bumped.connect(_on_walker_bumped)
 		walkers.append(wk)
 	if "dogs" in run.chaos:

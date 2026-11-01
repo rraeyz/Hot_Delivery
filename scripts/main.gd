@@ -810,6 +810,8 @@ func _autotest() -> void:
 	await get_tree().process_frame
 	if args.has("len"):
 		w.time_left = float(args.len)
+	if args.has("occ"):
+		get_viewport().use_occlusion_culling = args.occ == "1"
 	if args.has("walker_check"):   # place a pedestrian and a bin right in front of the camera
 		var wk: Node3D = w.walkers[0]
 		wk.set_physics_process(false)
@@ -831,7 +833,8 @@ func _autotest() -> void:
 			next_shot += every
 			get_viewport().get_texture().get_image().save_png("%s/shot_%02d.png" % [out, shots])
 			shots += 1
-			print("t=%.1f speed=%.1f items=%d loose=%d crashed=%s money=%d" % [t, w.scooter.speed, w.scooter.rack.items.size(), w.loose.size(), w.scooter.is_crashed, run.money])
+			print("t=%.1f speed=%.1f items=%d loose=%d crashed=%s money=%d objects=%d draws=%d" % [t, w.scooter.speed, w.scooter.rack.items.size(), w.loose.size(), w.scooter.is_crashed, run.money,
+				RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME), RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)])
 	get_tree().quit()
 
 
@@ -867,7 +870,9 @@ func _autotest_net() -> void:
 	var t := 0.0
 	var start_pos: Array = w.scooters.map(func(s): return s.global_position)
 	var cooked := 0
+	var max_players := 0   # the peer may quit a moment before we check
 	while t < secs and is_instance_valid(w):
+		max_players = maxi(max_players, Net.players.size())
 		if Net.is_cook(Net.my_id()):
 			if int(t * 60.0) % 90 == 0:
 				for o in w.orders:
@@ -890,12 +895,12 @@ func _autotest_net() -> void:
 		moved.append(snappedf(w.scooters[i].global_position.distance_to(start_pos[i]), 0.1))
 	print("NET %s scooters=%d local=%d moved=%s money=%d orders=%d deliveries=%d" % ["host" if Net.is_host() else "client",
 		w.scooters.size(), w.local_index, moved, run.money, w.orders.size(), w.reviews.size()])
-	var ok: bool = Net.players.size() >= 2 and w.scooters.size() == Net.drivers().size() and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
+	var ok: bool = max_players >= 2 and w.scooters.size() == Net.drivers().size() and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
 	if Net.cooks().size() > 0:
 		var ready := w.orders.filter(func(o): return o.get("ready", true) or o.state != "offer").size()
 		print("NET cook: cooked=%d ready_or_taken=%d" % [cooked, ready])
 		ok = ok and ready > 0
-	print("NET RESULT ", "PASS" if ok else "FAIL")
+	print("NET RESULT ", "PASS" if ok else "FAIL players=%d drivers=%d" % [Net.players.size(), Net.drivers().size()])
 	if Net.is_host():
 		await get_tree().create_timer(3.0).timeout   # let the client finish first
 	get_tree().quit(0 if ok else 1)
