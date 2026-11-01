@@ -71,7 +71,12 @@ func setup(w: World) -> void:
 	review_box.custom_minimum_size = Vector2(440, 0)
 	review_box.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	root.add_child(review_box)
-	hint = UiKit.label(Game.t("hint_split" if w.split else ("hint_coop" if w.coop else "hint")), 18, Color(1, 1, 1, 0.85))
+	var hint_key := "hint_split" if w.split else ("hint_coop" if w.coop else "hint")
+	if Net.online and Net.is_cook(Net.my_id()):
+		hint_key = "hint_cook"
+	elif Net.online and Net.is_passenger(Net.my_id()):
+		hint_key = "hint_ride"
+	hint = UiKit.label(Game.t(hint_key), 18, Color(1, 1, 1, 0.85))
 	hint.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.position = Vector2(-500, -14)

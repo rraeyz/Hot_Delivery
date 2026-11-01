@@ -36,8 +36,9 @@ Kullanıcı geri bildirimine göre his/denge ayarı; Steam sayfası için kapak 
 - Online 1-4 oyuncu: ONLINE menüsü (Kur / IP ile Katıl), ev sahibi yetkili; istemci girdisi + 20 Hz anlık görüntü; bölüm sonları senkron. CI'de iki süreçli localhost testi.
 - Modlar: Normal (co-op, bir kere kira kaçırma hakkı) ve Rekabetçi (2-4 kişi; herkesin kendi kasası/dükkânı; her bölüm yeni zorluk kartı birikir; 7 bölüm; kazanan). Yerel: menüde "KAPIŞMA: 2 SCOOTER"; online: lobide Mod düğmesi.
 **Testler:** 300 birim kontrolü, fizik ölçümü, bot vardiyası, online host+istemci testi (normal ve rekabetçi).
-**Build:** `builds/TipOver-windows-v0.3.zip`.
-**Eksik / bilinen:** Online'da "yolcu olarak arkaya binme" yok; Steam lobileri yok (IP ile bağlanılıyor — internetten oynamak için ev sahibinin 24680 UDP portunu açması ya da ZeroTier/Radmin VPN gibi bir LAN programı gerekir); bölünmüş ekranda tekrar yok.
+**Build:** `builds/TipOver-windows-v0.4.zip`.
+**Sonradan eklendi (aynı oturum):** online YOLCU rolü (birinin arkasına binip kuleyi dengele/fırlat), online AŞÇI rolü (mutfak paneli: ibreyi yeşilde durdur; iyi pişirme = sıcak/sağlam yemek; aşçı varken siparişler hazırlanmadan alınamaz), yuvarlak arabalar, park etmiş arabalar, yaya geçitleri. Build v0.4.
+**Eksik / bilinen:** Steam lobileri yok (IP ile bağlanılıyor — internetten oynamak için ev sahibinin 24680 UDP portunu açması ya da ZeroTier/Radmin VPN gibi bir LAN programı gerekir); bölünmüş ekranda tekrar yok.
 
 ### KULLANICI BEKLENİYOR (fırsat olunca)
 1. v0.3'ü indir, KARAKTER ekranında kendini yap, bir vardiya oyna.

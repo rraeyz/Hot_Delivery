@@ -5,7 +5,7 @@ Berbat bir scooter'la, arkadaki yemek kulesini devirmeden ve soğutmadan teslim 
 - Plan: [PLAN.md](PLAN.md) · İlerleme: [PROGRESS.md](PROGRESS.md) · Lisanslar: [CREDITS.md](CREDITS.md)
 
 ## En kolay yol: hazır .exe (Windows)
-1. GitHub'da bu dalda `builds/TipOver-windows-v0.3.zip` dosyasına tıkla > **Download** (sağ üstte indirme simgesi).
+1. GitHub'da bu dalda `builds/TipOver-windows-v0.4.zip` dosyasına tıkla > **Download** (sağ üstte indirme simgesi).
 2. Zip'e sağ tıkla > **Tümünü ayıkla**.
 3. `TipOver.exe`'ye çift tıkla. Windows "bilinmeyen yayıncı" derse: **Ek bilgi > Yine de çalıştır** (imzasız olduğu için normal).
 
@@ -25,5 +25,7 @@ Berbat bir scooter'la, arkadaki yemek kulesini devirmeden ve soğutmadan teslim 
 | Ekran görüntüsü | F12 | Select |
 
 Co-op (sürücü + yolcu): 1. oyuncu WASD + H; 2. oyuncu oklar (denge), Enter (fırlat), Sağ Shift (al). Ya da iki gamepad.
+
+**Online (1-4 kişi):** ONLINE > adını yaz > biri KUR, diğerleri IP yazıp KATIL. Lobide herkes ROL seçer: SÜRÜCÜ (kendi scooter'ı), YOLCU (birinin arkasına biner, kuleyi dengeler ve fırlatır) ya da AŞÇI (siparişleri hazırlar). Ev sahibi MOD seçer: NORMAL (ortak kasa) ya da REKABETÇİ (herkes kendi kasası, her bölüm yeni zorluk kartı, 7 bölüm). Farklı evlerden oynamak için ücretsiz Radmin VPN / ZeroTier gibi bir sanal LAN programı kullanın ve onun verdiği IP'yi yazın.
 
 **Nasıl oynanır:** turuncu ışık = restoran (yavaşla, yemek otomatik yüklenir). Yeşil ışık = müşteri (yanında dur ya da en üstteki yemeği balkondaki sarı halkaya fırlat → 2 kat bahşiş). Yeşil ok yolu gösterir. Alttaki daire kulenin ne kadar eğik olduğunu gösterir: kırmızıya dönerse oklarla ters yöne it.

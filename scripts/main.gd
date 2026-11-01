@@ -799,6 +799,8 @@ func _autotest_net() -> void:
 			w.scooter.external_input = bot.drive(1.0 / 60.0)
 		await get_tree().physics_frame
 		t += 1.0 / 60.0
+		if args.has("out") and int(t * 60.0) % 300 == 0:
+			get_viewport().get_texture().get_image().save_png("%s/net_%02d.png" % [args.out, int(t)])
 	if not is_instance_valid(w):
 		print("NET FAIL world vanished (disconnected?)")
 		get_tree().quit(1)
