@@ -794,6 +794,9 @@ func _autotest() -> void:
 		run.setup_competitive(2)
 	if chaos != "":
 		run.chaos = Array(chaos.split(","))
+	if args.has("capsule"):
+		await _capsule()
+		return
 	if args.has("menu"):
 		show_menu()
 		if args.has("character"):
@@ -918,3 +921,74 @@ func _autotest_net() -> void:
 	if Net.is_host():
 		await get_tree().create_timer(3.0).timeout   # let the client finish first
 	get_tree().quit(0 if ok else 1)
+
+
+## Store art: a posed street shot (leaning tower, food mid-air, a pedestrian mid-cartwheel)
+## rendered at the window size, with an optional big title. See STORE.md for the command.
+func _capsule() -> void:
+	var out: String = args.get("out", "user://")
+	start_day()
+	var w := world
+	await get_tree().create_timer(0.3).timeout
+	var bot := Autopilot.new(w)
+	var t := 0.0
+	while t < float(args.get("drive", "6")):   # get rolling down a street
+		w.scooter.external_input = bot.drive(1.0 / 60.0)
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+	var sc := w.scooter
+	sc.rack.mods = {"capacity": 9}
+	while sc.rack.items.size() > 0:
+		sc.rack.remove_item(sc.rack.items[0])
+	for k in ["pizza", "soup", "burger", "jelly", "cake", "coffee"]:
+		sc.rack.add_item(FoodItem.new(k))
+	var lean := [0.0, 0.05, 0.1, 0.14, 0.12, 0.1]
+	for i in sc.rack.items.size():
+		sc.rack.items[i].tilt = Vector2(lean[i], 0.03 * i)
+	sc.rack._update_visuals()
+	w.throw_top()   # coffee flies off the top
+	var fwd := -sc.global_basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized()
+	var right := fwd.cross(Vector3.UP)
+	if w.walkers.size() > 0:
+		var wk: Node3D = w.walkers[0]
+		wk.global_position = sc.global_position + fwd * 2.2 + right * 1.6
+		wk.knock(-right * 6.0)
+	await get_tree().create_timer(0.22).timeout
+	get_tree().paused = true
+	var side := float(args.get("side", "-1"))
+	if args.has("hud"):   # gameplay screenshot: keep the HUD and the chase camera
+		for i in 30:
+			await get_tree().process_frame
+		get_viewport().get_texture().get_image().save_png(out + "/" + args.get("name", "shot") + ".png")
+		get_tree().quit()
+		return
+	w.hud.visible = false   # -1: camera on the road side (curb side has parked cars)
+	var cam := Camera3D.new()
+	cam.fov = 50.0
+	w.add_child(cam)
+	var p := sc.global_position
+	cam.global_position = p + fwd * 4.6 + right * 1.9 * side + Vector3.UP * 0.7
+	cam.look_at(p + Vector3.UP * 1.25 - right * 1.4 * side * float(args.get("offset", "1.8")))
+	cam.current = true
+	for car in w.cars:   # keep traffic out of the shot
+		if is_instance_valid(car) and car.global_position.distance_to(p) < 14.0:
+			car.visible = false
+	if args.get("title", "") != "":
+		var layer := CanvasLayer.new()
+		w.add_child(layer)
+		var title := UiKit.label(args.title, int(args.get("title_size", "120")), UiKit.GOLD)
+		title.add_theme_constant_override("outline_size", 18)
+		title.add_theme_color_override("font_outline_color", Color("#9d0208"))
+		title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		title.offset_left = 40.0
+		title.offset_right = -40.0
+		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if side > 0 else HORIZONTAL_ALIGNMENT_LEFT
+		title.add_theme_font_override("font", UiKit.font(900))
+		title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		layer.add_child(title)
+	for i in 30:
+		await get_tree().process_frame
+	get_viewport().get_texture().get_image().save_png(out + "/" + args.get("name", "capsule") + ".png")
+	get_tree().quit()

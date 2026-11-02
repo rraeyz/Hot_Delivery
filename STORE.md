@@ -26,3 +26,18 @@ Physics, Comedy, Driving, Roguelite, Local Co-Op, Split Screen, Funny, Casual, L
 Subject: Can you deliver soup on a scooter? Free keys inside
 
 Hi [name], I'm a solo dev from Turkey. Tip Over is a food-delivery physics comedy: every order stacks on the back of a terrible scooter, and the customers review exactly how it went. It's great with a friend (one drives, one balances the tower) and works solo. Keys for you and a friend: [keys]. 30-second clip: [link]. No pressure to cover it — I'd just love to see your worst delivery.
+
+## Mağaza görselleri (`marketing/steam/`)
+Hepsi oyunun içinden otomatik çekiliyor: `tools/store_art.sh "OYUN ADI"` (isim değişince tek komutla yeniden üret).
+
+| Dosya | Boyut | Steam'de nereye |
+|---|---|---|
+| header_capsule.png | 920×430 | Header Capsule |
+| small_capsule.png | 462×174 | Small Capsule |
+| main_capsule.png | 1232×706 | Main Capsule |
+| vertical_capsule.png | 748×896 | Vertical Capsule |
+| library_capsule.png | 600×900 | Library Capsule |
+| library_hero.png | 3840×1240 | Library Hero (yazısız) |
+| screenshot_1..5.png | 1920×1080 | Ekran görüntüleri (Steam en az 5 ister) |
+
+Eksik (KULLANICI ya da sonra): Library Logo (1280×720, saydam PNG, sadece oyun adı) — isim kesinleşince üretilecek. Steam'in kapsül kuralları: kapsülde sadece oyun adı ve görsel olur; "indirim", ödül, inceleme puanı gibi yazılar yasak.
