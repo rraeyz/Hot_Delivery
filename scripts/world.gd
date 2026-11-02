@@ -87,6 +87,7 @@ func _ready() -> void:
 			s.look = info.get("look", Courier.default_look(i))
 			s.color = Color(Game.SCOOTER_COLORS[int(info.get("color", i)) % Game.SCOOTER_COLORS.size()])
 			s.remote = ids[i] != Net.my_id() and not client
+			s.set_meta("peer", ids[i])
 			s.passenger_ids = Net.order().filter(func(p): return Net.is_passenger(p) and Net.ride_target(p) == i)
 			s.name = "Scooter%d" % i
 		add_child(s)
@@ -801,6 +802,8 @@ func _check_pickups(pos: Vector3, sp: float) -> void:
 			it.heat = 60.0 + 40.0 * q
 			it.integrity = 70.0 + 30.0 * q
 			scooter.rack.add_item(it)
+			if scooter.rack.items.size() >= 5:
+				award(scooter.index, "TOWER_5")
 			o.state = "carry"
 			audio.play("pickup")
 			_refresh_beacons()
@@ -998,12 +1001,19 @@ func _deliver(o: Dictionary, it: FoodItem, thrown: bool, at := Vector3.INF) -> v
 	rv.day = run.day
 	reviews.append(rv)
 	run.add_tip(res.tip, scooters[who].team)
-	if who == local_index:
-		SteamBridge.achieve("FIRST_DELIVERY")
-		if thrown:
-			SteamBridge.achieve("BALCONY_THROW")
-		if it.kind == "soup" and it.integrity > 90.0:
-			SteamBridge.achieve("SOUP_SURVIVOR")
+	award(who, "FIRST_DELIVERY")
+	if thrown:
+		award(who, "BALCONY_THROW")
+		if clock < elevator_until:
+			award(who, "STAIRS_SKIP")
+	if it.kind == "soup" and it.integrity > 90.0:
+		award(who, "SOUP_SURVIVOR")
+	if it.kind == "coffee" and it.integrity > 90.0:
+		award(who, "BARISTA")
+	if it.kind == "jelly":
+		award(who, "JELLY")
+	if it.kind == "cake":
+		award(who, "WEDDING_CAKE")
 	rv["by"] = who
 	if thrown:
 		run.stats.throws += 1
@@ -1140,8 +1150,7 @@ func _on_crash(_s: Scooter) -> void:
 		if o.state == "carry":
 			o.crashed = true
 	hud.popup(Game.t("crash"), Color("#ef476f"), true)
-	if scooters.find(_s) == local_index:
-		SteamBridge.achieve("WIPEOUT")
+	award(scooters.find(_s), "WIPEOUT")
 	audio.play("crash")
 	if not Net.online or scooters.find(_s) == local_index:
 		_cam_for(_s).add_trauma(0.9)
@@ -1171,8 +1180,13 @@ func _on_honk(_s: Scooter) -> void:
 
 var _bump_popup_at := -10.0
 
+var _bumps := {}   # scooter index -> pedestrians knocked this shift
+
 func _on_walker_bumped(wk: Node3D) -> void:
 	var s := nearest_scooter(wk.global_position)
+	_bumps[s.index] = int(_bumps.get(s.index, 0)) + 1
+	if _bumps[s.index] == 5:
+		award(s.index, "BOWLING")
 	s.rack.jolt(3.0)
 	audio.play("thud")
 	if clock - _bump_popup_at > 0.6:   # a whole pack knocked over at once: one shout, not a pile
@@ -1538,6 +1552,24 @@ func _end_shift() -> void:
 
 
 ## Slow-motion clip of the day's biggest crash (online: the host sends it to everyone).
+## Achievement for whoever drives (or rides) scooter `who`. Online, the host tells each player's own game.
+func award(who: int, ach: String) -> void:
+	if who < 0 or who >= scooters.size():
+		return
+	if not Net.online:
+		if who == local_index or split:   # split screen shares one Steam account
+			SteamBridge.achieve(ach)
+		return
+	if client:
+		return
+	var s: Scooter = scooters[who]
+	for pid in [int(s.get_meta("peer", 0))] + s.passenger_ids:
+		if pid == Net.my_id():
+			SteamBridge.achieve(ach)
+		elif pid != 0:
+			netsync.fx.rpc_id(pid, "achieve", [ach])
+
+
 var replays_shown := 0
 
 func play_replay(data: Array, who: int) -> void:

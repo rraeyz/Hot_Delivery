@@ -141,7 +141,7 @@ Her oturumun başında bu dosyayı ve PROGRESS.md'yi oku. Sıradaki `[ ]` görev
 - [x] Yorumlar için daha fazla dil (ES, DE, PT-BR, RU) — dünya pazarı
 - [x] Erişilebilirlik: renk körü dostu işaretler, tuş atama ekranı
 - [x] Performans: occlusion culling (her binada kutu oklüder) + parçalı ve vertex-renkli mesh birleştirme (3000 → ~300 çizim nesnesi), tests/perf_count.tscn
-- [ ] Steam başarımları listesi (GodotSteam gelince bağlanacak)
+- [x] Steam başarımları: 15 başarım kodda bağlı (online dahil), ad/açıklama tablosu STEAM.md'de — GodotSteam gelince otomatik çalışır
 - [x] Yeni yemekler: dev JÖLE (çok sallanır ama kırılmaz, 7. gün açılır) ve 4'lü KAHVE tepsisi (en ufak frende döker, 8. gün açılır)
 - [x] Yeni olay: ŞEHİR MARATONU — 16 koşucu bir caddeden akar, çarpınca takla atarlar (online aynı paket)
 - [x] Yeni yükseltmeler: Şemsiyeli Şapka (yağmur/sağanak etkisiz), Köpek Ödülü (köpek ısırmaz, güvercin gelmez)

@@ -257,6 +257,8 @@ func fx(kind: String, args: Array) -> void:
 			world._shower_fx()
 		"marathon":
 			world.make_marathon(args[0], args[1], args[2], args[3])
+		"achieve":
+			SteamBridge.achieve(args[0])
 		"replay":
 			world.play_replay(args[0], args[1])
 		"roadworks":

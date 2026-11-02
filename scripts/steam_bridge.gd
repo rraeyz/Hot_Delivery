@@ -8,7 +8,8 @@ signal join_failed(reason: String)
 
 const APP_ID := 480          # Spacewar test app; replace with the real App ID after Steamworks setup
 const ACHIEVEMENTS := ["FIRST_DELIVERY", "BALCONY_THROW", "SOUP_SURVIVOR", "WIPEOUT", "DAY_5", "DAY_10",
-	"COMPETITIVE_WIN", "PERFECT_COOK"]
+	"COMPETITIVE_WIN", "PERFECT_COOK", "STAIRS_SKIP", "BARISTA", "JELLY", "WEDDING_CAKE", "TOWER_5", "BOWLING",
+	"ONLINE_SHIFT"]
 
 var steam: Object = null     # the "Steam" singleton when available
 var available := false
@@ -81,7 +82,12 @@ func make_client_peer(host_steam_id: int) -> MultiplayerPeer:
 	return p
 
 
+var earned: Array = []      # this session's achievements, also without Steam (tests read it)
+
+
 func achieve(name: String) -> void:
+	if name in ACHIEVEMENTS and not name in earned:
+		earned.append(name)
 	if available and name in ACHIEVEMENTS:
 		steam.call("setAchievement", name)
 		steam.call("storeStats")

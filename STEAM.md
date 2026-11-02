@@ -12,13 +12,30 @@ Ben bulut ortamında dışarıdan gelen derlenmiş dosyaları (dll/so) projeye k
 ## 2) Steamworks
 1. https://partner.steamgames.com — Steam Direct ücreti 100$ (tek masraf).
 2. Uygulama oluşturunca **App ID** alırsın. `scripts/steam_bridge.gd` içindeki `APP_ID := 480` satırını o sayıyla değiştir (480 = Valve'ın test uygulaması "Spacewar").
-3. Steamworks > Başarımlar bölümüne şu API adlarıyla başarım ekle:
-   FIRST_DELIVERY, BALCONY_THROW, SOUP_SURVIVOR, WIPEOUT, DAY_5, DAY_10, COMPETITIVE_WIN, PERFECT_COOK
+3. Steamworks > Başarımlar (Stats & Achievements) bölümüne aşağıdaki 15 başarımı **API adı birebir aynı** olacak şekilde ekle (ad ve açıklamayı kopyala-yapıştır; simgeler: 256×256 PNG, kilitli hâli gri):
+
+| API adı | Ad (EN) | Açıklama (EN) | Ad (TR) |
+|---|---|---|---|
+| FIRST_DELIVERY | Still Warm-ish | Deliver your first order. | Hâlâ Ilık Sayılır |
+| BALCONY_THROW | Air Mail | Throw food onto a balcony and land it. | Uçak Postası |
+| SOUP_SURVIVOR | Not a Drop | Deliver soup with more than 90% left in the bowl. | Bir Damla Bile |
+| WIPEOUT | Flying Courier | Crash your scooter. Everyone does. | Uçan Kurye |
+| DAY_5 | Rent Paid (x5) | Survive to day 5. | Kira Ödendi (x5) |
+| DAY_10 | Employee of the Month | Survive to day 10. | Ayın Elemanı |
+| COMPETITIVE_WIN | King of the City | Win a competitive match. | Şehrin Kralı |
+| PERFECT_COOK | Chef's Kiss | Hit the perfect zone while cooking. | Şefin Öpücüğü |
+| STAIRS_SKIP | Who Needs Elevators | During a broken-elevator event, deliver by throwing. | Asansöre Ne Gerek |
+| BARISTA | Barista on Wheels | Deliver coffee with more than 90% left. | Tekerlekli Barista |
+| JELLY | Wobble Wobble | Deliver a giant jelly. | Lıkır Lıkır |
+| WEDDING_CAKE | Something Borrowed | Deliver the wedding cake. | Gelin Pastası |
+| TOWER_5 | Leaning Tower | Carry 5 items at once. | Pisa Kulesi |
+| BOWLING | Strike! | Knock over 5 pedestrians in one shift. | Strike! |
+| ONLINE_SHIFT | Team Effort | Finish an online shift. | Ekip İşi |
 4. Steamworks > Remote Play: "Remote Play Together" açık olsun (yerel 2 kişilik modlar internetten oynanır).
 
 ## Nasıl çalışır
 - Ev sahibi STEAM'DE KUR → arkadaş-özel lobi açılır → ARKADAŞ DAVET ET ile Steam davet penceresi.
 - Arkadaş daveti kabul eder → oyun açılır (`+connect_lobby`) → lobiye girer → ev sahibine Steam P2P ile bağlanır (port açmaya gerek yok).
-- Başarımlar oyun içi olaylarda otomatik verilir.
+- Başarımlar oyun içi olaylarda otomatik verilir. Online oyunda ev sahibi, başarımı kazanan oyuncunun kendi oyununa yollar (her oyuncu kendi Steam hesabında açar).
 
 Not: Bu kısım Steam istemcisi ve eklenti olmadan test edilemedi; ilk Steam testinde sorun çıkarsa bana logu gönder.

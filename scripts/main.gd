@@ -419,11 +419,13 @@ func show_summary(result: Dictionary) -> void:
 		run.end_shift()
 		var light := {"top": result.top, "earned": result.earned}
 		if Net.online:
+			SteamBridge.achieve("ONLINE_SHIFT")
 			remote_comp.rpc(run.to_dict(), light)
 		show_comp(light)
 		return
 	var paid := run.end_shift()
 	if Net.online:
+		SteamBridge.achieve("ONLINE_SHIFT")
 		remote_summary.rpc({"top": result.top, "earned": result.earned}, run.to_dict(), paid)
 	if world:
 		world.hud.visible = false
@@ -476,6 +478,7 @@ func _record_run_end() -> void:
 @rpc("authority", "reliable")
 func remote_summary(result: Dictionary, d: Dictionary, paid: bool) -> void:
 	run = RunState.from_dict(d)
+	SteamBridge.achieve("ONLINE_SHIFT")
 	if world:
 		world.hud.visible = false
 	var root := _screen()
@@ -496,6 +499,7 @@ func remote_summary(result: Dictionary, d: Dictionary, paid: bool) -> void:
 
 @rpc("authority", "reliable")
 func remote_comp(d: Dictionary, light: Dictionary) -> void:
+	SteamBridge.achieve("ONLINE_SHIFT")
 	run = RunState.from_dict(d)
 	show_comp(light)
 
@@ -888,7 +892,8 @@ func _autotest_net() -> void:
 		max_drivers = maxi(max_drivers, Net.drivers().size())
 		if args.has("crash") and Net.is_host() and t >= float(args.crash):
 			args.erase("crash")
-			w.scooter.crash(-w.scooter.global_basis.z * 12.0)
+			var cs: Scooter = w.scooters[clampi(int(args.get("crash_who", "0")), 0, w.scooters.size() - 1)]
+			cs.crash(-cs.global_basis.z * 12.0)
 		if Net.is_cook(Net.my_id()):
 			if int(t * 60.0) % 90 == 0:
 				for o in w.orders:
@@ -911,7 +916,7 @@ func _autotest_net() -> void:
 		moved.append(snappedf(w.scooters[i].global_position.distance_to(start_pos[i]), 0.1))
 	print("NET %s scooters=%d local=%d moved=%s money=%d orders=%d deliveries=%d" % ["host" if Net.is_host() else "client",
 		w.scooters.size(), w.local_index, moved, run.money, w.orders.size(), w.reviews.size()])
-	print("NET replays shown: ", w.replays_shown)
+	print("NET replays shown: ", w.replays_shown, " achievements: ", SteamBridge.earned)
 	var ok: bool = max_players >= 2 and w.scooters.size() == max_drivers and moved.all(func(m): return m > 5.0) and w.orders.size() > 0
 	if Net.cooks().size() > 0:
 		var ready := w.orders.filter(func(o): return o.get("ready", true) or o.state != "offer").size()
