@@ -969,7 +969,8 @@ func _capsule() -> void:
 	cam.fov = 50.0
 	w.add_child(cam)
 	var p := sc.global_position
-	cam.global_position = p + fwd * 4.6 + right * 1.9 * side + Vector3.UP * 0.7
+	var dist := float(args.get("dist", "4.6"))
+	cam.global_position = p + fwd * dist + right * 1.9 * side * dist / 4.6 + Vector3.UP * (0.7 + (dist - 4.6) * 0.25)
 	cam.look_at(p + Vector3.UP * 1.25 - right * 1.4 * side * float(args.get("offset", "1.8")))
 	cam.current = true
 	for car in w.cars:   # keep traffic out of the shot
@@ -987,6 +988,10 @@ func _capsule() -> void:
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if side > 0 else HORIZONTAL_ALIGNMENT_LEFT
 		title.add_theme_font_override("font", UiKit.font(900))
 		title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		if args.get("title_pos", "") == "top":   # portrait art: title across the top
+			title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			title.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+			title.offset_top = 40.0
 		layer.add_child(title)
 	for i in 30:
 		await get_tree().process_frame

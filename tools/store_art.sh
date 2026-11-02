@@ -16,9 +16,10 @@ cap() {   # name WxH driver [extra args...]
 cap header_capsule 920x430 opengl3 --title="$T"
 cap small_capsule 462x174 opengl3 --title="$T" --title_size=150
 cap main_capsule 1232x706 opengl3 --title="$T"
-cap vertical_capsule 748x896 opengl3 --title="$T" --title_size=110
-cap library_capsule 600x900 opengl3 --title="$T" --title_size=100
+cap vertical_capsule 748x896 opengl3 --title="$T" --title_size=110 --title_pos=top --offset=0 --dist=7
+cap library_capsule 600x900 opengl3 --title="$T" --title_size=100 --title_pos=top --offset=0 --dist=7.5
 cap library_hero 3840x1240 opengl3
+[ "${SHOTS:-1}" = 0 ] && exit 0   # SHOTS=0: capsules only
 i=1
 for a in "bazaar noon 3" "beach sunset 8" "downtown night 5" "bazaar morning 12" "beach noon 21"; do
 	set -- $a
