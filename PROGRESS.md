@@ -91,3 +91,4 @@ Online yolcu rolü, park etmiş arabalar/yaya geçitleri, daha iyi araç modelle
 - Steam başarımları: 15 tane (7 yeni: Asansöre Ne Gerek, Tekerlekli Barista, Lıkır Lıkır, Gelin Pastası, Pisa Kulesi, Strike!, Ekip İşi). Online oyunda başarım doğru oyuncuya gidiyor (testte istemci kendi WIPEOUT'unu aldı). Ad/açıklama tablosu + 30 simge (`marketing/steam/achievements/`) hazır.
 - Hata düzeltme: çorba kasesinin ve kahve bardaklarının kapağı sıvıyı gizliyordu (çorba hep boş görünüyordu) — artık ağzı açık.
 - Yeni mahalle: KIŞ (en iyi gün 10 olunca açılır). Buzlu yol (%25 az tutuş), sıcak yemek %30 hızlı soğur, soğuk yemekler çok yavaş erir; kar yağışı, karlı çatılar, kardan adamlar. 7 dilde adı var.
+- Build: `builds/TipOver-windows-v0.9.zip` (çorba düzeltmesi + başarımlar + Kış mahallesi).
