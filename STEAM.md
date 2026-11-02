@@ -12,7 +12,7 @@ Ben bulut ortamında dışarıdan gelen derlenmiş dosyaları (dll/so) projeye k
 ## 2) Steamworks
 1. https://partner.steamgames.com — Steam Direct ücreti 100$ (tek masraf).
 2. Uygulama oluşturunca **App ID** alırsın. `scripts/steam_bridge.gd` içindeki `APP_ID := 480` satırını o sayıyla değiştir (480 = Valve'ın test uygulaması "Spacewar").
-3. Steamworks > Başarımlar (Stats & Achievements) bölümüne aşağıdaki 15 başarımı **API adı birebir aynı** olacak şekilde ekle (ad ve açıklamayı kopyala-yapıştır; simgeler: 256×256 PNG, kilitli hâli gri):
+3. Steamworks > Başarımlar (Stats & Achievements) bölümüne aşağıdaki 15 başarımı **API adı birebir aynı** olacak şekilde ekle (ad ve açıklamayı kopyala-yapıştır). Simgeler hazır: `marketing/steam/achievements/<API adı>.png` ve kilitli hâli `<API adı>_locked.png` (256×256, oyunun kendi modellerinden; yeniden üretmek için main.gd `_achievement_icons` üstündeki komut):
 
 | API adı | Ad (EN) | Açıklama (EN) | Ad (TR) |
 |---|---|---|---|

@@ -24,7 +24,7 @@ static func build(kind: String) -> Node3D:
 			tag.rotation.y = 0.4
 		"soup":
 			U.cyl(root, 0.26, 0.26, 0.03, Color("#cfd8dc"), Vector3(0, 0.015, 0))  # tray
-			U.cyl(root, 0.24, 0.15, 0.19, Color("#fafafa"), Vector3(0, 0.125, 0))  # bowl
+			_open(U.cyl(root, 0.24, 0.15, 0.19, Color("#fafafa"), Vector3(0, 0.125, 0)))  # bowl
 			var surf := U.cyl(root, 0.215, 0.215, 0.02, Color("#f77f00"), Vector3(0, 0.19, 0))
 			root.set_meta("liquid", surf)
 			U.sphere(root, 0.035, Color("#2a9d8f"), Vector3(0.05, 0.205, 0.04))
@@ -76,11 +76,19 @@ static func build(kind: String) -> Node3D:
 			U.box(root, Vector3(0.36, 0.025, 0.36), Color("#8d6e63"), Vector3(0, 0.012, 0))
 			for i in 4:
 				var p := Vector3(-0.09 + (i % 2) * 0.18, 0.09, -0.09 + int(i / 2.0) * 0.18)
-				U.cyl(root, 0.06, 0.05, 0.15, Color("#fefae0"), p)
+				_open(U.cyl(root, 0.06, 0.05, 0.15, Color("#fefae0"), p))
 				var c := U.cyl(root, 0.055, 0.055, 0.012, Color("#6f4e37"), p + Vector3(0, 0.07, 0))
 				if i == 0:
 					root.set_meta("liquid", c)
 	return root
+
+
+## Bowls and cups: no lid, both wall sides drawn, so the liquid inside shows.
+static func _open(mi: MeshInstance3D) -> void:
+	(mi.mesh as CylinderMesh).cap_top = false
+	var m: StandardMaterial3D = mi.material_override.duplicate()
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mi.material_override = m
 
 
 ## Collision shape approximating the food, for when it becomes a loose physics object.

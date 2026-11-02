@@ -801,6 +801,9 @@ func _autotest() -> void:
 	if args.has("capsule"):
 		await _capsule()
 		return
+	if args.has("icons"):
+		await _achievement_icons()
+		return
 	if args.has("menu"):
 		show_menu()
 		if args.has("character"):
@@ -1001,4 +1004,75 @@ func _capsule() -> void:
 	for i in 30:
 		await get_tree().process_frame
 	get_viewport().get_texture().get_image().save_png(out + "/" + args.get("name", "capsule") + ".png")
+	get_tree().quit()
+
+
+## Steam achievement icons from the game's own models: <API>.png and <API>_locked.png (grey).
+## xvfb-run -a godot --path . --rendering-driver opengl3 --resolution 256x256 -- --autotest --icons --out=marketing/steam/achievements
+func _achievement_icons() -> void:
+	var out: String = args.get("out", "user://")
+	DirAccess.make_dir_recursive_absolute(out)
+	var plan := {   # API name: [models bottom to top ("courier" / "rider" / food kind), background, tilt]
+		"FIRST_DELIVERY": [["pizza"], "#2a9d8f", 0.0], "BALCONY_THROW": [["burger"], "#4361ee", 0.6],
+		"SOUP_SURVIVOR": [["soup"], "#f77f00", 0.0], "WIPEOUT": [["courier"], "#ef476f", 1.3],
+		"DAY_5": [["pizza", "pizza"], "#90be6d", 0.05], "DAY_10": [["pizza", "soup", "burger"], "#f9c74f", 0.08],
+		"COMPETITIVE_WIN": [["courier"], "#ffd60a", 0.0], "PERFECT_COOK": [["icecream"], "#ff70a6", 0.0],
+		"STAIRS_SKIP": [["drinks"], "#7b2cbf", 0.7], "BARISTA": [["coffee"], "#6f4e37", 0.0],
+		"JELLY": [["jelly"], "#06d6a0", 0.15], "WEDDING_CAKE": [["cake"], "#ffc8dd", 0.0],
+		"TOWER_5": [["pizza", "soup", "burger", "drinks", "cake"], "#118ab2", 0.12],
+		"BOWLING": [["rider"], "#ff9f1c", 1.0], "ONLINE_SHIFT": [["courier", "courier"], "#3a86ff", 0.0],
+	}
+	for ach in SteamBridge.ACHIEVEMENTS:
+		assert(plan.has(ach), "icon plan missing " + ach)
+	var stage := Node3D.new()
+	add_child(stage)
+	var env := WorldEnvironment.new()
+	env.environment = Environment.new()
+	env.environment.background_mode = Environment.BG_COLOR
+	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.environment.ambient_light_color = Color(0.75, 0.75, 0.8)
+	stage.add_child(env)
+	var sun := DirectionalLight3D.new()
+	sun.rotation = Vector3(-0.9, 0.6, 0)
+	stage.add_child(sun)
+	var cam := Camera3D.new()
+	cam.fov = 40.0
+	stage.add_child(cam)
+	cam.current = true
+	for ach in plan:
+		var spec: Array = plan[ach]
+		env.environment.background_color = Color(spec[1])
+		var models := Node3D.new()
+		stage.add_child(models)
+		var y := 0.0
+		var two: bool = (spec[0] as Array).size() == 2 and spec[0][0] == "courier"
+		for i in (spec[0] as Array).size():
+			var k: String = spec[0][i]
+			var m := Node3D.new()
+			if k == "courier" or k == "rider":
+				Courier.build(m, Courier.default_look(i + 1), k == "courier")
+				m.position = Vector3((i - 0.5) * 0.9 if two else 0.0, 0.6, 0)
+				y = maxf(y, 1.3)
+			else:
+				m = FoodVisual.build(k)
+				m.position.y = y
+				m.rotation.z = spec[2] * i
+				y += FoodItem.DEFS[k].height * FoodVisual.SCALE
+			models.add_child(m)
+		models.rotation = Vector3(0, -0.5, spec[2])
+		var h := maxf(y, 0.3)
+		var d := 0.9 + maxf(h, 0.65) * 1.6   # flat foods are wide, keep them in frame
+		cam.position = Vector3(0, h * 0.5 + d * 0.4, d)
+		cam.look_at(Vector3(0, h * 0.45, 0))
+		for i in 4:
+			await get_tree().process_frame
+		var img := get_viewport().get_texture().get_image()
+		img.save_png("%s/%s.png" % [out, ach])
+		for py in img.get_height():
+			for px in img.get_width():
+				var c := img.get_pixel(px, py)
+				var g := c.get_luminance() * 0.8
+				img.set_pixel(px, py, Color(g, g, g))
+		img.save_png("%s/%s_locked.png" % [out, ach])
+		models.queue_free()
 	get_tree().quit()
