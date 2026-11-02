@@ -84,6 +84,24 @@ func test_weather_upgrades(t) -> void:
 	t.check(r.mods().treats == 1, "dog treats mod set")
 
 
+func test_winter(t) -> void:
+	var r := RunState.new(1, 0)
+	var base := r.mods()
+	r.theme = "snow"
+	var m := r.mods()
+	t.check(m.grip_mult < base.grip_mult, "winter roads are icy")
+	var hot := FoodItem.new("pizza")
+	var ice := FoodItem.new("icecream")
+	var hot2 := FoodItem.new("pizza")
+	var ice2 := FoodItem.new("icecream")
+	hot.step_heat(10.0, m.heat_loss_mult)
+	ice.step_heat(10.0, m.heat_loss_mult * m.cold_loss_mult)
+	hot2.step_heat(10.0, base.heat_loss_mult)
+	ice2.step_heat(10.0, base.heat_loss_mult * base.cold_loss_mult)
+	t.check(hot.heat < hot2.heat, "hot food cools faster in winter")
+	t.check(ice.heat > ice2.heat, "ice cream melts slower in winter")
+
+
 func test_brake_tilts_forward(t) -> void:
 	var p := FoodItem.new("pizza")
 	_sim(p, Vector2(0, -8.0), 0.5)

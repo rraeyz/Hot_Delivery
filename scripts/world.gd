@@ -154,6 +154,27 @@ func _build_environment() -> void:
 	var r := Look.environment(self, run.tod, city.theme, run.chaos)
 	env = r.env
 	night = r.night
+	if run.theme == "snow" and not "rain" in run.chaos:
+		var sn := CPUParticles3D.new()
+		sn.amount = 500
+		sn.lifetime = 4.0
+		sn.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+		sn.emission_box_extents = Vector3(22, 1, 22)
+		sn.direction = Vector3(0.2, -1, 0)
+		sn.spread = 15.0
+		sn.initial_velocity_min = 2.0
+		sn.initial_velocity_max = 3.5
+		sn.gravity = Vector3.ZERO
+		var fm := SphereMesh.new()
+		fm.radius = 0.04
+		fm.height = 0.08
+		fm.radial_segments = 4
+		fm.rings = 2
+		fm.material = U.mat(Color(1, 1, 1, 0.9), true)
+		sn.mesh = fm
+		sn.position.y = 9.0
+		rain = sn   # rides along with the camera like rain
+		add_child(sn)
 	if "rain" in run.chaos:
 		rain = CPUParticles3D.new()
 		rain.amount = 600
@@ -234,9 +255,9 @@ func _build_city() -> void:
 	# blocks
 	for b in city.blocks:
 		var c: Vector3 = b.center
-		var col := (Color("#74c69d") if run.theme != "beach" else Color("#f4e1a1")) if b.park else Color(city.theme.walk)
+		var col := ({"beach": Color("#f4e1a1"), "snow": Color("#f8fafc")}.get(run.theme, Color("#74c69d")) as Color) if b.park else Color(city.theme.walk)
 		var slab := U.static_box(self, Vector3(CityGen.BLOCK, 0.15, CityGen.BLOCK), col, c + Vector3(0, 0.075, 0))
-		(slab.get_child(1) as MeshInstance3D).material_override = Look.tile_mat(col, b.park and run.theme != "beach")
+		(slab.get_child(1) as MeshInstance3D).material_override = Look.tile_mat(col, b.park and not run.theme in ["beach", "snow"])
 		_street_furniture(c)
 		if b.park:
 			# a big jump ramp in the park
@@ -375,13 +396,30 @@ func _backdrop() -> void:
 	# grass tufts in parks
 	var tufts := []
 	for b in city.blocks:
-		if not b.park or beach:
+		if b.park and run.theme == "snow":
+			_snowmen(b.center)
+		if not b.park or beach or run.theme == "snow":
 			continue
 		for i in 260:
 			var p: Vector3 = b.center + Vector3(rng.randf_range(-16, 16), 0.15, rng.randf_range(-16, 16))
 			tufts.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.6, 1.3)), p + Vector3(0, 0.12, 0)))
 	if tufts.size() > 0:
 		_multimesh(tufts, Vector3(0.08, 0.25, 0.4), Color("#40916c"))
+
+
+func _snowmen(c: Vector3) -> void:
+	for i in rng.randi_range(1, 3):
+		var p := c + Vector3(rng.randf_range(-12, 12), 0, rng.randf_range(-12, 12))
+		var sm := Node3D.new()
+		sm.position = p
+		sm.rotation.y = rng.randf() * TAU
+		U.sphere(sm, 0.55, Color("#f8fafc"), Vector3(0, 0.5, 0))
+		U.sphere(sm, 0.4, Color("#f8fafc"), Vector3(0, 1.25, 0))
+		U.sphere(sm, 0.28, Color("#f8fafc"), Vector3(0, 1.8, 0))
+		U.cyl(sm, 0.0, 0.06, 0.3, Color("#ff7b00"), Vector3(0, 1.82, -0.38), 8).rotation.x = -PI / 2
+		U.box(sm, Vector3(0.36, 0.06, 0.36), Color("#222222"), Vector3(0, 2.05, 0))
+		U.box(sm, Vector3(0.22, 0.22, 0.22), Color("#222222"), Vector3(0, 2.18, 0))
+		add_child(sm)
 
 
 func _multimesh(xforms: Array, size: Vector3, c: Color) -> void:
@@ -494,6 +532,8 @@ func _roof_details(base: Vector3, s: Vector3, c: Color) -> void:
 			[Vector3(s.x * 0.5, 0.25, 0), Vector3(0.25, 0.5, s.z)], [Vector3(-s.x * 0.5, 0.25, 0), Vector3(0.25, 0.5, s.z)]]:
 		U.box(self, e[1], trim, top + e[0])
 	U.box(self, Vector3(s.x + 0.12, 0.6, s.z + 0.12), c.darkened(0.45), base + Vector3(0, 0.3, 0))   # plinth
+	if run.theme == "snow":   # snow blanket on the roof and the parapet
+		U.box(self, Vector3(s.x + 0.3, 0.25, s.z + 0.3), Color("#f8fafc"), top + Vector3(0, 0.5, 0))
 	var k := rng.randi() % 4
 	for i in k:
 		var p := top + Vector3(rng.randf_range(-s.x, s.x) * 0.3, 0, rng.randf_range(-s.z, s.z) * 0.3)

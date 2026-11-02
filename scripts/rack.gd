@@ -86,7 +86,7 @@ func step(dt: float, accel: Vector2) -> void:
 			hm *= 2.0
 		elif not it.is_cold() and mods.get("heatwave", false):
 			hm *= 0.6
-		it.step_heat(dt, hm * mods.get("heat_loss_mult", 1.0))
+		it.step_heat(dt, hm * mods.get("heat_loss_mult", 1.0) * (mods.get("cold_loss_mult", 1.0) if it.is_cold() else 1.0))
 		cum += it.tilt
 		if cum.length() > it.limit:
 			if it.tape > 0:

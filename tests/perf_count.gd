@@ -2,7 +2,7 @@ extends Node
 ## Counts render objects in a generated city (draw-call budget check).
 func _ready() -> void:
 	var run := RunState.new(3, 5)
-	for th in ["bazaar", "beach", "downtown"]:
+	for th in CityGen.THEMES:
 		run.theme = th
 		var w := World.new()
 		w.setup(run, false)

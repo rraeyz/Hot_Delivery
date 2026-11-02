@@ -22,6 +22,10 @@ const THEMES := {
 	"downtown": {"palette": ["#6c757d", "#adb5bd", "#457b9d", "#1d3557", "#a8dadc", "#e5e5e5", "#ced4da", "#5c677d"],
 		"park": 0.05, "tall": 0.45, "ramps": 3, "props": 50,
 		"ground": "#25272b", "outer": "#55595f", "walk": "#9a9a9a", "sky": "#90e0ef", "cars": 6},
+	# winter: icy roads, hot food cools fast, frozen food barely melts
+	"snow": {"palette": ["#9d0208", "#6a4c93", "#3d5a80", "#e09f3e", "#335c67", "#f4f1de", "#8d5524", "#2a9d8f"],
+		"park": 0.2, "tall": 0.1, "ramps": 6, "props": 70,
+		"ground": "#3b3f45", "outer": "#eef2f6", "walk": "#dde5ee", "sky": "#a9c4d9", "cars": -1},
 }
 
 
