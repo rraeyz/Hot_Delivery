@@ -88,3 +88,5 @@ Online yolcu rolü, park etmiş arabalar/yaya geçitleri, daha iyi araç modelle
 - Eski (grafik güncellemesi öncesi) tanıtım görselleri silindi; `marketing/` artık oyun dosyasına gömülmüyor.
 - Uzun bot testleri (3 mahalle × 3 gün, tüm yemekler açık) ve rekabetçi simülasyon hatasız.
 
+- Steam başarımları: 15 tane (7 yeni: Asansöre Ne Gerek, Tekerlekli Barista, Lıkır Lıkır, Gelin Pastası, Pisa Kulesi, Strike!, Ekip İşi). Online oyunda başarım doğru oyuncuya gidiyor (testte istemci kendi WIPEOUT'unu aldı). Ad/açıklama tablosu + 30 simge (`marketing/steam/achievements/`) hazır.
+- Hata düzeltme: çorba kasesinin ve kahve bardaklarının kapağı sıvıyı gizliyordu (çorba hep boş görünüyordu) — artık ağzı açık.
