@@ -201,6 +201,19 @@ func _bar(v: float, c: Color) -> ProgressBar:
 
 
 var _banner: Label
+var _vote: PanelContainer
+
+
+## Streamer mode: small chat-vote box on the left ("" hides it).
+func vote_panel(text: String) -> void:
+	if not _vote:
+		_vote = PanelContainer.new()
+		_vote.position = Vector2(16, 64)
+		var l := UiKit.label("", 15)
+		_vote.add_child(l)
+		popups.add_child(_vote)
+	(_vote.get_child(0) as Label).text = text
+	_vote.visible = text != ""
 
 
 ## Persistent instruction line under the timer ("" hides it).

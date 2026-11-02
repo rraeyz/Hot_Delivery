@@ -338,6 +338,16 @@ func show_settings() -> void:
 		Game.settings.colorblind = on
 		Game.write_save())
 	v.add_child(cb2)
+	v.add_child(UiKit.label(Game.t("twitch"), 14))
+	var tw := LineEdit.new()
+	tw.placeholder_text = "twitch.tv/..."
+	tw.text = Game.settings.get("twitch", "")
+	tw.custom_minimum_size = Vector2(400, 0)
+	tw.max_length = 25
+	tw.text_changed.connect(func(tx: String):
+		Game.settings.twitch = tx.strip_edges().trim_prefix("https://").trim_prefix("www.").trim_prefix("twitch.tv/")
+		Game.write_save())
+	v.add_child(tw)
 	v.add_child(UiKit.button(Game.t("keys"), show_keys))
 	v.add_child(UiKit.button(Game.t("controls"), show_controls))
 	var cr := UiKit.label(Game.t("credits"), 14, Color(1, 1, 1, 0.6))

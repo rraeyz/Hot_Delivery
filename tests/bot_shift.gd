@@ -33,13 +33,25 @@ func _run() -> void:
 		var bot := Autopilot.new(w)
 		if args.has("event"):
 			w._random_event(args.event)
+		if args.has("chatvote"):   # fake chat: everyone votes for option 2
+			w.chat_votes = true
+			w.event_timer = 21.0
 		var result := {}
 		w.shift_ended.connect(func(r): result.merge(r))
 		var frames := 0
+		var expect_event := ""
 		while result.is_empty():
 			w.scooter.external_input = bot.drive(1.0 / 60.0)
 			await get_tree().physics_frame
 			frames += 1
+			if args.has("chatvote") and frames % 30 == 0 and w.vote.options.size() == 3:
+				w.vote.add("viewer%d" % (frames % 7), "2")
+				expect_event = w.vote.options[1]
+			if args.has("chatvote") and expect_event != "" and w.vote.options.is_empty():
+				print("CHATVOTE picked=%s expected=%s" % [w.last_event, expect_event])
+				if w.last_event != expect_event:
+					fails += 1
+				expect_event = ""
 			if frames % 300 == 0 and args.has("verbose"):
 				print("  t=%d pos=%s spd=%.1f items=%d path=%s goal=%s crashed=%s grounded=%s in=%s up=%s" % [frames / 60, w.scooter.global_position, w.scooter.speed, w.scooter.rack.items.size(), bot.path, bot.goal.round(), w.scooter.is_crashed, w.scooter.grounded, w.scooter.external_input, w.scooter.global_basis.y])
 			if bot.stuck_t > 2.0 and frames % 120 == 0:

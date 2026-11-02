@@ -128,6 +128,12 @@ func _ready() -> void:
 	hud = Hud.new()
 	add_child(hud)
 	hud.setup(self)
+	var ch: String = Game.settings.get("twitch", "")
+	if ch != "" and not client and not split:
+		chat_votes = true
+		var tc := TwitchChat.new(ch)
+		add_child(tc)
+		tc.message.connect(func(u: String, t: String): vote.add(u, t))
 	_spawn_npcs()
 	if client:
 		for n in cars + dogs + walkers:
@@ -785,6 +791,7 @@ func _physics_process(dt: float) -> void:
 	for sc in scooters:
 		sc.mods["shower"] = wet
 	event_timer -= dt
+	_vote_tick()
 	if event_timer <= 0.0:
 		event_timer = rng.randf_range(40.0, 70.0)
 		_random_event()
@@ -1256,9 +1263,36 @@ const STAIRS := 4   # broken elevator: seconds (one per floor) standing at the d
 
 
 ## Mid-shift surprises so no two minutes feel the same.
+const EVENTS := ["happy", "rush", "shower", "roadworks", "convoy", "elevator", "marathon"]
+var last_event := ""
+var chat_votes := false        # streamer mode: Twitch chat picks the next event
+var vote := ChatVote.new()
+
+
+## Chat vote runs during the last 20 s before each event.
+func _vote_tick() -> void:
+	if not chat_votes:
+		return
+	if event_timer <= 20.0 and vote.options.is_empty():
+		var opts := EVENTS.duplicate()
+		opts.shuffle()
+		vote.start(opts.slice(0, 3))
+	if not vote.options.is_empty():
+		var c := vote.counts()
+		var lines := [Game.t("chat_vote") + "  %ds" % ceili(maxf(event_timer, 0.0))]
+		for i in vote.options.size():
+			lines.append("%d  %s  —  %d" % [i + 1, Game.t("evn_" + vote.options[i]), c[i]])
+		hud.vote_panel("\n".join(lines))
+
+
 func _random_event(forced := "") -> void:
-	var options := ["happy", "rush", "shower", "roadworks", "convoy", "elevator", "marathon"]
+	if forced == "" and chat_votes and not vote.options.is_empty():
+		forced = vote.winner()
+		vote.start([])
+		hud.vote_panel("")
+	var options := EVENTS
 	var e: String = forced if forced != "" else options[rng.randi() % options.size()]
+	last_event = e
 	match e:
 		"happy":
 			happy_until = clock + 20.0

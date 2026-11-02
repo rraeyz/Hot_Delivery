@@ -102,6 +102,29 @@ func test_winter(t) -> void:
 	t.check(ice.heat > ice2.heat, "ice cream melts slower in winter")
 
 
+func test_chat_vote(t) -> void:
+	var m := ChatVote.parse(":Alice!alice@alice.tmi.twitch.tv PRIVMSG #streamer :2 pls")
+	t.check(m.get("user") == "alice" and m.get("text") == "2 pls", "parse PRIVMSG")
+	var tagged := ChatVote.parse("@badge-info=;color=#FF0000 :bob!bob@bob.tmi.twitch.tv PRIVMSG #streamer :1")
+	t.check(tagged.get("user") == "bob" and tagged.get("text") == "1", "parse tagged PRIVMSG")
+	t.check(ChatVote.parse("PING :tmi.twitch.tv").is_empty(), "PING is not chat")
+	t.check(ChatVote.parse(":tmi.twitch.tv 001 justinfan1 :Welcome").is_empty(), "server line is not chat")
+	var v := ChatVote.new()
+	v.start(["happy", "marathon", "convoy"])
+	t.check(v.winner() == "happy", "no votes: first option")
+	v.add("a", "2")
+	v.add("b", "2!!")
+	v.add("c", "3")
+	v.add("d", "7")
+	v.add("e", "hello")
+	t.check(v.counts() == [0, 2, 1], "counts ignore junk and out-of-range")
+	v.add("a", "3")
+	v.add("b", "3")
+	t.check(v.winner() == "convoy", "changing your vote moves it (%s)" % [v.counts()])
+	v.start(["shower"])
+	t.check(v.counts() == [0], "new vote clears old votes")
+
+
 func test_brake_tilts_forward(t) -> void:
 	var p := FoodItem.new("pizza")
 	_sim(p, Vector2(0, -8.0), 0.5)
