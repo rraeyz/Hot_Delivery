@@ -81,3 +81,10 @@ Online yolcu rolü, park etmiş arabalar/yaya geçitleri, daha iyi araç modelle
 - Testler: 412 birim kontrolü; bot `--event=marathon` ve `--elevator` ile oynuyor; online testler geçiyor.
 - 4. hafta video fikirleri VIDEOS.md'de.
 - Build: `builds/TipOver-windows-v0.8.zip`.
+
+### Oturum 6 — 2 Kasım 2026 gece (Steam mağaza görselleri)
+- Steam'in istediği bütün görseller oyundan otomatik çekildi: `marketing/steam/` (header, small, main, vertical, library kapsülleri, library hero, 5 ekran görüntüsü). Boyutlar ve nereye yükleneceği STORE.md'de.
+- İsim değişince tek komut: `tools/store_art.sh "YENİ İSİM"` (~35 dk; `SHOTS=0` sadece kapsüller, ~5 dk).
+- Eski (grafik güncellemesi öncesi) tanıtım görselleri silindi; `marketing/` artık oyun dosyasına gömülmüyor.
+- Uzun bot testleri (3 mahalle × 3 gün, tüm yemekler açık) ve rekabetçi simülasyon hatasız.
+
